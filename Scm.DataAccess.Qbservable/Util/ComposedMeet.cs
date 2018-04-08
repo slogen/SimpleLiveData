@@ -16,11 +16,11 @@ namespace Scm.DataAccess.Qbservable.Util
             Sink = sink;
         }
 
-        public IQbservable<TResult> Observe<TResult>(Expression<Func<TEntity, TResult>> selector,
+        public virtual IQbservable<TResult> Observe<TResult>(Expression<Func<TEntity, TResult>> selector,
             Expression<Func<TEntity, bool>> predicate = null, IScheduler scheduler = null)
             => Source.Observe(selector, predicate, scheduler);
 
-        public IObservable<long> Add<TSource>(IObservable<TSource> entities, IScheduler scheduler = null)
+        public virtual IObservable<long> Add<TSource>(IObservable<TSource> entities, IScheduler scheduler = null)
             where TSource : TEntity
             => Sink.Add(entities, scheduler);
     }

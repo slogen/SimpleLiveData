@@ -9,12 +9,10 @@ using Scm.DataAccess.Queryable;
 
 namespace Scm.DataStorage.Efc2
 {
-    public abstract class AbstractDbContextRepository<TContext, TEntity>: IRepository<TEntity>
-        where TContext: DbContext
+    public abstract class AbstractDbContextRepository<TEntity>: IRepository<TEntity>
         where TEntity: class
     {
-        protected abstract TContext Context { get; }
-        protected virtual DbSet<TEntity> Set => Context.Set<TEntity>();
+        protected abstract DbSet<TEntity> Set { get; }
 
         public async Task AddRangeAsync<TSource>(IEnumerable<TSource> source, CancellationToken cancellationToken)
             where TSource: TEntity

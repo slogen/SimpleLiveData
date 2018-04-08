@@ -30,4 +30,8 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Scm.DataStorage.Meet\" />
+  </ItemGroup>
+
 </Project>

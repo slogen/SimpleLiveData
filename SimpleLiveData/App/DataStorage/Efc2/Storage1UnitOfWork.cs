@@ -5,9 +5,9 @@ using SimpleLiveData.App.DataModel;
 
 namespace SimpleLiveData.App.DataStorage
 {
-    public class Storage1UnitOfWork : DbContextUnitOfWork<Storage1Context>, ISomeUnitOfWork
+    public class AppEfc2UnitOfWork : DbContextUnitOfWork<AppEfc2Context>, ISomeUnitOfWork
     {
-        public Storage1UnitOfWork(Storage1Context context) : base(context) { }
+        public AppEfc2UnitOfWork(AppEfc2Context context) : base(context) { }
 
         public IMeet<A> A => Repository<A>().ToMeet();
     }

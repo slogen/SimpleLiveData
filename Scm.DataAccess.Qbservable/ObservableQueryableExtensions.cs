@@ -10,6 +10,7 @@ namespace Scm.DataAccess.Qbservable
             this IQueryableSource<TEntity> source)
             where TEntity : class
             => new ObservableSourceFromQueryableSource<TEntity>(source);
+
         public static IObservableSink<TEntity> ToObservableSink<TEntity>(
             this IEnumerableAsyncSink<TEntity> sink,
             TimeSpan? chunkTimeSpan = null,
@@ -20,8 +21,16 @@ namespace Scm.DataAccess.Qbservable
         public static IMeet<TEntity> ToMeet<TEntity>(
             this IRepository<TEntity> repo,
             TimeSpan? chunkTimeSpan = null,
-            int? chunkSize = null)
-            where TEntity: class
-        => new ComposedMeet<TEntity>(repo.ToQbservableSource(), repo.ToObservableSink(chunkTimeSpan, chunkSize));
+            int? chunkSize = null,
+            bool? commitBeforeObserve = null)
+            where TEntity : class
+        {
+            IMeet<TEntity> meet = new ComposedMeet<TEntity>(
+                repo.ToQbservableSource(),
+                repo.ToObservableSink(chunkTimeSpan, chunkSize));
+            if (!(commitBeforeObserve ?? false))
+                meet = new InstantMeet<TEntity>(meet);
+            return meet;
+        }
     }
 }
