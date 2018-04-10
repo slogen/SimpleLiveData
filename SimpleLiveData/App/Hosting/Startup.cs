@@ -1,18 +1,21 @@
-﻿using System.Web.Http;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Web.Http;
 using Owin;
 
 namespace SimpleLiveData.App.Hosting
 {
     public class Startup
     {
+        [SuppressMessage("ReSharper", "ArgumentsStyleStringLiteral", Justification = "Used for claraity")]
+        [SuppressMessage("ReSharper", "ArgumentsStyleOther", Justification = "Used for clarity")]
         public void Configuration(IAppBuilder appBuilder)
         {
             // Configure Web API for self-host. 
-            HttpConfiguration config = new HttpConfiguration();
+            var config = new HttpConfiguration();
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
+                defaults: new {id = RouteParameter.Optional}
             );
 
             appBuilder.UseWebApi(config);

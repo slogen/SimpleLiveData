@@ -5,10 +5,11 @@ using Scm.DataAccess;
 
 namespace Scm.DataStorage.Efc2
 {
-    public abstract class AbstractContextUnitOfWork<TDbContext> : CommitCountingUnitOfWork
+    public abstract class AbstractContextAsyncUnitOfWork<TDbContext> : AbstractSingleCommitAsyncUnitOfWork
         where TDbContext : DbContext
     {
         protected abstract TDbContext Context { get; }
+
         protected override async Task CommitAsyncOnce(CancellationToken cancellationToken)
             => await Context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 

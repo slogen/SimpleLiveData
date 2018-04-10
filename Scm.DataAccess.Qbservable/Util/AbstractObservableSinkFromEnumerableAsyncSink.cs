@@ -6,13 +6,13 @@ using Scm.Rx;
 
 namespace Scm.DataAccess.Qbservable.Util
 {
-
     public abstract class AbstractObservableSinkFromEnumerableAsyncSink<TEntity> : IObservableSink<TEntity>
         where TEntity : class
     {
         public abstract IEnumerableAsyncSink<TEntity> Sink { get; }
-        public virtual int? ChunkSize { get; }
-        public virtual TimeSpan? TimeSpan { get; }
+        public abstract int? ChunkSize { get; }
+        public abstract TimeSpan? TimeSpan { get; }
+
         public IObservable<long> Add<TSource>(
             IObservable<TSource> entities,
             IScheduler scheduler = null)

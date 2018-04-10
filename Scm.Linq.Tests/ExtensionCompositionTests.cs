@@ -9,15 +9,9 @@ namespace Scm.Linq.Tests
 {
     public class ExtensionCompositionTests
     {
-        [Fact]
-        public void FAfterGAppliesGFirst()
-        {
-            F.Expr((int i) => $"f({i})")
-                .After((int i) => i + 1)
-                .Compile()(0)
-                .Should()
-                .Be("f(1)");
-        }
+        [SuppressMessage("ReSharper", "UnusedParameter.Local", Justification = "Just throw")]
+        private static bool DoThrow(int x) => throw new InvalidOperationException();
+
         [Fact]
         public void CompositionAndCorrectlyEvaluated()
         {
@@ -33,21 +27,12 @@ namespace Scm.Linq.Tests
                 .Compile()(i).Should().Be(false);
         }
 
-        [SuppressMessage("ReSharper", "UnusedParameter.Local", Justification = "Just throw")]
-        private static bool DoThrow(int x) => throw new InvalidOperationException();
         [Fact]
         public void CompositionAndDoesShortcutEvaluation()
         {
             F.Expr((int x) => x % 2 == 0)
                 .AndAlso(x => DoThrow(x))
                 .Compile()(1).Should().Be(false);
-        }
-        [Fact]
-        public void CompositionOrDoesShortcutEvaluation()
-        {
-            F.Expr((int x) => x % 2 == 0)
-                .OrElse(x => DoThrow(x))
-                .Compile()(0).Should().Be(true);
         }
 
 
@@ -70,6 +55,14 @@ namespace Scm.Linq.Tests
         }
 
         [Fact]
+        public void CompositionOrDoesShortcutEvaluation()
+        {
+            F.Expr((int x) => x % 2 == 0)
+                .OrElse(x => DoThrow(x))
+                .Compile()(0).Should().Be(true);
+        }
+
+        [Fact]
         [SuppressMessage("ReSharper", "ArgumentsStyleLiteral", Justification = "Used to state explicit test")]
         [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue", Justification = "Used to state explicit test")]
         public void EmptyCompositionShouldEvaluateCorrectly()
@@ -82,6 +75,31 @@ namespace Scm.Linq.Tests
             none.Any(ifEmpty: false).Compile()(1).Should().Be(false);
             none.Any().Compile()(1).Should().Be(false);
         }
+
+        [Fact]
+        public void FAfterGAppliesGFirst()
+        {
+            F.Expr((int i) => $"f({i})")
+                .After((int i) => i + 1)
+                .Compile()(0)
+                .Should()
+                .Be("f(1)");
+        }
+
+        [Fact]
+        public void SequenceCompositionAllDoesShortut()
+        {
+            new[] {F.Expr((int x) => x % 2 == 0), x => DoThrow(x)}
+                .All().Compile()(1).Should().BeFalse();
+        }
+
+        [Fact]
+        public void SequenceCompositionAnyDoesShortut()
+        {
+            new[] {F.Expr((int x) => x % 2 == 0), x => DoThrow(x)}
+                .Any().Compile()(0).Should().BeTrue();
+        }
+
         [Fact]
         [SuppressMessage("ReSharper", "ArgumentsStyleLiteral", Justification = "Used to state explicit test")]
         [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue", Justification = "Used to state explicit test")]
@@ -89,13 +107,13 @@ namespace Scm.Linq.Tests
         {
             var predicates = new[]
             {
-                new []{F.Expr((int x) => x % 2 == 0), F.Expr((int x) => x % 3 == 0), F.Expr((int x) => x % 5 == 0)},
-                new []{F.Expr((int x) => x % 2 == 0), F.Expr((int x) => x % 3 == 0), F.Expr((int x) => x % 4 == 0)},
-                new []{F.Expr((int x) => x % 4 == 0), F.Expr((int x) => x % 8 == 0), F.Expr((int x) => x % 9 == 0)},
+                new[] {F.Expr((int x) => x % 2 == 0), F.Expr((int x) => x % 3 == 0), F.Expr((int x) => x % 5 == 0)},
+                new[] {F.Expr((int x) => x % 2 == 0), F.Expr((int x) => x % 3 == 0), F.Expr((int x) => x % 4 == 0)},
+                new[] {F.Expr((int x) => x % 4 == 0), F.Expr((int x) => x % 8 == 0), F.Expr((int x) => x % 9 == 0)}
             };
             const int v = 2 * 3 * 5;
             var expectAll = new[] {true, false, false};
-            var expectAny = new[] { true, true, false };
+            var expectAny = new[] {true, true, false};
             foreach (var ifEmpty in new[] {true, false})
                 for (var i = 2; i < predicates.Length; ++i)
                 {
@@ -107,19 +125,6 @@ namespace Scm.Linq.Tests
                         .Should().Be(expectAny[i], "Any([{0}] {1}, ifEmpty: {2}) should be {3}", i, predicates[i],
                             ifEmpty, expectAny[i]);
                 }
-        }
-
-        [Fact]
-        public void SequenceCompositionAllDoesShortut()
-        {
-            new[] {F.Expr((int x) => x % 2 == 0), x => DoThrow(x)}
-                .All().Compile()(1).Should().BeFalse();
-        }
-        [Fact]
-        public void SequenceCompositionAnyDoesShortut()
-        {
-            new[] { F.Expr((int x) => x % 2 == 0), x => DoThrow(x) }
-                .Any().Compile()(0).Should().BeTrue();
         }
     }
 }

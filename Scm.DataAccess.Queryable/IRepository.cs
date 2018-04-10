@@ -4,7 +4,8 @@
     {
         // TODO: add non-generic stuff?
     }
-    public interface IRepository<TEntity>: IQueryableSource<TEntity>, IEnumerableAsyncSink<TEntity>, IRepository
+
+    public interface IRepository<TEntity> : IQueryableSource<TEntity>, IEnumerableAsyncSink<TEntity>, IRepository
     {
     }
 }

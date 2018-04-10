@@ -8,25 +8,6 @@ namespace Scm.Linq
 {
     public static class ExpressionOperations
     {
-        private sealed class ExpressionReplacer : ExpressionVisitor
-        {
-            private readonly Expression _from;
-            private readonly Expression _to;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public ExpressionReplacer(Expression from, Expression to)
-            {
-                _from = from;
-                _to = to;
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public override Expression Visit(Expression node)
-            {
-                return ReferenceEquals(node, _from) ? _to : base.Visit(node);
-            }
-        }
-
         /// <summary>
         /// Replace all occurences of <paramref name="from"/> with <paramref name="to"/> in <paramref name="body"/>
         /// </summary>
@@ -48,6 +29,28 @@ namespace Scm.Linq
                 x => x.p,
                 x => x.a);
 
+        public static Expression BetaReduceRecursive(this Expression expresion)
+            => new BetaReduceRecursiveVisitor().Visit(expresion);
+
+        private sealed class ExpressionReplacer : ExpressionVisitor
+        {
+            private readonly Expression _from;
+            private readonly Expression _to;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public ExpressionReplacer(Expression from, Expression to)
+            {
+                _from = from;
+                _to = to;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public override Expression Visit(Expression node)
+            {
+                return ReferenceEquals(node, _from) ? _to : base.Visit(node);
+            }
+        }
+
         private class BetaReduceRecursiveVisitor : ExpressionVisitor
         {
             protected override Expression VisitInvocation(InvocationExpression node)
@@ -55,8 +58,5 @@ namespace Scm.Linq
                         node.Arguments.Select(BetaReduceRecursive))
                     .BetaReduceRecursive();
         }
-
-        public static Expression BetaReduceRecursive(this Expression expresion)
-            => new BetaReduceRecursiveVisitor().Visit(expresion);
     }
 }

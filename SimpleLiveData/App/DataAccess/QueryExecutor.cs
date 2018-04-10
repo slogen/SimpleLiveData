@@ -1,19 +1,23 @@
-﻿using SimpleLiveData.App.DataStorage;
-using System;
+﻿using System;
 using System.Linq;
-using System.Text;
+using System.Reactive.Linq;
 
 namespace SimpleLiveData.App.DataAccess
 {
     public class QueryExecutor
     {
-        private ISomeUnitOfWork UnitOfWork { get; }
-        public QueryExecutor(ISomeUnitOfWork someUnitOfWork) { UnitOfWork = someUnitOfWork; }
+        public QueryExecutor(ISomeAsyncUnitOfWork someAsyncUnitOfWork)
+        {
+            AsyncUnitOfWork = someAsyncUnitOfWork;
+        }
+
+        private ISomeAsyncUnitOfWork AsyncUnitOfWork { get; }
 
         public IObservable<AFilterOnStrResponse> RelevantAStuffForQuery(AFilterOnStrQuery filter)
         {
-            return UnitOfWork.A.Observe(a => 
-                new AFilterOnStrResponse
+            return AsyncUnitOfWork.A.Observe(q => q
+                    .Where(a => a.Str.Contains(filter.StrContains)))
+                .Select(a => new AFilterOnStrResponse
                 {
                     A = new AFilterOnStrResponse.AData
                     {
@@ -21,8 +25,7 @@ namespace SimpleLiveData.App.DataAccess
                         Str = a.Str
                     },
                     BIds = a.Bs.Select(x => x.Id).ToList()
-                },
-                a => a.Str.Contains(filter.StrContains));
+                });
         }
     }
 }

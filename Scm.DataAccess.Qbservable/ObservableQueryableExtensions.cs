@@ -28,8 +28,6 @@ namespace Scm.DataAccess.Qbservable
             IMeet<TEntity> meet = new ComposedMeet<TEntity>(
                 repo.ToQbservableSource(),
                 repo.ToObservableSink(chunkTimeSpan, chunkSize));
-            if (!(commitBeforeObserve ?? false))
-                meet = new InstantMeet<TEntity>(meet);
             return meet;
         }
     }

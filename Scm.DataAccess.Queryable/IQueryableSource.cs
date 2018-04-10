@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Linq;
-using System.Linq.Expressions;
 
 namespace Scm.DataAccess.Queryable
 {
-    public interface IQueryableSource<TEntity>
+    public interface IQueryableSource<out TEntity>
     {
         /// <summary>
-        /// Access repository of <see cref="TEntity"/>, applying <paramref name="selector"/> to each entity,
-        /// optionally filtering for <paramref name="filter"/>
+        /// Access repository of <see cref="TEntity"/>, applying f to its content
         /// </summary>
-        /// <remarks>This allows building of arbitrary expressions efficiently</remarks>
-        IQueryable<TResult> Query<TResult>(
-            Expression<Func<TEntity, TResult>> selector,
-            Expression<Func<TEntity, bool>> predicate = null);
+        IObservable<TResult> Query<TResult>(Func<IQueryable<TEntity>, IObservable<TResult>> f);
     }
 }

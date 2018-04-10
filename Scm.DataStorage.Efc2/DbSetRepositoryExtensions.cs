@@ -6,7 +6,7 @@ namespace Scm.DataStorage.Efc2
     public static class DbSetRepositoryExtensions
     {
         public static IRepository<TEntity> ToRepository<TEntity>(this DbSet<TEntity> set)
-            where TEntity: class
+            where TEntity : class
             => new DbSetRepository<TEntity>(set);
     }
 }

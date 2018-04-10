@@ -5,13 +5,13 @@ using Scm.DataAccess.Queryable;
 
 namespace Scm.DataStorage.Efc2
 {
-    public class DbContextUnitOfWork<TDbContext> : AbstractContextUnitOfWork<TDbContext>
+    public class DbContextAsyncUnitOfWork<TDbContext> : AbstractContextAsyncUnitOfWork<TDbContext>
         where TDbContext : DbContext
     {
         // Same repository for everyone accessing this context
         protected ConcurrentDictionary<Type, IRepository> Repositories = new ConcurrentDictionary<Type, IRepository>();
 
-        public DbContextUnitOfWork(TDbContext context)
+        public DbContextAsyncUnitOfWork(TDbContext context)
         {
             Context = context;
         }

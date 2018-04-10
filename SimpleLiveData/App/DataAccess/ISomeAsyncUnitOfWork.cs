@@ -4,8 +4,8 @@ using SimpleLiveData.App.DataModel;
 
 namespace SimpleLiveData.App.DataAccess
 {
-    public interface ISomeUnitOfWork: IUnitOfWork
+    public interface ISomeAsyncUnitOfWork : IAsyncUnitOfWork
     {
-        IMeet <A> A { get; }
+        IMeet<A> A { get; }
     }
 }

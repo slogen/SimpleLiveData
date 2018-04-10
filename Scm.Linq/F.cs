@@ -18,10 +18,16 @@ namespace Scm.Linq
         public static Func<T> Func<T>(this Func<T> f) => f;
         public static Expression<Func<TArg1, T>> Expr<TArg1, T>(this Expression<Func<TArg1, T>> f) => f;
         public static Func<TArg1, T> Func<TArg1, T>(this Func<TArg1, T> f) => f;
-        public static Expression<Func<TArg1, TArg2, T>> Expr<TArg1, TArg2, T>(this Expression<Func<TArg1, TArg2, T>> f) => f;
-        public static Func<TArg1, TArg2, T> Func<TArg1, TArg2, T>(this Func<TArg1, TArg2, T> f) => f;
-        public static Expression<Func<TArg1, TArg2, TArg3, T>> Expr<TArg1, TArg2, TArg3, T>(this Expression<Func<TArg1, TArg2, TArg3, T>> f) => f;
-        public static Func<TArg1, TArg2, TArg3, T> Func<TArg1, TArg2, TArg3, T>(this Func<TArg1, TArg2, TArg3, T> f) => f;
 
+        public static Expression<Func<TArg1, TArg2, T>>
+            Expr<TArg1, TArg2, T>(this Expression<Func<TArg1, TArg2, T>> f) => f;
+
+        public static Func<TArg1, TArg2, T> Func<TArg1, TArg2, T>(this Func<TArg1, TArg2, T> f) => f;
+
+        public static Expression<Func<TArg1, TArg2, TArg3, T>> Expr<TArg1, TArg2, TArg3, T>(
+            this Expression<Func<TArg1, TArg2, TArg3, T>> f) => f;
+
+        public static Func<TArg1, TArg2, TArg3, T> Func<TArg1, TArg2, TArg3, T>(this Func<TArg1, TArg2, TArg3, T> f) =>
+            f;
     }
 }

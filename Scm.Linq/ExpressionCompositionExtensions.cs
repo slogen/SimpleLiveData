@@ -5,7 +5,8 @@ using System.Linq.Expressions;
 
 namespace Scm.Linq
 {
-    public static class ExpressionCompositionExtensions {
+    public static class ExpressionCompositionExtensions
+    {
         /// <summary>
         /// Compose <paramref name="f"/> *after* <paramref name="g"/> in the mathematical sense: (f.After(g))(x) == f(g(x))
         /// </summary>
@@ -20,7 +21,7 @@ namespace Scm.Linq
         /// </summary>
         public static Expression<Func<TIn1, TOut2>> Before<TIn1, TOut1, TIn2, TOut2>(
             this Expression<Func<TIn1, TOut1>> f, Expression<Func<TIn2, TOut2>> g)
-            where TOut1: TIn2
+            where TOut1 : TIn2
             => g.After(f);
 
         private static Expression<Func<TIn, bool>> BinaryDistributiveOperation<TIn>(
@@ -40,9 +41,11 @@ namespace Scm.Linq
             this Expression<Func<TIn, bool>> f1,
             Expression<Func<TIn, bool>> f2)
             => BinaryDistributiveOperation(Expression.AndAlso, f1, f2);
+
         public static Expression<Func<TIn, bool>> OrElse<TIn>(this Expression<Func<TIn, bool>> f1,
             Expression<Func<TIn, bool>> f2)
             => BinaryDistributiveOperation(Expression.OrElse, f1, f2);
+
         public static Expression<Func<TIn, bool>> Not<TIn>(this Expression<Func<TIn, bool>> f)
             => UnaryDistributiveOperation(Expression.Not, f);
 
@@ -56,9 +59,12 @@ namespace Scm.Linq
 
         public static Expression<Func<TIn, bool>> All<TIn>(this IEnumerable<Expression<Func<TIn, bool>>> source,
             bool ifEmpty = true)
-            => source.Aggregate(default(Expression<Func<TIn, bool>>), (acc, next) => acc?.AndAlso(next) ?? next) ?? (_ => ifEmpty);
+            => source.Aggregate(default(Expression<Func<TIn, bool>>), (acc, next) => acc?.AndAlso(next) ?? next) ??
+               (_ => ifEmpty);
+
         public static Expression<Func<TIn, bool>> Any<TIn>(this IEnumerable<Expression<Func<TIn, bool>>> source,
             bool ifEmpty = false)
-            => source.Aggregate(default(Expression<Func<TIn, bool>>), (acc, next) => acc?.OrElse(next) ?? next) ?? (_ => ifEmpty);
+            => source.Aggregate(default(Expression<Func<TIn, bool>>), (acc, next) => acc?.OrElse(next) ?? next) ??
+               (_ => ifEmpty);
     }
 }

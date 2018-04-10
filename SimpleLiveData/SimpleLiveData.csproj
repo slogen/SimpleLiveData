@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.SignalR" Version="2.2.3" />
     <PackageReference Include="Microsoft.AspNet.SignalR.Client" Version="2.2.3" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.OData" Version="5.7.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.OwinSelfHost" Version="5.2.5-preview1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.1.0-preview1-final" />
     <PackageReference Include="System.Reactive.Linq" Version="4.0.0-preview00001" />
@@ -31,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="App\DataStorage\Live\" />
     <Folder Include="Scm.DataStorage.Meet\" />
   </ItemGroup>
 
