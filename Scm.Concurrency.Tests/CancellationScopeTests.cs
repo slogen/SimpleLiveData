@@ -21,24 +21,17 @@ namespace Scm.Concurrency.Tests
                         IsCancellationRequested = isCancellationRequested
                     }, cfg => cfg.ExcludingMissingMembers());
         }
-        [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed", Justification = "Probing for Token to provoke exception")]
-        protected static void AssertDisposed(ICancellationScope source)
+
+        protected static void ThrowIfDisposed(ICancellationScope scope)
         {
-            Action tryToken = () => { source?.Token.GetHashCode(); };
-            tryToken.Should().Throw<ObjectDisposedException>();
+            // ReSharper disable once UnusedVariable -- side-effect used to detect dispose
+            var token = scope.Token;
         }
 
-        [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed", Justification = "Probing for Token to provoke exception")]
-        protected static void AssertDisposed(CancellationTokenSource source)
+        protected static void ThrowIfDisposed(CancellationTokenSource source)
         {
-            Action tryToken = () => { source?.Token.GetHashCode(); };
-            tryToken.Should().Throw<ObjectDisposedException>();
-        }
-        [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed", Justification = "Probing for Token to provoke exception")]
-        protected static void AssertNotDisposed(CancellationTokenSource source)
-        {
-            Action tryToken = () => { source?.Token.GetHashCode(); };
-            tryToken.Should().NotThrow();
+            // ReSharper disable once UnusedVariable -- side-effect used to detect dispose
+            var token = source.Token;
         }
 
         [Fact]
@@ -80,7 +73,7 @@ namespace Scm.Concurrency.Tests
                     AssertState(ct, canBeCancelled: true, isCancellationRequested: true);
                 }
                 AssertState(ct, canBeCancelled: true, isCancellationRequested: true);
-                AssertNotDisposed(source);
+                source.Invoking(ThrowIfDisposed).Should().NotThrow();
             }
         }
         [Fact]
@@ -96,10 +89,11 @@ namespace Scm.Concurrency.Tests
                     AssertState(ct, canBeCancelled: true, isCancellationRequested: false);
                     source.Cancel();
                     AssertState(ct, canBeCancelled: true, isCancellationRequested: true);
+                    cts.Invoking(ThrowIfDisposed).Should().NotThrow();
                 }
                 AssertState(ct, canBeCancelled: true, isCancellationRequested: true);
-                AssertDisposed(cts);
-                AssertDisposed(source);
+                cts.Invoking(ThrowIfDisposed).Should().Throw<ObjectDisposedException>();
+                source.Invoking(ThrowIfDisposed).Should().Throw<ObjectDisposedException>();
             }
         }
         [Fact]

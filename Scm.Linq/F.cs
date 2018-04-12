@@ -16,6 +16,7 @@ namespace Scm.Linq
     {
         public static Expression<Func<T>> Expr<T>(this Expression<Func<T>> f) => f;
         public static Func<T> Func<T>(this Func<T> f) => f;
+        public static Action Action(this Action f) => f;
         public static Expression<Func<TArg1, T>> Expr<TArg1, T>(this Expression<Func<TArg1, T>> f) => f;
         public static Func<TArg1, T> Func<TArg1, T>(this Func<TArg1, T> f) => f;
 

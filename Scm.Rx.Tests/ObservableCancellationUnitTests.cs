@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
@@ -17,20 +18,21 @@ namespace Scm.Rx.Tests
         [Fact]
         public void TakeUntilShallCancelOperationWhenGivenCancellationTokenToObservable()
         {
-            Func<Task<IList<int>>> act = async () =>
+            var seen = new List<int>();
+            using (var cts = new CancellationTokenSource())
             {
-                using (var cts = new CancellationTokenSource())
-                {
-                    var s1 = new Subject<int>();
-                    var record = s1.TakeUntil(cts.Token.ToObservable()).ToList().ToTask(TestCancelled);
-                    s1.OnNext(1);
-                    s1.OnNext(2);
-                    cts.Cancel();
-                    s1.OnNext(3);
-                    return await record.ConfigureAwait(false);
-                }
-            };
-            act.Should().Throw<OperationCanceledException>();
+                Enumerable.Range(0, 3).ToObservable().Do(x =>
+                    {
+                        if (x >= 2)
+                            // ReSharper disable once AccessToDisposedClosure -- awaited
+                            cts.Cancel();
+                    })
+                    .TakeUntil(cts.Token.ToObservable())
+                    .Do(seen.Add)
+                    .Awaiting(o => o.ToTask(TestCancelled))
+                    .Should().Throw<OperationCanceledException>();
+            }
+            seen.Should().BeEquivalentTo(new[] {0,1});
         }
 
         [Fact]

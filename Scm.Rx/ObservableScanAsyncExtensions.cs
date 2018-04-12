@@ -12,8 +12,7 @@ namespace Scm.Rx
         public static IObservable<TAccumulate> ScanAsync<TSource, TAccumulate>(
             this IObservable<TSource> source,
             TAccumulate seed,
-            Func<TAccumulate, TSource, CancellationToken, Task<TAccumulate>> accumulator,
-            IScheduler scheduler = null)
+            Func<TAccumulate, TSource, CancellationToken, Task<TAccumulate>> accumulator)
             =>
                 source.Scan(
                         Observable.Return(seed),

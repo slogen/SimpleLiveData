@@ -12,8 +12,9 @@ namespace Scm.Rx
         {
             if (!timeSpan.HasValue)
                 return count.HasValue ? source.Buffer(count.Value) : source.ToList();
-            if (!count.HasValue)
-                return source.ToList();
+            // Need to consider timespan
+            if (!count.HasValue) // No count either
+                return scheduler is null ? source.Buffer(timeSpan.Value) : source.Buffer(timeSpan.Value, scheduler);
             return scheduler is null
                 ? source.Buffer(timeSpan.Value, count.Value)
                 : Observable.Buffer(source, timeSpan.Value, count.Value, scheduler);

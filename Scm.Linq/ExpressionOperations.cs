@@ -23,11 +23,20 @@ namespace Scm.Linq
                 body,
                 (acc, next) => acc.Replace(fromFunc(next), toFunc(next)));
 
+        public static Expression BetaReduce(this LambdaExpression lambda, params Expression[] arguments)
+            => lambda.BetaReduce((IEnumerable<Expression>) arguments);
+
         public static Expression BetaReduce(this LambdaExpression lambda, IEnumerable<Expression> arguments)
             => lambda.Body.Replace(
                 lambda.Parameters.Zip(arguments, (p, a) => new {p, a}),
                 x => x.p,
                 x => x.a);
+        public static Expression BetaReduce<TIn, TOut>(this Expression<Func<TIn, TOut>> f, Expression arg)
+        {
+            if (!typeof(TIn).IsAssignableFrom(arg.Type))
+                throw new InvalidCastException($"Unable to assign {typeof(TIn)} from {arg.Type} ");
+            return ((LambdaExpression) f).BetaReduce(arg);
+        }
 
         public static Expression BetaReduceRecursive(this Expression expresion)
             => new BetaReduceRecursiveVisitor().Visit(expresion);

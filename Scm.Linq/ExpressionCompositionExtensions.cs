@@ -49,8 +49,6 @@ namespace Scm.Linq
         public static Expression<Func<TIn, bool>> Not<TIn>(this Expression<Func<TIn, bool>> f)
             => UnaryDistributiveOperation(Expression.Not, f);
 
-        public static Expression<Func<TArg1, T>> Curry<TArg1, T>(this Expression<Func<TArg1, T>> f) => f;
-
         public static Expression<Func<TArg1, Func<TArg2, T>>> Curry<TArg1, TArg2, T>(
             this Expression<Func<TArg1, TArg2, T>> f)
             => Expression.Lambda<Func<TArg1, Func<TArg2, T>>>(

@@ -7,10 +7,10 @@ using Xunit;
 
 namespace Scm.Linq.Tests
 {
-    public class ExtensionCompositionTests
+    public class ExpressionCompositionTests
     {
         [SuppressMessage("ReSharper", "UnusedParameter.Local", Justification = "Just throw")]
-        private static bool DoThrow(int x) => throw new InvalidOperationException();
+        private static bool ThrowIfCalled(int x) => throw new InvalidOperationException();
 
         [Fact]
         public void CompositionAndCorrectlyEvaluated()
@@ -31,7 +31,7 @@ namespace Scm.Linq.Tests
         public void CompositionAndDoesShortcutEvaluation()
         {
             F.Expr((int x) => x % 2 == 0)
-                .AndAlso(x => DoThrow(x))
+                .AndAlso(x => ThrowIfCalled(x))
                 .Compile()(1).Should().Be(false);
         }
 
@@ -58,7 +58,7 @@ namespace Scm.Linq.Tests
         public void CompositionOrDoesShortcutEvaluation()
         {
             F.Expr((int x) => x % 2 == 0)
-                .OrElse(x => DoThrow(x))
+                .OrElse(x => ThrowIfCalled(x))
                 .Compile()(0).Should().Be(true);
         }
 
@@ -89,14 +89,14 @@ namespace Scm.Linq.Tests
         [Fact]
         public void SequenceCompositionAllDoesShortut()
         {
-            new[] {F.Expr((int x) => x % 2 == 0), x => DoThrow(x)}
+            new[] {F.Expr((int x) => x % 2 == 0), x => ThrowIfCalled(x)}
                 .All().Compile()(1).Should().BeFalse();
         }
 
         [Fact]
         public void SequenceCompositionAnyDoesShortut()
         {
-            new[] {F.Expr((int x) => x % 2 == 0), x => DoThrow(x)}
+            new[] {F.Expr((int x) => x % 2 == 0), x => ThrowIfCalled(x)}
                 .Any().Compile()(0).Should().BeTrue();
         }
 
@@ -125,6 +125,44 @@ namespace Scm.Linq.Tests
                         .Should().Be(expectAny[i], "Any([{0}] {1}, ifEmpty: {2}) should be {3}", i, predicates[i],
                             ifEmpty, expectAny[i]);
                 }
+        }
+
+        [Fact]
+        public void BeforeEvaluatesAsExpected()
+        {
+            F.Expr((int x) => -x).Before((int x) => 2 * x).Compile()(3).Should().Be(-6);
+        }
+        [Fact]
+        public void NotEvaluatesAsExpected()
+        {
+            var f = F.Expr((bool x) => x).Not().Compile();
+            f(true).Should().BeFalse();
+            f(false).Should().BeTrue();
+        }
+
+        [Fact]
+        public void CurryWorksAsExpected()
+        {
+            var f = F.Expr((int x, int y) => x + x * y);
+            f.Curry().Compile()(2)(3).Should().Be(2 + 2 * 3);
+        }
+
+        [Fact]
+        public void BetaReduceWillInlineArgument()
+        {
+            var e = F.Expr((int x, int y) => x + x * y).Curry().BetaReduce(Expression.Constant(2));
+            e.Should().BeEquivalentTo(F.Expr((int y) => 2 + 2*y));
+
+        }
+        class A { }
+        class B : A { }
+        [Fact]
+        public void BetaThrowsWhenFailingStaticTyping()
+        {
+            var b = new B();
+            var e = F.Expr((B x) => x);
+            Action act  = F.Action(() => e.BetaReduce(Expression.Constant(b, typeof(A))));
+            act.Should().Throw<InvalidCastException>();
         }
     }
 }
