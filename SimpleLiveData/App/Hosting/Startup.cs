@@ -1,26 +1,25 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Web.Http;
-using Owin;
+using Microsoft.AspNet.OData.Builder;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using SimpleLiveData.App.DataModel;
+using SimpleLiveData.App.Presentation.SignalR;
 
 namespace SimpleLiveData.App.Hosting
 {
     public class Startup
     {
-        [SuppressMessage("ReSharper", "ArgumentsStyleStringLiteral", Justification = "Used for claraity")]
-        [SuppressMessage("ReSharper", "ArgumentsStyleOther", Justification = "Used for clarity")]
-        public void Configuration(IAppBuilder appBuilder)
+        public void ConfigureServices(IServiceCollection services)
         {
-            // Configure Web API for self-host. 
-            var config = new HttpConfiguration();
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new {id = RouteParameter.Optional}
-            );
-
-            appBuilder.UseWebApi(config);
+            services.AddSignalR();
+            services.AddMvc();
+        }
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseMvc();
             // Any connection or hub wire up and configuration should go here
-            appBuilder.MapSignalR();
+            app.UseSignalR(routes => { });
         }
     }
 }

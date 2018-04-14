@@ -1,16 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <ApplicationIcon />
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.SignalR" Version="2.2.3" />
-    <PackageReference Include="Microsoft.AspNet.SignalR.Client" Version="2.2.3" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.OData" Version="5.7.0" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.OwinSelfHost" Version="5.2.5-preview1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.1.0-preview1-final" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.1.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.0.0-beta2" />
+    <PackageReference Include="Microsoft.AspNetCore.Owin" Version="2.1.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.Routing" Version="2.1.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.0.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.0.0-preview2-final" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.1.0-preview2-final" />
     <PackageReference Include="System.Reactive.Linq" Version="4.0.0-preview00001" />
     <PackageReference Include="System.Reactive.Providers" Version="4.0.0-preview00001" />
   </ItemGroup>
@@ -34,6 +39,10 @@
   <ItemGroup>
     <Folder Include="App\DataStorage\Live\" />
     <Folder Include="Scm.DataStorage.Meet\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
 </Project>

@@ -6,6 +6,6 @@ namespace SimpleLiveData.App.DataAccess
 {
     public interface ISomeAsyncUnitOfWork : IAsyncUnitOfWork
     {
-        IMeet<A> A { get; }
+        IMeet<MyEntity> A { get; }
     }
 }

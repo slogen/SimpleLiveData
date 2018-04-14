@@ -1,9 +1,12 @@
-﻿using System;
+﻿
+
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
-using System.Web.Http;
-using System.Web.Http.OData.Query;
+using Microsoft.AspNet.OData.Query;
+using Microsoft.AspNetCore.Mvc;
 using Scm.DataAccess.Qbservable;
 using Scm.Rx;
 using SimpleLiveData.App.DataAccess;
@@ -11,12 +14,13 @@ using SimpleLiveData.App.DataModel;
 
 namespace SimpleLiveData.App.Presentation.Owin
 {
-    [RoutePrefix("/api/A")]
-    public class QueryController
+    [Route("api/MyEntity")]
+    public class QueryController: Controller
     {
         public static TimeSpan DefaultTimeSpan = TimeSpan.FromSeconds(5);
+        public QueryController() { }
 
-        public QueryController(ISomeAsyncUnitOfWork unitOfWork)
+        private QueryController(ISomeAsyncUnitOfWork unitOfWork)
         {
             UnitOfWork = unitOfWork;
         }
@@ -25,14 +29,14 @@ namespace SimpleLiveData.App.Presentation.Owin
         public static TimeSpan DefaultTimeOut { get; set; } = TimeSpan.FromSeconds(1);
 
         // TODO: Move to share
-        protected IQueryable<T> Apply<T>(IObservableSource<T> src, ODataQueryOptions options,
+        protected IQueryable<T> Apply<T>(IObservableSource<T> src, ODataQueryOptions<T> options,
             Func<IQbservable<T>, IObservable<T>> f)
         {
             var appliedOptions = src.Observe(q => f(options.ApplyTo(q.ToQueryable()).Cast<T>().ToQbservable()));
             return appliedOptions.AsQbservable().ToQueryable();
         }
 
-        protected IQueryable<T> Apply<T>(IObservableSource<T> src, ODataQueryOptions options, TimeSpan? timeSpan,
+        protected IQueryable<T> Apply<T>(IObservableSource<T> src, ODataQueryOptions<T> options, TimeSpan? timeSpan,
             CancellationToken cancellationToken)
         {
             return Apply(src, options, q =>
@@ -47,10 +51,17 @@ namespace SimpleLiveData.App.Presentation.Owin
             });
         }
 
-        public IQueryable<A> Get(ODataQueryOptions options, TimeSpan? timeSpan = null,
-            CancellationToken cancellationToken = default(CancellationToken))
+        [Route("A")]
+        [HttpGet]
+        [HttpPost]
+        public
+             IEnumerable<MyEntity>
+            Foo(
+             //ODataQueryOptions<MyEntity> options, TimeSpan? timeSpan = null,
+             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return Apply(UnitOfWork.A, options, timeSpan, cancellationToken);
+            return Enumerable.Range(0, 3).Select(x => new MyEntity(Guid.NewGuid(), x.ToString()));
+            //return Apply(UnitOfWork.A, options, timeSpan, cancellationToken);
         }
     }
 }

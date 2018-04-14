@@ -11,6 +11,6 @@ namespace SimpleLiveData.App.DataStorage.Efc2
         {
         }
 
-        public IMeet<A> A => Repository<A>().ToMeet();
+        public IMeet<MyEntity> A => Repository<MyEntity>().ToMeet();
     }
 }

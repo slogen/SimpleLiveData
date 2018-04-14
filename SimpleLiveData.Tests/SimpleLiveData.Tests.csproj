@@ -8,18 +8,16 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.1.0-preview2-final" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
-    <PackageReference Include="Microsoft.Reactive.Testing" Version="4.0.0-preview00001" />
-    <PackageReference Include="System.Reactive.Linq" Version="4.0.0-preview00001" />
+    <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="xunit" Version="2.4.0-beta.1.build3958" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0-beta.1.build3958" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Scm.Concurrency\Scm.Concurrency.csproj" />
-    <ProjectReference Include="..\Scm.Linq\Scm.Linq.csproj" />
-    <ProjectReference Include="..\Scm.Rx\Scm.Rx.csproj" />
+    <ProjectReference Include="..\SimpleLiveData\SimpleLiveData.csproj" />
   </ItemGroup>
 
 </Project>

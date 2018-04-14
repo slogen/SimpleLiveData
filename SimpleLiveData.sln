@@ -27,7 +27,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scm.Rx.Tests", "Scm.Rx.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scm.Concurrency.Tests", "Scm.Concurrency.Tests\Scm.Concurrency.Tests.csproj", "{2B94628F-0BAE-43AA-AB9A-3ACA75D74C27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scm.Time", "Scm.Time\Scm.Time.csproj", "{3F8E5B68-43B3-4DB1-8B16-9D428017CC17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scm.Time", "Scm.Time\Scm.Time.csproj", "{3F8E5B68-43B3-4DB1-8B16-9D428017CC17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleLiveData.Tests", "SimpleLiveData.Tests\SimpleLiveData.Tests.csproj", "{35F29534-B031-40AD-A259-438DBCBBE38B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{35703A3B-C769-4159-8B8B-1234AFA9A828}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +91,14 @@ Global
 		{3F8E5B68-43B3-4DB1-8B16-9D428017CC17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F8E5B68-43B3-4DB1-8B16-9D428017CC17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F8E5B68-43B3-4DB1-8B16-9D428017CC17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35F29534-B031-40AD-A259-438DBCBBE38B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35F29534-B031-40AD-A259-438DBCBBE38B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35F29534-B031-40AD-A259-438DBCBBE38B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35F29534-B031-40AD-A259-438DBCBBE38B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35703A3B-C769-4159-8B8B-1234AFA9A828}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35703A3B-C769-4159-8B8B-1234AFA9A828}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35703A3B-C769-4159-8B8B-1234AFA9A828}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35703A3B-C769-4159-8B8B-1234AFA9A828}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

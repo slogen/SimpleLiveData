@@ -5,6 +5,6 @@ namespace SimpleLiveData.App.DataStorage.Efc2
 {
     public class AppEfc2Context : DbContext
     {
-        public DbSet<A> A { get; set; }
+        public DbSet<MyEntity> A { get; set; }
     }
 }

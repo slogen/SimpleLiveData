@@ -24,7 +24,7 @@ namespace SimpleLiveData.App.DataAccess
                         Id = a.Id,
                         Str = a.Str
                     },
-                    BIds = a.Bs.Select(x => x.Id).ToList()
+                    //BIds = a.Bs.Select(x => x.Id).ToList()
                 });
         }
     }

@@ -7,6 +7,6 @@ namespace SimpleLiveData.App.DataModel
         public int Id { get; set; }
         public string OtherBInfo { get; set; }
         public Guid A1Id { get; set; }
-        public A A { get; set; }
+        public MyEntity MyEntity { get; set; }
     }
 }
