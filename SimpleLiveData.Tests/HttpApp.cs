@@ -12,7 +12,7 @@ using Xunit;
 namespace SimpleLiveData.Tests
 {
     [CollectionDefinition("HttpApp")] // Dclare how to share a fully configured Http interface to App
-    public abstract class HttpApp : AbstractHttpConfigurationFixture, ICollectionFixture<HttpApp>
+    public class HttpApp : AbstractHttpConfigurationFixture, ICollectionFixture<HttpApp>
     {
         public IScheduler Scheduler = new FastScheduler(1);
 

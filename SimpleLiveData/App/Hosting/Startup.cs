@@ -38,6 +38,7 @@ namespace SimpleLiveData.App.Hosting
         {
             var builder = new ODataConventionModelBuilder(serviceProvider);
             builder.EntitySet<Installation>(nameof(Installation));
+            builder.EntitySet<Signal>(nameof(Signal));
             return builder.GetEdmModel();
         }
     }
