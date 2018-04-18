@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Scm.DataAccess.Qbservable;
 
 namespace Scm.DataStorage.Subject
@@ -23,11 +24,11 @@ namespace Scm.DataStorage.Subject
 
         public static NoDataMeet<TEntity> Default => new NoDataMeet<TEntity>();
 
-        public IObservable<TResult> Observe<TResult>(Func<IQbservable<TEntity>, IObservable<TResult>> f)
+        public TResult Observe<TResult>(Func<IQbservable<TEntity>, TResult> f)
             => f(Observable.Empty<TEntity>().AsQbservable());
 
-        public IObservable<long> Add<TSource>(IObservable<TSource> entities, IScheduler scheduler = null)
+        public IConnectableObservable<long> Add<TSource>(IObservable<TSource> entities, IScheduler scheduler = null)
             where TSource : TEntity
-            => Observable.Return(0L);
+            => Observable.Empty<long>().Publish(0);
     }
 }

@@ -13,11 +13,11 @@ namespace Scm.DataStorage.Subject
     {
         protected abstract ISubject<TEntity> Subject { get; }
 
-        public virtual IObservable<long> Add<TSource>(IObservable<TSource> entities, IScheduler scheduler = null)
+        public virtual IConnectableObservable<long> Add<TSource>(IObservable<TSource> entities, IScheduler scheduler = null)
             where TSource : TEntity
             => entities.Select(x => (TEntity) x).Do(Subject.OnNext).Scan(0L, (a, x) => a + 1).PublishLast();
 
-        public virtual IObservable<TResult> Observe<TResult>(Func<IQbservable<TEntity>, IObservable<TResult>> f)
+        public virtual TResult Observe<TResult>(Func<IQbservable<TEntity>, TResult> f)
             => f(Subject.AsQbservable());
     }
 }

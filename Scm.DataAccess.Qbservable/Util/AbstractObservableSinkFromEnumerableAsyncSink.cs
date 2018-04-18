@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Scm.DataAccess.Queryable;
 using Scm.Rx;
 
@@ -13,7 +14,7 @@ namespace Scm.DataAccess.Qbservable.Util
         public abstract int? ChunkSize { get; }
         public abstract TimeSpan? TimeSpan { get; }
 
-        public IObservable<long> Add<TSource>(
+        public IConnectableObservable<long> Add<TSource>(
             IObservable<TSource> entities,
             IScheduler scheduler = null)
             where TSource : TEntity
@@ -24,6 +25,6 @@ namespace Scm.DataAccess.Qbservable.Util
                         await Sink.AddRangeAsync(next, ct).ConfigureAwait(false);
                     return acc + next.Count;
                 })
-                .PublishLast();
+                .Publish(0);
     }
 }

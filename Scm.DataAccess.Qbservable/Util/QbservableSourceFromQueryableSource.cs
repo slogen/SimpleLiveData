@@ -2,9 +2,9 @@
 
 namespace Scm.DataAccess.Qbservable.Util
 {
-    public class ObservableSourceFromQueryableSource<TEntity> : AbstractObservableSourceFromQueryableSource<TEntity>
+    public class QbservableSourceFromQueryableSource<TEntity> : AbstractQbservableSourceFromQueryableSource<TEntity>
     {
-        public ObservableSourceFromQueryableSource(IQueryableSource<TEntity> source)
+        public QbservableSourceFromQueryableSource(IQueryableSource<TEntity> source)
         {
             Source = source;
         }

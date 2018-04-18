@@ -46,7 +46,7 @@ namespace Scm.DataStorage.Subject
             Dispose(false);
         }
 
-        protected class ContextMeet<TEntity> : AbstractSubjectMeet<TEntity>
+        public class ContextMeet<TEntity> : AbstractSubjectMeet<TEntity>
         {
             public ContextMeet(AbstractSubjectContext parent, ISubject<TEntity> subject)
             {
@@ -58,14 +58,14 @@ namespace Scm.DataStorage.Subject
             protected override ISubject<TEntity> Subject { get; }
 
 
-            public override IObservable<long> Add<TSource>(IObservable<TSource> entities, IScheduler scheduler = null)
+            public override IConnectableObservable<long> Add<TSource>(IObservable<TSource> entities, IScheduler scheduler = null)
                 => base.Add(entities
                         .TakeUntil(Parent.Commits.LastOrDefaultAsync()
                             .Throw(_ => new ObjectDisposedException("SubjectContext Disposed")))
                     , scheduler);
 
-            public override IObservable<TResult> Observe<TResult>(Func<IQbservable<TEntity>, IObservable<TResult>> f)
-                => base.Observe(f).TakeUntil(Parent.Commits.LastOrDefaultAsync());
+            public override TResult Observe<TResult>(Func<IQbservable<TEntity>, TResult> f)
+                => base.Observe(q => f(q.TakeUntil(Parent.Commits.LastOrDefaultAsync())));
         }
     }
 }

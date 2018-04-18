@@ -17,7 +17,7 @@ namespace Scm.DataStorage.Efc2
             where TSource : TEntity
             => await Set.AddRangeAsync(source.Cast<TEntity>(), cancellationToken).ConfigureAwait(false);
 
-        public IObservable<TResult> Query<TResult>(Func<IQueryable<TEntity>, IObservable<TResult>> f)
+        public TResult Query<TResult>(Func<IQueryable<TEntity>, TResult> f)
             => f(Set);
     }
 }

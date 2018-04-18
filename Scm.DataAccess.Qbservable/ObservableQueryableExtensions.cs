@@ -6,10 +6,10 @@ namespace Scm.DataAccess.Qbservable
 {
     public static class ObservableQueryableExtensions
     {
-        public static IObservableSource<TEntity> ToQbservableSource<TEntity>(
+        public static IQbservableSource<TEntity> ToQbservableSource<TEntity>(
             this IQueryableSource<TEntity> source)
             where TEntity : class
-            => new ObservableSourceFromQueryableSource<TEntity>(source);
+            => new QbservableSourceFromQueryableSource<TEntity>(source);
 
         public static IObservableSink<TEntity> ToObservableSink<TEntity>(
             this IEnumerableAsyncSink<TEntity> sink,
