@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Scm.Time
+namespace Scm.Sys
 {
     public static class TimeMultiplierExtensions
     {

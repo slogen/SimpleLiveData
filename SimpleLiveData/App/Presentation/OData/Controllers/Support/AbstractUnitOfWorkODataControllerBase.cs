@@ -10,7 +10,7 @@ using Scm.DataAccess;
 using Scm.DataAccess.Queryable;
 using Scm.Presentation.OData;
 
-namespace SimpleLiveData.App.Presentation.OData
+namespace SimpleLiveData.App.Presentation.OData.Controllers.Support
 {
     public abstract class AbstractUnitOfWorkODataControllerBase<TUnitOfWork, TEntity> 
         : AbstractUnitOfWorkODataControllerBase<TUnitOfWork, IQueryableSource<TEntity>, TEntity>

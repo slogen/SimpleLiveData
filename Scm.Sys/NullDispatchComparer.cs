@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace SimpleLiveData.App.DataModel
+namespace Scm.Sys
 {
     public abstract class NullDispatchComparer<T> : IComparer<T>
         where T: class

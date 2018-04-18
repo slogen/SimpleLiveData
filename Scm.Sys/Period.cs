@@ -20,10 +20,4 @@ namespace Scm.Sys
         public static Period Starting(DateTime? at) => new Period(at, null);
         public static Period Ending(DateTime? at) => new Period(null, at);
     }
-
-    public static class PeriodExtensions
-    {
-        public static Period StartAt(this Period old, DateTime? newStart)
-            => new Period(newStart, old.To);
-    }
 }
