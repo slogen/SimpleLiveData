@@ -1,10 +1,12 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SimpleLiveData.App.DataModel
 {
     public abstract class AbstractEntity
     {
-        public Guid Id { get; private set; }
+        [Key]
+        public Guid Id { get; set; }
 
         protected AbstractEntity(Guid id)
         {
