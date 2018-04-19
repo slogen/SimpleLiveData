@@ -10,18 +10,20 @@ namespace Scm.Rx.Tests
     public class ObservableThrowExtensionsTests
     {
         protected CancellationToken CancellationToken => CancellationToken.None;
+
+        protected Exception ThrowIfCalled(int x) => new NotSupportedException("Unexpected");
+
         [Fact]
-        public void ThrowWillThrowOnItemReceived()
+        public void ThrowWillNotThrowOnUnsubscription()
         {
-            const string expectedMessage = "expected msg";
-            new[] {1}.Awaiting(async xs =>
-                    await xs.ToObservable().Throw(x =>
-                    {
-                        x.Should().Be(1);
-                        return new NotSupportedException(expectedMessage);
-                    }).ToTask(CancellationToken).ConfigureAwait(false))
-                .Should().Throw<NotSupportedException>().WithMessage(expectedMessage);
+            Observable.Never<int>().Awaiting(async nvr =>
+                    await nvr.Throw(ThrowIfCalled)
+                        .Timeout(TimeSpan.Zero, Observable.Empty<int>())
+                        .LastOrDefaultAsync()
+                        .ToTask(CancellationToken).ConfigureAwait(false))
+                .Should().NotThrow();
         }
+
         [Fact]
         public void ThrowWillThrowOnCompletion()
         {
@@ -35,16 +37,17 @@ namespace Scm.Rx.Tests
                 .Should().Throw<NotSupportedException>().WithMessage(expectedMessage);
         }
 
-        protected Exception ThrowIfCalled(int x) => new NotSupportedException("Unexpected");
         [Fact]
-        public void ThrowWillNotThrowOnUnsubscription()
+        public void ThrowWillThrowOnItemReceived()
         {
-            Observable.Never<int>().Awaiting(async nvr =>
-                    await nvr.Throw(ThrowIfCalled)
-                        .Timeout(TimeSpan.Zero, Observable.Empty<int>())
-                        .LastOrDefaultAsync()
-                        .ToTask(CancellationToken).ConfigureAwait(false))
-                .Should().NotThrow();
+            const string expectedMessage = "expected msg";
+            new[] {1}.Awaiting(async xs =>
+                    await xs.ToObservable().Throw(x =>
+                    {
+                        x.Should().Be(1);
+                        return new NotSupportedException(expectedMessage);
+                    }).ToTask(CancellationToken).ConfigureAwait(false))
+                .Should().Throw<NotSupportedException>().WithMessage(expectedMessage);
         }
 
         ///// <summary>

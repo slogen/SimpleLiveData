@@ -8,7 +8,8 @@ namespace Scm.Presentation.OData
         public static ODataQuerySettings QuerySettings(this IOdataApplyOptions odataApplyOptions)
             => odataApplyOptions?.QuerySettings ?? ODataApplyOptions.DefaultInstance.QuerySettings;
 
-        [SuppressMessage("ReSharper", "PossibleInvalidOperationException", Justification = "DefaultInstance must provide value")]
+        [SuppressMessage("ReSharper", "PossibleInvalidOperationException", Justification =
+            "DefaultInstance must provide value")]
         public static AllowedQueryOptions IgnoredQueryOptions(this IOdataApplyOptions odataApplyOptions,
             bool? ordered = null)
             => odataApplyOptions?.IgnoreQueryOptions(ordered ?? ODataApplyOptions.DefaultOrdered)

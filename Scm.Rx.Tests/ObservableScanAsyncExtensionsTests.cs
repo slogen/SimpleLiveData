@@ -14,6 +14,7 @@ namespace Scm.Rx.Tests
         {
             throw new InvalidOperationException();
         }
+
         [Fact]
         public async Task ScanAsyncOnEmptyReturnsEmpty()
         {
@@ -22,6 +23,7 @@ namespace Scm.Rx.Tests
                 .ToList();
             result.Should().BeEquivalentTo(new int[0]);
         }
+
         [Fact]
         public async Task ScanAsyncOnListWillWaitForEachPredecessorBeforeContinuing()
         {

@@ -4,10 +4,10 @@ namespace Scm.Sys
 {
     public class Period
     {
-        public DateTime? From { get; private set; }
-        public DateTime? To { get; private set; }
+        public Period()
+        {
+        }
 
-        public Period() { }
         public Period(DateTime? from, DateTime? to)
         {
             if (from.HasValue && to.HasValue && to.Value < from.Value)
@@ -15,6 +15,9 @@ namespace Scm.Sys
             From = from;
             To = to;
         }
+
+        public DateTime? From { get; private set; }
+        public DateTime? To { get; private set; }
 
         public static Period Infinite() => new Period();
         public static Period Starting(DateTime? at) => new Period(at, null);

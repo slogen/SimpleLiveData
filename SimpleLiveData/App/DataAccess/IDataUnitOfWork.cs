@@ -4,7 +4,6 @@ using SimpleLiveData.App.DataModel;
 
 namespace SimpleLiveData.App.DataAccess
 {
-
     public interface IDataUnitOfWork : IAsyncUnitOfWork
     {
         IQueryableSource<Installation> Installations { get; }

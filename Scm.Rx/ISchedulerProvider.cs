@@ -5,7 +5,9 @@ namespace Scm.Rx
     public interface ISchedulerProvider
     {
         IScheduler Default { get; }
+
         IScheduler CurrentThread { get; }
+
         //IScheduler Dispatcher { get; }
         IScheduler Immediate { get; }
         IScheduler NewThread { get; }

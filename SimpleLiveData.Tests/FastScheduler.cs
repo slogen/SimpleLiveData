@@ -6,7 +6,7 @@ namespace SimpleLiveData.Tests
 {
     public class FastScheduler : VirtualTimeScheduler<DateTime, double>
     {
-        public FastScheduler(double speedup): base(DateTime.UtcNow, Comparer<DateTime>.Default)
+        public FastScheduler(double speedup) : base(DateTime.UtcNow, Comparer<DateTime>.Default)
         {
             Speedup = speedup;
         }

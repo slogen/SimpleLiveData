@@ -3,21 +3,34 @@ using System.Reactive.Concurrency;
 
 namespace Scm.Rx
 {
-    public class SchedulerProvider: ISchedulerProvider
+    public class SchedulerProvider : ISchedulerProvider
     {
+        public static ISchedulerProvider DefaultInstance { get; set; } = DefaultSchedulerProvider.Instance;
+        public IScheduler CurrentThread { get; set; }
+        public IScheduler Immediate { get; set; }
+        public IScheduler NewThread { get; set; }
+        public IScheduler ThreadPool { get; set; }
+        public IScheduler Default { get; set; }
+        public static ISchedulerProvider Singular(IScheduler scheduler) => new SingularSchedulerProvider(scheduler);
+
         private class DefaultSchedulerProvider : ISchedulerProvider
         {
-            public static DefaultSchedulerProvider Instance { get; }= new DefaultSchedulerProvider();
-            private  DefaultSchedulerProvider() { }
+            private DefaultSchedulerProvider()
+            {
+            }
+
+            public static DefaultSchedulerProvider Instance { get; } = new DefaultSchedulerProvider();
+
             [SuppressMessage("ReSharper", "MemberHidesStaticFromOuterClass", Justification = "Outer not used")]
             public IScheduler Default => ThreadPool;
+
             public IScheduler CurrentThread => CurrentThreadScheduler.Instance;
+
             //public IScheduler Dispatcher => Dispatcher
             public IScheduler Immediate => ImmediateScheduler.Instance;
             public IScheduler NewThread => NewThreadScheduler.Default;
             public IScheduler ThreadPool => ThreadPoolScheduler.Instance;
         }
-        public static ISchedulerProvider DefaultInstance { get; set; } = DefaultSchedulerProvider.Instance;
 
         private class SingularSchedulerProvider : ISchedulerProvider
         {
@@ -38,11 +51,5 @@ namespace Scm.Rx
 
             public IScheduler ThreadPool => _scheduler;
         }
-        public static ISchedulerProvider Singular(IScheduler scheduler) => new SingularSchedulerProvider(scheduler);
-        public IScheduler CurrentThread { get; set; }
-        public IScheduler Immediate { get; set; }
-        public IScheduler NewThread { get; set; }
-        public IScheduler ThreadPool { get; set; }
-        public IScheduler Default { get; set; }
     }
 }

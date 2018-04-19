@@ -8,10 +8,11 @@ using Xunit;
 
 namespace Scm.Concurrency.Tests
 {
-    [SuppressMessage("ReSharper", "ArgumentsStyleLiteral", Justification ="Improved readbility")]
+    [SuppressMessage("ReSharper", "ArgumentsStyleLiteral", Justification = "Improved readbility")]
     public class CancellationScopeTests
     {
-        protected static void AssertState(CancellationToken cancellationToken, bool canBeCancelled, bool isCancellationRequested)
+        protected static void AssertState(CancellationToken cancellationToken, bool canBeCancelled,
+            bool isCancellationRequested)
         {
             cancellationToken
                 .Should().BeEquivalentTo(
@@ -34,18 +35,6 @@ namespace Scm.Concurrency.Tests
             var token = source.Token;
         }
 
-        [Fact]
-        public void NoCancellationShouldBehaveAsSpect()
-        {
-            CancellationToken ct;
-            using (var cts = CancellationScope.None())
-            {
-                ct = cts.Token;
-                AssertState(ct, canBeCancelled: false, isCancellationRequested: false);
-            }
-            AssertState(ct, canBeCancelled: false, isCancellationRequested: false);
-        }
-
 
         [Fact]
         public void CancelledScopeShouldBehaveAsSpec()
@@ -56,56 +45,23 @@ namespace Scm.Concurrency.Tests
                 ct = cts.Token;
                 AssertState(ct, canBeCancelled: true, isCancellationRequested: true);
             }
+
             AssertState(ct, canBeCancelled: true, isCancellationRequested: true);
         }
-        [Fact]
-        public void TokenCancellationScopeShouldBehaveAsSpec()
-        {
-            using (var source = new CancellationTokenSource())
-            {
-                CancellationToken ct;
-                ICancellationScope cts;
-                using (cts = source.Token.ToScope())
-                {
-                    ct = cts.Token;
-                    AssertState(ct, canBeCancelled: true, isCancellationRequested: false);
-                    source.Cancel();
-                    AssertState(ct, canBeCancelled: true, isCancellationRequested: true);
-                }
-                AssertState(ct, canBeCancelled: true, isCancellationRequested: true);
-                source.Invoking(ThrowIfDisposed).Should().NotThrow();
-            }
-        }
-        [Fact]
-        public void SourceCancellationScopeShouldBehaveAsSpec()
-        {
-            using (var source = new CancellationTokenSource())
-            {
-                CancellationToken ct;
-                ICancellationScope cts;
-                using (cts = source.ToScope())
-                {
-                    ct = cts.Token;
-                    AssertState(ct, canBeCancelled: true, isCancellationRequested: false);
-                    source.Cancel();
-                    AssertState(ct, canBeCancelled: true, isCancellationRequested: true);
-                    cts.Invoking(ThrowIfDisposed).Should().NotThrow();
-                }
-                AssertState(ct, canBeCancelled: true, isCancellationRequested: true);
-                cts.Invoking(ThrowIfDisposed).Should().Throw<ObjectDisposedException>();
-                source.Invoking(ThrowIfDisposed).Should().Throw<ObjectDisposedException>();
-            }
-        }
+
         [Fact]
         public void Link0TokensProducesNoCancellationSource()
         {
             AssertState(new CancellationToken[0].Link().Token, canBeCancelled: false, isCancellationRequested: false);
         }
+
         [Fact]
         public void LinkingOnlyNonCancellableTokensProducesNoCancellationScope()
         {
-            AssertState(Enumerable.Range(0, 3).Select(x => CancellationToken.None).Link().Token, canBeCancelled: false, isCancellationRequested: false);
+            AssertState(Enumerable.Range(0, 3).Select(x => CancellationToken.None).Link().Token, canBeCancelled: false,
+                isCancellationRequested: false);
         }
+
         [Fact]
         public void LinkingTokensProducesSharedCancellation()
         {
@@ -128,6 +84,61 @@ namespace Scm.Concurrency.Tests
                     Func<Task> act = async () => await Task.WhenAll(WaitForCancel(), DoCancel()).ConfigureAwait(false);
                     act.Should().Throw<TaskCanceledException>();
                 }
+            }
+        }
+
+        [Fact]
+        public void NoCancellationShouldBehaveAsSpect()
+        {
+            CancellationToken ct;
+            using (var cts = CancellationScope.None())
+            {
+                ct = cts.Token;
+                AssertState(ct, canBeCancelled: false, isCancellationRequested: false);
+            }
+
+            AssertState(ct, canBeCancelled: false, isCancellationRequested: false);
+        }
+
+        [Fact]
+        public void SourceCancellationScopeShouldBehaveAsSpec()
+        {
+            using (var source = new CancellationTokenSource())
+            {
+                CancellationToken ct;
+                ICancellationScope cts;
+                using (cts = source.ToScope())
+                {
+                    ct = cts.Token;
+                    AssertState(ct, canBeCancelled: true, isCancellationRequested: false);
+                    source.Cancel();
+                    AssertState(ct, canBeCancelled: true, isCancellationRequested: true);
+                    cts.Invoking(ThrowIfDisposed).Should().NotThrow();
+                }
+
+                AssertState(ct, canBeCancelled: true, isCancellationRequested: true);
+                cts.Invoking(ThrowIfDisposed).Should().Throw<ObjectDisposedException>();
+                source.Invoking(ThrowIfDisposed).Should().Throw<ObjectDisposedException>();
+            }
+        }
+
+        [Fact]
+        public void TokenCancellationScopeShouldBehaveAsSpec()
+        {
+            using (var source = new CancellationTokenSource())
+            {
+                CancellationToken ct;
+                ICancellationScope cts;
+                using (cts = source.Token.ToScope())
+                {
+                    ct = cts.Token;
+                    AssertState(ct, canBeCancelled: true, isCancellationRequested: false);
+                    source.Cancel();
+                    AssertState(ct, canBeCancelled: true, isCancellationRequested: true);
+                }
+
+                AssertState(ct, canBeCancelled: true, isCancellationRequested: true);
+                source.Invoking(ThrowIfDisposed).Should().NotThrow();
             }
         }
     }

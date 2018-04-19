@@ -11,21 +11,19 @@ using Xunit;
 
 namespace SimpleLiveData.Tests
 {
-    [CollectionDefinition("HttpApp")] // Dclare how to share a fully configured Http interface to App
-    public class HttpApp : AbstractHttpConfigurationFixture, ICollectionFixture<HttpApp>
+    public class HttpApp : AbstractHttpConfigurationFixture, IClassFixture<HttpApp>
     {
         public IScheduler Scheduler = new FastScheduler(1);
+        public TestSource TestSource = new TestSource();
 
         public virtual IDataUnitOfWork DataUnitOfWork(IServiceProvider sp)
         {
-            return new TestSource();
+            return TestSource;
         }
+
         protected override IWebHostBuilder ConfigureBuilder(IWebHostBuilder builder)
         {
-            var provider = new SchedulerProvider
-            {
-                // Default = Scheduler
-            };
+            var provider = new SchedulerProvider();
             return builder
                 .UseStartup<Startup>()
                 .ConfigureTestServices(svcs =>
@@ -37,7 +35,6 @@ namespace SimpleLiveData.Tests
                             SchedulerProvider = provider
                         }));
                 });
-
         }
     }
 }

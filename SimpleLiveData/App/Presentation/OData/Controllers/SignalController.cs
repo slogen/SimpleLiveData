@@ -6,9 +6,11 @@ using SimpleLiveData.App.Presentation.OData.Controllers.Support;
 
 namespace SimpleLiveData.App.Presentation.OData.Controllers
 {
-    public class SignalsController : DataUnitOfWorkControllerBase<Signal>
+    public class SignalController : DataUnitOfWorkControllerBase<Signal>
     {
-        public SignalsController(IDataUnitOfWork unitOfWork, IODataOptions oDataOptions) : base(unitOfWork, oDataOptions) { }
+        public SignalController(IDataUnitOfWork unitOfWork, IODataOptions oDataOptions) : base(unitOfWork, oDataOptions)
+        {
+        }
 
         protected override IQueryableSource<Signal> GetSource()
             => UnitOfWork.Signals;

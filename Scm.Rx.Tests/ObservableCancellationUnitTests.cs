@@ -32,7 +32,8 @@ namespace Scm.Rx.Tests
                     .Awaiting(o => o.ToTask(TestCancelled))
                     .Should().Throw<OperationCanceledException>();
             }
-            seen.Should().BeEquivalentTo(new[] {0,1});
+
+            seen.Should().BeEquivalentTo(new[] {0, 1});
         }
 
         [Fact]

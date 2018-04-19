@@ -58,7 +58,8 @@ namespace Scm.DataStorage.Subject
             protected override ISubject<TEntity> Subject { get; }
 
 
-            public override IConnectableObservable<long> Add<TSource>(IObservable<TSource> entities, IScheduler scheduler = null)
+            public override IConnectableObservable<long> Add<TSource>(IObservable<TSource> entities,
+                IScheduler scheduler = null)
                 => base.Add(entities
                         .TakeUntil(Parent.Commits.LastOrDefaultAsync()
                             .Throw(_ => new ObjectDisposedException("SubjectContext Disposed")))

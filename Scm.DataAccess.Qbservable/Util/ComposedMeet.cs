@@ -19,7 +19,8 @@ namespace Scm.DataAccess.Qbservable.Util
         public virtual TResult Observe<TResult>(Func<IQbservable<TEntity>, TResult> f)
             => Source.Observe(f);
 
-        public virtual IConnectableObservable<long> Add<TSource>(IObservable<TSource> entities, IScheduler scheduler = null)
+        public virtual IConnectableObservable<long> Add<TSource>(IObservable<TSource> entities,
+            IScheduler scheduler = null)
             where TSource : TEntity
             => Sink.Add(entities, scheduler);
     }

@@ -31,6 +31,7 @@ namespace Scm.Linq
                 lambda.Parameters.Zip(arguments, (p, a) => new {p, a}),
                 x => x.p,
                 x => x.a);
+
         public static Expression BetaReduce<TIn, TOut>(this Expression<Func<TIn, TOut>> f, Expression arg)
         {
             if (!typeof(TIn).IsAssignableFrom(arg.Type))

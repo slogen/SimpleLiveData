@@ -9,8 +9,9 @@ namespace Scm.Concurrency
         private static readonly ICancellationScope NoCancellationScope =
             new CancellationTokenScope(CancellationToken.None);
 
-        private static readonly ICancellationScope CancelledScope = 
+        private static readonly ICancellationScope CancelledScope =
             new CancellationTokenScope(new CancellationToken(true));
+
         public static ICancellationScope None() => NoCancellationScope;
 
         public static ICancellationScope Cancelled() => CancelledScope;

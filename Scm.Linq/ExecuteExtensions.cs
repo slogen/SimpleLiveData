@@ -11,7 +11,8 @@ namespace Scm.Linq
         /// 
         /// Usefull to just cause side-effects
         /// </summary>
-        [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed", Justification = "That is precisely what execute does")]
+        [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed", Justification =
+            "That is precisely what execute does")]
         public static void Execute<TSource>(this IEnumerable<TSource> source)
         {
             source.LongCount();

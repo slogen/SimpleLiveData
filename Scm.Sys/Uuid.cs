@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -13,11 +11,16 @@ namespace Scm.Sys
     /// </summary>
     public static class Uuid
     {
-        public static Guid Default() => Guid.NewGuid();
-        private static readonly byte[] OrderFlip = new byte[]
+        private static readonly byte[] OrderFlip =
         {
-            3, 2, 1, 0, 5, 4, 7, 6, 8, 9, 10, 11, 12, 13, 14 ,15
+            3, 2, 1, 0, 5, 4, 7, 6, 8, 9, 10, 11, 12, 13, 14, 15
         };
+
+        public static Encoding DefaultEncoding { get; set; } = Encoding.UTF8;
+
+        public static Guid Dns { get; } = Guid.Parse("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
+        public static Guid Default() => Guid.NewGuid();
+
         private static byte[] EnsureGuidMsb(byte[] bytes)
         {
             if (!BitConverter.IsLittleEndian)
@@ -40,8 +43,10 @@ namespace Scm.Sys
                 cs.Write(namespaceBytes, 0, namespaceBytes.Length);
                 cs.Write(bytes, index, length);
             }
+
             return algorithm.Hash;
         }
+
         public static Guid NamespaceFromHash(byte[] hash, ushort version)
         {
             if ((version & 0x0F) != version)
@@ -74,11 +79,12 @@ Set octets zero through 3 of the time_low field to octets zero through 3 of the 
 
    o  Convert the resulting UUID to local byte order. */
             var guidBytes = EnsureGuidMsb(hash);
-            guidBytes[7] = (byte)((guidBytes[7] & 0x0F) | (version << 4 & 0xF0));
+            guidBytes[7] = (byte) ((guidBytes[7] & 0x0F) | ((version << 4) & 0xF0));
             return new Guid(guidBytes);
         }
 
-        public static Guid Namespace(this Guid nameSpace, byte[] bytes, int index, int length, ushort version, HashAlgorithm algorithm)
+        public static Guid Namespace(this Guid nameSpace, byte[] bytes, int index, int length, ushort version,
+            HashAlgorithm algorithm)
         {
             return NamespaceFromHash(Hash(nameSpace, bytes, index, length, algorithm), version);
         }
@@ -95,7 +101,6 @@ Set octets zero through 3 of the time_low field to octets zero through 3 of the 
 
             throw new NotSupportedException($"Version {version} not supported");
         }
-        public static Encoding DefaultEncoding { get; set; } = Encoding.UTF8;
 
         public static Guid Namespace(this Guid nameSpace, string name, ushort version = 5, Encoding encoding = null)
         {
@@ -116,13 +121,8 @@ Set octets zero through 3 of the time_low field to octets zero through 3 of the 
             var b = guid.ToByteArray();
             return new[]
             {
-                b[3], b[2], b[1], b[0], b[5], b[4], b[7], b[6]
-                ,b[8],b[9],b[10],b[11],b[12],b[13],b[14],b[15]
+                b[3], b[2], b[1], b[0], b[5], b[4], b[7], b[6], b[8], b[9], b[10], b[11], b[12], b[13], b[14], b[15]
             };
         }
-
-        public static Guid Dns { get; } = Guid.Parse("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
-
     }
-
 }

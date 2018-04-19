@@ -13,9 +13,16 @@ namespace SimpleLiveData.Tests
     {
         public virtual IWebHostBuilder Builder =>
             _builder ?? (_builder = ConfigureBuilder(new WebHostBuilder()));
+
         public virtual TestServer Server => _server ?? (_server = MakeServer());
         public virtual HttpClient Client => _client ?? (_client = MakeClient());
         public Guid Id { get; } = Guid.NewGuid();
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         protected abstract IWebHostBuilder ConfigureBuilder(IWebHostBuilder builder);
 
@@ -27,13 +34,14 @@ namespace SimpleLiveData.Tests
         protected virtual HttpClient MakeClient()
             => Server.CreateClient();
 
-        public void Dispose()
+
+        ~AbstractHttpConfigurationFixture()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            Dispose(false);
         }
 
         #region Internal variables
+
         private IWebHostBuilder _builder;
         private TestServer _server;
         private HttpClient _client;
@@ -41,6 +49,7 @@ namespace SimpleLiveData.Tests
         private static long _undisposedCount;
         private static readonly ISubject<Unit> MissingDisposeSubject = new Subject<Unit>();
         public static IObservable<Unit> MissingDispose => MissingDisposeSubject.AsObservable();
+
         private static void NotifyMissingDispose()
         {
             Interlocked.Increment(ref _undisposedCount);
@@ -60,12 +69,7 @@ namespace SimpleLiveData.Tests
                 _server?.Dispose();
             }
         }
+
         #endregion
-
-
-        ~AbstractHttpConfigurationFixture()
-        {
-            Dispose(false);
-        }
     }
 }
