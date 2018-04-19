@@ -23,9 +23,9 @@ namespace Scm.Sys
 
         private static byte[] EnsureGuidMsb(byte[] bytes)
         {
-            if (!BitConverter.IsLittleEndian)
-                return bytes;
-            return Enumerable.Range(0, 16).Select(i => bytes[OrderFlip[i]]).ToArray();
+            return BitConverter.IsLittleEndian
+                ? Enumerable.Range(0, 16).Select(i => bytes[OrderFlip[i]]).ToArray()
+                : bytes;
         }
 
         private static byte[] Hash(Guid nameSpace, byte[] bytes, int index, int length, HashAlgorithm algorithm)
@@ -91,6 +91,7 @@ Set octets zero through 3 of the time_low field to octets zero through 3 of the 
 
         private static HashAlgorithm HashByVersion(ushort version)
         {
+            // ReSharper disable once SwitchStatementMissingSomeCases -- throws if not handled
             switch (version)
             {
                 case 3:

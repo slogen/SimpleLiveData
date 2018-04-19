@@ -12,11 +12,11 @@ namespace Scm.Linq.Tests
         [SuppressMessage("ReSharper", "UnusedParameter.Local", Justification = "Just throw")]
         private static bool ThrowIfCalled(int x) => throw new InvalidOperationException();
 
-        class A
+        private class A
         {
         }
 
-        class B : A
+        private class B : A
         {
         }
 
@@ -38,7 +38,7 @@ namespace Scm.Linq.Tests
         {
             var b = new B();
             var e = F.Expr((B x) => x);
-            Action act = F.Action(() => e.BetaReduce(Expression.Constant(b, typeof(A))));
+            var act = F.Action(() => e.BetaReduce(Expression.Constant(b, typeof(A))));
             act.Should().Throw<InvalidCastException>();
         }
 

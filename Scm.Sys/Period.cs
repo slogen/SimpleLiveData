@@ -16,8 +16,8 @@ namespace Scm.Sys
             To = to;
         }
 
-        public DateTime? From { get; private set; }
-        public DateTime? To { get; private set; }
+        public DateTime? From { get; }
+        public DateTime? To { get; }
 
         public static Period Infinite() => new Period();
         public static Period Starting(DateTime? at) => new Period(at, null);

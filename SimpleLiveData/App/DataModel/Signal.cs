@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SimpleLiveData.App.DataModel
 {
@@ -9,6 +10,7 @@ namespace SimpleLiveData.App.DataModel
         {
         }
 
+        [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter", Justification = "Meant to be copy constructor")]
         public Signal(Signal other) : this(other.Id, other.Name)
         {
         }

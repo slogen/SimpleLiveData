@@ -6,7 +6,7 @@ namespace Scm.Linq.Tests
     public class FTests
     {
         [Fact]
-        void FExprRunsCorrectly()
+        public void FExprRunsCorrectly()
         {
             F.Expr(() => 1).Compile()().Should().Be(1);
             F.Expr((int x) => -x).Compile()(2).Should().Be(-2);
@@ -16,7 +16,7 @@ namespace Scm.Linq.Tests
         }
 
         [Fact]
-        void FFuncRunsCorrectly()
+        public void FFuncRunsCorrectly()
         {
             F.Func(() => 1)().Should().Be(1);
             F.Func((int x) => -x)(2).Should().Be(-2);

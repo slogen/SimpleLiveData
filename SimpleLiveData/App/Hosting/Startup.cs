@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -18,6 +19,8 @@ namespace SimpleLiveData.App.Hosting
             services.AddOData();
         }
 
+        [SuppressMessage("ReSharper", "ArgumentsStyleStringLiteral", Justification = "Clarity")]
+        [SuppressMessage("ReSharper", "ArgumentsStyleOther", Justification = "Clarity")]
         public void Configure(IApplicationBuilder app)
         {
             app.UseMvc(routes =>

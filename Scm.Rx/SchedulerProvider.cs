@@ -32,24 +32,25 @@ namespace Scm.Rx
             public IScheduler ThreadPool => ThreadPoolScheduler.Instance;
         }
 
+        [SuppressMessage("ReSharper", "ConvertToAutoPropertyWhenPossible", Justification = "Dispatches to single (private) field")]
         private class SingularSchedulerProvider : ISchedulerProvider
         {
-            private readonly IScheduler _scheduler;
+            private IScheduler SingularScheduler { get; }
 
-            public SingularSchedulerProvider(IScheduler scheduler)
+            public SingularSchedulerProvider(IScheduler singularScheduler)
             {
-                _scheduler = scheduler;
+                SingularScheduler = singularScheduler;
             }
 
-            public IScheduler Default => _scheduler;
+            public IScheduler Default => SingularScheduler;
 
-            public IScheduler CurrentThread => _scheduler;
+            public IScheduler CurrentThread => SingularScheduler;
 
-            public IScheduler Immediate => _scheduler;
+            public IScheduler Immediate => SingularScheduler;
 
-            public IScheduler NewThread => _scheduler;
+            public IScheduler NewThread => SingularScheduler;
 
-            public IScheduler ThreadPool => _scheduler;
+            public IScheduler ThreadPool => SingularScheduler;
         }
     }
 }

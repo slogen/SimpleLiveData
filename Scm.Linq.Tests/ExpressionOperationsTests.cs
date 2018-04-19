@@ -8,7 +8,7 @@ namespace Scm.Linq.Tests
     public class ExpressionOperationsTests
     {
         [Fact]
-        void BetaReduceRecusiveTransforms()
+        public void BetaReduceRecusiveTransforms()
         {
             var f = F.Expr<int, Func<int, int, int>>(x => (y, z) => x + x + y + z);
             var e = Expression.Invoke(f,
