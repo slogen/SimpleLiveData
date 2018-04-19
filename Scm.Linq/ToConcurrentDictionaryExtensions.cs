@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Scm.Linq
 {
-    public static class ConcurrentDictionaryExtensions
+    public static class ToConcurrentDictionaryExtensions
     {
         public static ConcurrentDictionary<TKey, TValue> ToConcurrentDictionary<TSource, TKey, TValue>(
             this IEnumerable<TSource> source,
