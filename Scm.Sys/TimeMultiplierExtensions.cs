@@ -12,7 +12,7 @@ namespace Scm.Sys
         /// Will return <see cref="TimeSpan.MinValue"/> or <see cref="TimeSpan.MaxValue"/> respectively when <paramref name="throwOnOverflow"/> is not set or throw otherwise
         /// </summary>
         /// <exception cref="OverflowException">If <paramref name="throwOnOverflow"/> is set and the multiplication overflows</exception>
-        public static TimeSpan Times(this TimeSpan span, long multiplier, bool? throwOnOverflow = null)
+        public static TimeSpan Times(this TimeSpan span, long multiplier, bool? throwOnOverflow)
         {
             decimal ticks = span.Ticks * multiplier;
             if (throwOnOverflow ?? DefaultThrowOnOverflow)

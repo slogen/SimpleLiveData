@@ -2,9 +2,9 @@
 
 namespace SimpleLiveData
 {
-    class Program
+    internal class Program
     {
-        static void Main()
+        private static void Main()
         {
             throw new NotImplementedException();
         }

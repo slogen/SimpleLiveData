@@ -31,7 +31,7 @@ namespace Scm.Web
                     try
                     {
                         while (await reader.WaitToReadAsync(ct).ConfigureAwait(false))
-                        while (reader.TryRead(out T item))
+                        while (reader.TryRead(out var item))
                             obs.OnNext(item);
                     }
                     catch (Exception ex) when (!ct.IsCancellationRequested)
@@ -48,7 +48,7 @@ namespace Scm.Web
                         obs.OnCompleted();
                 })
                 .Publish().RefCount()
-                .Finally(() => ready.OnCompleted());
+                .Finally(ready.OnCompleted);
             return new ReadyMonitoredObservable<T>(observable, ready);
         }
 

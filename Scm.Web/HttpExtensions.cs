@@ -35,7 +35,7 @@ namespace Scm.Web
             bool? leaveOpen = null)
         {
             var bodyStream = await resp.Content.ReadAsStreamAsync().ConfigureAwait(false);
-            var headers = resp.Headers;
+            //var headers = resp.Headers;
             // TODO: Read encoding from headers
             return new StreamReader(bodyStream, resp.Encoding(),
                 detectEncodingFromByteOrderMarks: false,

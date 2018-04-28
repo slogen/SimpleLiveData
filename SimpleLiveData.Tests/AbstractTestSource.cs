@@ -114,7 +114,7 @@ namespace SimpleLiveData.Tests
                     (float) Math.Sin(0.0 + i.Id.GetHashCode() + s.Id.GetHashCode() + t.Ticks);
             var span = interval ?? TimeSpan.FromSeconds(1);
             var at = (startAt ?? DateTime.UtcNow).Truncate(span);
-            for (int i = 0; i < int.MaxValue; ++i)
+            for (var i = 0; i < int.MaxValue; ++i)
             {
                 var t = at + span.Times(i);
                 foreach (var inst in InstallationsById.Values)

@@ -9,7 +9,7 @@ namespace SimpleLiveData.App.Presentation.SignalR
         {
         }
 
-        public HubData(Data data)
+        public HubData(IData data)
         {
             InstallationId = data.InstallationId;
             SignalId = data.SignalId;

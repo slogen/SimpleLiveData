@@ -18,9 +18,6 @@ namespace Scm.Web
         protected Stream Stream { get; }
         protected Encoding Encoding { get; }
 
-        protected override TextReader Reader
-        {
-            get { return new StreamReader(Stream, Encoding); }
-        }
+        protected override TextReader Reader => new StreamReader(Stream, Encoding);
     }
 }
