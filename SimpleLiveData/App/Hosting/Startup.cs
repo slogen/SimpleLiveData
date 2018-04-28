@@ -14,7 +14,9 @@ namespace SimpleLiveData.App.Hosting
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSignalR();
+            services.AddSignalR()
+                .AddJsonProtocol(cfg =>
+                    cfg.PayloadSerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             services.AddMvc();
             services.AddODataQueryFilter();
             services.AddOData();
