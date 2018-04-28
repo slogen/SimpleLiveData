@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scm.Sys.Tests", "Scm.Sys.Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scm.Presentation.OData", "Scm.Presentation.OData\Scm.Presentation.OData.csproj", "{947A853C-9810-41C3-AA30-64AA1310F00F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scm.Web", "Scm.Web\Scm.Web.csproj", "{5771E86B-B43F-4C61-BAC8-FBADCDCD77D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{947A853C-9810-41C3-AA30-64AA1310F00F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{947A853C-9810-41C3-AA30-64AA1310F00F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{947A853C-9810-41C3-AA30-64AA1310F00F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5771E86B-B43F-4C61-BAC8-FBADCDCD77D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5771E86B-B43F-4C61-BAC8-FBADCDCD77D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5771E86B-B43F-4C61-BAC8-FBADCDCD77D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5771E86B-B43F-4C61-BAC8-FBADCDCD77D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

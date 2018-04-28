@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Scm.DataAccess
+namespace Scm.DataAccess.Support
 {
     /// <summary>
     /// Enforces that a UnitOfWork is (successfully) committed only once

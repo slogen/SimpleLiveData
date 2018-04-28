@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using SimpleLiveData.App.DataModel;
+using SimpleLiveData.App.Presentation.SignalR;
 
 namespace SimpleLiveData.App.Hosting
 {
@@ -23,6 +24,10 @@ namespace SimpleLiveData.App.Hosting
         [SuppressMessage("ReSharper", "ArgumentsStyleOther", Justification = "Clarity")]
         public void Configure(IApplicationBuilder app)
         {
+            // Any connection or hub wire up and configuration should go here
+            app.UseSignalR(routes =>
+                routes.MapHub<LiveHub>("/signalr/livedata"));
+
             app.UseMvc(routes =>
             {
                 routes.MapODataServiceRoute(
@@ -30,9 +35,6 @@ namespace SimpleLiveData.App.Hosting
                     routePrefix: "odata",
                     model: BuildEdmModel(app.ApplicationServices));
             });
-
-            // Any connection or hub wire up and configuration should go here
-            app.UseSignalR(routes => { });
         }
 
         public IEdmModel BuildEdmModel(IServiceProvider serviceProvider)

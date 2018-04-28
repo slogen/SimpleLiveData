@@ -1,27 +1,38 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Scm.DataAccess.Qbservable;
+using Scm.DataAccess.Queryable;
 using Scm.Linq;
 using Scm.Sys;
 using SimpleLiveData.App.DataModel;
 
 namespace SimpleLiveData.Tests
 {
-    public abstract class AbstractTestSource
+    public abstract class AbstractTestSource :
+        IQueryableSource<Installation>,
+        IQbservableSource<Installation>,
+        IQueryableSource<Signal>,
+        IQbservableSource<Signal>,
+        IObservableSink<Data>,
+        IQbservableSource<Data>,
+        IDisposable
     {
-        private readonly ISubject<Data> _data = new Subject<Data>();
+        protected DateTime StartTime = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        public abstract TimeSpan ObserveIntervalSpan { get; }
+        public static Guid InstallationNameSpace { get; } = Guid.Parse("7c73ec21-a7d9-4bb3-9802-b7193abba077");
+        public static Guid SignalNameSpace { get; } = Guid.Parse("0acb31aa-6075-4871-b7a0-2150bac625b5");
+
+        #region Installations
+
         protected TimeSpan InstallationBeginInterval = TimeSpan.FromDays(1);
 
         protected ConcurrentDictionary<Guid, Installation> InstallationsById =
             new ConcurrentDictionary<Guid, Installation>();
-
-        protected ConcurrentDictionary<Guid, Signal> SignalsById = new ConcurrentDictionary<Guid, Signal>();
-        protected DateTime StartTime = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        public static Guid InstallationNameSpace { get; } = Guid.Parse("7c73ec21-a7d9-4bb3-9802-b7193abba077");
-        public static Guid SignalNameSpace { get; } = Guid.Parse("0acb31aa-6075-4871-b7a0-2150bac625b5");
-        public IQbservable<Data> ObserveData => _data.AsQbservable();
 
         protected Installation Installation(int i)
         {
@@ -32,12 +43,51 @@ namespace SimpleLiveData.Tests
                     Period.Starting(StartTime.Add(InstallationBeginInterval.Multiply(i)))));
         }
 
+        public IQueryableSource<Installation> Installations => this;
+
+        public TResult Observe<TResult>(Func<IQbservable<Installation>, TResult> f)
+            => f(ObserveData.GroupByUntil(d => d.Installation, i => Observable.Interval(ObserveIntervalSpan))
+                .SelectMany(g => g.ToList().Select(l => new Installation(g.Key) {Data = l})));
+
+        public TResult Query<TResult>(Func<IQueryable<Installation>, TResult> f)
+            => f(InstallationsById.Values.AsQueryable());
+
+        #endregion
+
+        #region Signals
+
+        protected ConcurrentDictionary<Guid, Signal> SignalsById = new ConcurrentDictionary<Guid, Signal>();
+
         protected Signal Signal(int i)
         {
             var name = $"S{i}";
             var uuid = SignalNameSpace.Namespace(name);
             return SignalsById.GetOrAdd(uuid, _ => new Signal(uuid, name));
         }
+
+        public IQueryableSource<Signal> Signals => this;
+
+        public TResult Observe<TResult>(Func<IQbservable<Signal>, TResult> f)
+            => f(ObserveData.GroupByUntil(d => d.Signal, i => Observable.Interval(ObserveIntervalSpan))
+                .SelectMany(g => g.ToList().Select(l => new Signal(g.Key) {Data = l})));
+
+        public TResult Query<TResult>(Func<IQueryable<Signal>, TResult> f)
+            => f(SignalsById.Values.AsQueryable());
+
+        #endregion
+
+        #region Data
+
+        private readonly ISubject<Data> _data = new Subject<Data>();
+        public IQbservable<Data> ObserveData => _data.AsObservable().AsQbservable();
+        public IQbservableSource<Data> Data => this;
+
+        public IConnectableObservable<long> Add<TSource>(IObservable<TSource> entities, IScheduler scheduler = null)
+            where TSource : Data
+            => entities.Do(AddData).Select((x, i) => i + 1L).Publish(0);
+
+        public TResult Observe<TResult>(Func<IQbservable<Data>, TResult> f)
+            => f(ObserveData);
 
         public void AddData(Data data)
         {
@@ -53,23 +103,37 @@ namespace SimpleLiveData.Tests
         public void Prepare(int installations, int signals)
         {
             Enumerable.Range(0, installations).Select(Installation).Execute();
-            Enumerable.Range(0, signals).Select(Installation).Execute();
+            Enumerable.Range(0, signals).Select(Signal).Execute();
         }
 
-        public void ProduceData(DateTime t, Func<Installation, Signal, float> f = null)
+        public IEnumerable<Data> ProduceData(Func<Installation, Signal, DateTime, float> f = null,
+            DateTime? startAt = null, TimeSpan? interval = null)
         {
             if (f == null)
-                f = (i, s) =>
+                f = (i, s, t) =>
                     (float) Math.Sin(0.0 + i.Id.GetHashCode() + s.Id.GetHashCode() + t.Ticks);
-            foreach (var i in InstallationsById.Values)
-            foreach (var s in SignalsById.Values)
-                AddData(new Data(i.Id, s.Id, t, f(i, s)));
+            var span = interval ?? TimeSpan.FromSeconds(1);
+            var at = (startAt ?? DateTime.UtcNow).Truncate(span);
+            for (int i = 0; i < int.MaxValue; ++i)
+            {
+                var t = at + span.Times(i);
+                foreach (var inst in InstallationsById.Values)
+                foreach (var sig in SignalsById.Values)
+                {
+                    var data = new Data(inst.Id, sig.Id, t, f(inst, sig, t));
+                    AddData(data);
+                    yield return data;
+                }
+            }
         }
+
+        #endregion
+
+        #region  Dispose
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
-                _data.OnCompleted();
+            _data?.OnCompleted();
         }
 
         public void Dispose()
@@ -82,5 +146,7 @@ namespace SimpleLiveData.Tests
         {
             Dispose(false);
         }
+
+        #endregion
     }
 }

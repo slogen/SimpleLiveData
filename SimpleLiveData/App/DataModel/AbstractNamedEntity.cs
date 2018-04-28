@@ -4,6 +4,10 @@ namespace SimpleLiveData.App.DataModel
 {
     public abstract class AbstractNamedEntity : AbstractEntity
     {
+        protected AbstractNamedEntity()
+        {
+        }
+
         protected AbstractNamedEntity(Guid id, string name) : base(id)
         {
             Name = name;

@@ -6,6 +6,10 @@ namespace SimpleLiveData.App.DataModel
 {
     public class Installation : AbstractNamedEntity
     {
+        protected Installation()
+        {
+        }
+
         public Installation(Guid id, string name, Period installationPeriod = null) : base(id, name)
         {
             InstallationPeriod = installationPeriod ?? new Period();

@@ -28,7 +28,8 @@ namespace SimpleLiveData.Tests
 
         protected virtual TestServer MakeServer()
         {
-            return new TestServer(Builder);
+            var srv = new TestServer(Builder);
+            return srv;
         }
 
         protected virtual HttpClient MakeClient()

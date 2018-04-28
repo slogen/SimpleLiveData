@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="1.0.0-preview2-final" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.1.0-preview2-final" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="4.0.0-preview00001" />
@@ -18,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Scm.Web\Scm.Web.csproj" />
     <ProjectReference Include="..\SimpleLiveData\SimpleLiveData.csproj" />
   </ItemGroup>
 

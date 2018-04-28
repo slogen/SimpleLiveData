@@ -9,14 +9,10 @@ namespace SimpleLiveData.Tests
         {
             var resp = await client.GetAsync(uri).ConfigureAwait(false);
             if (!resp.IsSuccessStatusCode)
-                throw new HttpRequestException($"HTTP Error: {resp.StatusCode}\n{await ExtractExplanation(resp)}");
+                throw new HttpRequestException(
+                    $"HTTP Error: {resp.StatusCode}\n{await resp.Content.ReadAsStringAsync()}");
 
             return await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-        }
-
-        private static async Task<string> ExtractExplanation(HttpResponseMessage resp)
-        {
-            return await resp.Content.ReadAsStringAsync();
         }
     }
 }

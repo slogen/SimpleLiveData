@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Scm.DataAccess;
+using Scm.DataAccess.Support;
 
 namespace Scm.DataStorage.Efc2
 {

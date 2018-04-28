@@ -5,7 +5,7 @@ using Scm.Sys;
 
 namespace SimpleLiveData.App.DataModel
 {
-    public class Data
+    public class Data : IData
     {
         public Data(Guid installationId, Guid signalId, DateTime timeStamp, float value)
         {
@@ -15,13 +15,13 @@ namespace SimpleLiveData.App.DataModel
             Value = value;
         }
 
-        [ForeignKey(nameof(Installation))] public Guid InstallationId { get; set; }
-
         public Installation Installation { get; set; }
 
-        [ForeignKey(nameof(Signal))] public Guid SignalId { get; set; }
-
         public Signal Signal { get; set; }
+
+        [ForeignKey(nameof(Installation))] public Guid InstallationId { get; set; }
+
+        [ForeignKey(nameof(Signal))] public Guid SignalId { get; set; }
         public DateTime TimeStamp { get; set; }
         public float Value { get; set; }
 

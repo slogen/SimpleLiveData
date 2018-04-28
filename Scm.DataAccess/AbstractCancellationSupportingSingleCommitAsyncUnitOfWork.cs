@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using Scm.DataAccess.Support;
 
 namespace Scm.DataAccess
 {
