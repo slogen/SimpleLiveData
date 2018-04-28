@@ -14,7 +14,7 @@ namespace Scm.Sys.Tests
         {
             Uuid.Dns.Namespace("www.example.org").Should().Be(Guid.Parse("74738ff5-5367-5958-9aee-98fffdcd1876"));
             Uuid.Dns.Namespace("www.example.org", version: 3).Should()
-                .Be(Guid.Parse("74738ff5-5367-5958-9aee-98fffdcd1876"));
+                .Be(Guid.Parse("0012416f-9eec-3ed4-a8b0-3bceecde1cd9"));
         }
 
         [Fact]
