@@ -69,7 +69,7 @@ namespace Scm.Web
             if (jsonSerializer == null)
                 throw new ArgumentNullException(nameof(jsonSerializer));
             var resp = await client.SendAsync(
-                uri.GetRequest().AcceptJson().AcceptUtf8())
+                    uri.GetRequest().AcceptJson().AcceptUtf8())
                 .AssertSuccess()
                 .ConfigureAwait(false);
             return await JsonHttpStreamConversion.FromResponse(jsonSerializer, resp).ConfigureAwait(false);

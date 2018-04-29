@@ -14,7 +14,7 @@ namespace DataSys.App.Presentation.Plain.Support
 {
     [Route("api/[controller]")]
     public abstract class EntityController<TEntity, TResult> : Controller
-        where TEntity: AbstractEntity
+        where TEntity : AbstractEntity
     {
         protected abstract IQueryableSource<TEntity> Source { get; }
         protected abstract IObservableSink<TEntity> Sink { get; }
@@ -23,6 +23,7 @@ namespace DataSys.App.Presentation.Plain.Support
 
         protected virtual IEnumerable<TResult> ToProtocol(IEnumerable<TEntity> entities)
             => entities.Select(ToProtocol);
+
         protected virtual IAsyncEnumerable<TResult> ToProtocol(IAsyncEnumerable<TEntity> entities)
             => entities.Select(ToProtocol);
 
@@ -37,6 +38,7 @@ namespace DataSys.App.Presentation.Plain.Support
                 return NotFound(id);
             return Ok(ToProtocol(entity));
         }
+
         [HttpPut("")]
         [ProducesResponseType(200)]
         public async Task<ActionResult<TResult>> Put(TResult newItem, CancellationToken cancellationToken)
@@ -61,6 +63,5 @@ namespace DataSys.App.Presentation.Plain.Support
         [ProducesResponseType(200)]
         public ActionResult<IAsyncEnumerable<TResult>> List(CancellationToken cancellationToken)
             => List(0, int.MaxValue, cancellationToken);
-
     }
 }

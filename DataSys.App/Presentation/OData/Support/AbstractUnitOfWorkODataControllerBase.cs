@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Query;
-using Microsoft.AspNetCore.Mvc;
 using Scm.DataAccess;
 using Scm.DataAccess.Queryable;
 using Scm.Presentation.OData;

@@ -24,7 +24,17 @@ namespace DataSys.App.Tests.Support
             var sub = Observable.Subscribe(observer);
             var id = Interlocked.Increment(ref _subscribeCount);
             _subcriptions.OnNext(id);
-            return Disposable.Create(() => { _subcriptions.OnNext(-id); });
+            return Disposable.Create(() =>
+            {
+                try
+                {
+                    _subcriptions.OnNext(-id);
+                }
+                finally
+                {
+                    sub.Dispose();
+                }
+            });
         }
     }
 }

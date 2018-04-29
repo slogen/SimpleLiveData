@@ -14,13 +14,12 @@ namespace DataSys.Protocol
             To = to;
         }
 
-        [DataMember]
-        public Guid Id { get; set; }
-        [DataMember]
-        public string Name { get; set; }
-        [DataMember]
-        public DateTime? From { get; set; }
-        [DataMember]
-        public DateTime? To { get; set; }
+        [DataMember] public Guid Id { get; set; }
+
+        [DataMember] public string Name { get; set; }
+
+        [DataMember] public DateTime? From { get; set; }
+
+        [DataMember] public DateTime? To { get; set; }
     }
 }

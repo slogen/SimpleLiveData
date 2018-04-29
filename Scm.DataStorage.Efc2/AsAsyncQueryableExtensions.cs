@@ -9,7 +9,8 @@ namespace Scm.DataStorage.Efc2
 {
     public static class AsAsyncQueryableExtensions
     {
-        public static IQueryable<TElement> AsAsyncQueryable<TElement>(this IEnumerable<TElement> source, TaskFactory taskFactory = null)
+        public static IQueryable<TElement> AsAsyncQueryable<TElement>(this IEnumerable<TElement> source,
+            TaskFactory taskFactory = null)
         {
             var q = source.AsQueryable();
             return q.Provider is IAsyncQueryProvider ? q : new AsyncQueryable<TElement>(q, taskFactory);
@@ -17,18 +18,19 @@ namespace Scm.DataStorage.Efc2
 
         private sealed class AsyncQueryProvider<T> : IAsyncQueryProvider
         {
-            private TaskFactory TaskFactory { get; }
-            private IQueryProvider Inner { get; }
-
             internal AsyncQueryProvider(IQueryProvider inner, TaskFactory taskFactory = null)
             {
                 Inner = inner;
                 TaskFactory = taskFactory ?? Task.Factory;
             }
 
+            private TaskFactory TaskFactory { get; }
+            private IQueryProvider Inner { get; }
+
             public IQueryable CreateQuery(Expression expression) => new AsyncQueryable<T>(expression, TaskFactory);
 
-            public IQueryable<TElement> CreateQuery<TElement>(Expression expression) => new AsyncQueryable<TElement>(expression, TaskFactory);
+            public IQueryable<TElement> CreateQuery<TElement>(Expression expression) =>
+                new AsyncQueryable<TElement>(expression, TaskFactory);
 
             public object Execute(Expression expression) => Inner.Execute(expression);
 
@@ -37,14 +39,12 @@ namespace Scm.DataStorage.Efc2
             public IAsyncEnumerable<TResult> ExecuteAsync<TResult>(Expression expression)
                 => new AsyncQueryable<TResult>(expression, TaskFactory);
 
-            public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken) 
+            public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
                 => TaskFactory.StartNew(() => Execute<TResult>(expression), cancellationToken);
         }
 
         private sealed class AsyncQueryable<T> : EnumerableQuery<T>, IAsyncEnumerable<T>, IQueryable<T>
         {
-            private TaskFactory TaskFactory { get; }
-
             public AsyncQueryable(IEnumerable<T> enumerable, TaskFactory taskFactory)
                 : base(enumerable)
             {
@@ -57,10 +57,12 @@ namespace Scm.DataStorage.Efc2
                 TaskFactory = taskFactory;
             }
 
-            IQueryProvider IQueryable.Provider => new AsyncQueryProvider<T>(this);
+            private TaskFactory TaskFactory { get; }
 
             public IAsyncEnumerator<T> GetEnumerator() =>
                 new AsyncEnumerator<T>(this.AsEnumerable().GetEnumerator(), TaskFactory);
+
+            IQueryProvider IQueryable.Provider => new AsyncQueryProvider<T>(this);
         }
 
         private struct AsyncEnumerator<T> : IAsyncEnumerator<T>

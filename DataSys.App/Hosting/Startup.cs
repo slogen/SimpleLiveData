@@ -38,7 +38,6 @@ namespace DataSys.App.Hosting
                         routeName: "odataserviceroute",
                         routePrefix: "odata",
                         model: BuildEdmModel(app.ApplicationServices));
-                    
                 });
         }
 
