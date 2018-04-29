@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataSys.App", "SimpleLiveData\DataSys.App.csproj", "{8F9D8B21-813C-4FA6-A295-D0551F3E4346}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scm.Linq.Tests", "Scm.Linq.Tests\Scm.Linq.Tests.csproj", "{8D712D62-C9AC-47DF-8907-2838911C5BEE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scm.Linq", "Scm.Linq\Scm.Linq.csproj", "{599FCAA8-BDEA-4C1F-87F7-9FDB3162EEDE}"
@@ -27,17 +25,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scm.Rx.Tests", "Scm.Rx.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scm.Concurrency.Tests", "Scm.Concurrency.Tests\Scm.Concurrency.Tests.csproj", "{2B94628F-0BAE-43AA-AB9A-3ACA75D74C27}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataSys.App.Tests", "SimpleLiveData.Tests\DataSys.App.Tests.csproj", "{35F29534-B031-40AD-A259-438DBCBBE38B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scm.Sys", "Scm.Sys\Scm.Sys.csproj", "{9D937E5D-60AC-4C5F-9154-D46DD8669288}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scm.Sys.Tests", "Scm.Sys.Tests\Scm.Sys.Tests.csproj", "{1777E4F7-1CA3-42D0-9D09-D01DA5502E61}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scm.Presentation.OData", "Scm.Presentation.OData\Scm.Presentation.OData.csproj", "{947A853C-9810-41C3-AA30-64AA1310F00F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scm.Web", "Scm.Web\Scm.Web.csproj", "{5771E86B-B43F-4C61-BAC8-FBADCDCD77D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scm.Web", "Scm.Web\Scm.Web.csproj", "{5771E86B-B43F-4C61-BAC8-FBADCDCD77D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataSys.Protocol", "DataSys.Protocol\DataSys.Protocol.csproj", "{4543985E-0DB1-459E-BE34-B761A001ADA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataSys.Protocol", "DataSys.Protocol\DataSys.Protocol.csproj", "{4543985E-0DB1-459E-BE34-B761A001ADA8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataSys.App", "DataSys.App\DataSys.App.csproj", "{3C195640-B81A-4560-A85A-F47293C7E0CF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataSys.App.Tests", "DataSys.App.Tests\DataSys.App.Tests.csproj", "{26B9294C-5963-4682-8E7D-FEC4E65ACBE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +45,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8F9D8B21-813C-4FA6-A295-D0551F3E4346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F9D8B21-813C-4FA6-A295-D0551F3E4346}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F9D8B21-813C-4FA6-A295-D0551F3E4346}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F9D8B21-813C-4FA6-A295-D0551F3E4346}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8D712D62-C9AC-47DF-8907-2838911C5BEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8D712D62-C9AC-47DF-8907-2838911C5BEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D712D62-C9AC-47DF-8907-2838911C5BEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -93,10 +89,6 @@ Global
 		{2B94628F-0BAE-43AA-AB9A-3ACA75D74C27}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B94628F-0BAE-43AA-AB9A-3ACA75D74C27}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B94628F-0BAE-43AA-AB9A-3ACA75D74C27}.Release|Any CPU.Build.0 = Release|Any CPU
-		{35F29534-B031-40AD-A259-438DBCBBE38B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{35F29534-B031-40AD-A259-438DBCBBE38B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{35F29534-B031-40AD-A259-438DBCBBE38B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{35F29534-B031-40AD-A259-438DBCBBE38B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9D937E5D-60AC-4C5F-9154-D46DD8669288}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9D937E5D-60AC-4C5F-9154-D46DD8669288}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D937E5D-60AC-4C5F-9154-D46DD8669288}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -117,6 +109,14 @@ Global
 		{4543985E-0DB1-459E-BE34-B761A001ADA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4543985E-0DB1-459E-BE34-B761A001ADA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4543985E-0DB1-459E-BE34-B761A001ADA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C195640-B81A-4560-A85A-F47293C7E0CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C195640-B81A-4560-A85A-F47293C7E0CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C195640-B81A-4560-A85A-F47293C7E0CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C195640-B81A-4560-A85A-F47293C7E0CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26B9294C-5963-4682-8E7D-FEC4E65ACBE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26B9294C-5963-4682-8E7D-FEC4E65ACBE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26B9294C-5963-4682-8E7D-FEC4E65ACBE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26B9294C-5963-4682-8E7D-FEC4E65ACBE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
