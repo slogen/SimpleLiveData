@@ -14,4 +14,8 @@
     <ProjectReference Include="..\Scm.Rx\Scm.Rx.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Util\" />
+  </ItemGroup>
+
 </Project>

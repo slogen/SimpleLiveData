@@ -4,10 +4,10 @@ using Scm.Presentation.OData;
 namespace DataSys.App.Presentation.OData.Support
 {
     public abstract class
-        DataUnitOfWorkControllerBase<TEntity> : UnitOfWorkODataControllerBase<IDataUnitOfWork, TEntity>
+        DataUnitOfWorkControllerBase<TEntity> : UnitOfWorkODataControllerBase<IAppUnitOfWork, TEntity>
         where TEntity : class
     {
-        protected DataUnitOfWorkControllerBase(IDataUnitOfWork unitOfWork, IODataOptions oDataOptions) : base(
+        protected DataUnitOfWorkControllerBase(IAppUnitOfWork unitOfWork, IODataOptions oDataOptions) : base(
             unitOfWork)
         {
             ODataOptions = oDataOptions;

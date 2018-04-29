@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Query;
 using Scm.DataAccess;
-using Scm.DataAccess.Queryable;
 using Scm.Presentation.OData;
 
 namespace DataSys.App.Presentation.OData.Support

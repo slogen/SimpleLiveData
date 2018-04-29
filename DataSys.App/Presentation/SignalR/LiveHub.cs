@@ -10,12 +10,12 @@ namespace DataSys.App.Presentation.SignalR
 {
     public class LiveHub : Hub
     {
-        public LiveHub(IDataUnitOfWork source)
+        public LiveHub(IAppUnitOfWork source)
         {
             Source = source;
         }
 
-        public IDataUnitOfWork Source { get; }
+        public IAppUnitOfWork Source { get; }
 
         protected override void Dispose(bool disposing)
         {
@@ -35,7 +35,7 @@ namespace DataSys.App.Presentation.SignalR
 
         public IObservable<IData> Observe(ODataQueryOptions<IData> queryOptions = null)
         {
-            var obs = Source.Data.Observe(datas => datas.Select(data => data)
+            var obs = Source.Live<Data>().Observe((IQbservable<Data> datas) => datas.Select(data => data)
                 .Do(
                     x => Debug.WriteLine(x),
                     ex => Debug.WriteLine(ex),

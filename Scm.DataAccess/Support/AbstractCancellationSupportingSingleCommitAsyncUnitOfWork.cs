@@ -1,7 +1,6 @@
 ﻿using System.Threading;
-using Scm.DataAccess.Support;
 
-namespace Scm.DataAccess
+namespace Scm.DataAccess.Support
 {
     public abstract class
         AbstractCancellationSupportingSingleCommitAsyncUnitOfWork : AbstractSingleCommitAsyncUnitOfWork

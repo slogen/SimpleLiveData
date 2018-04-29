@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Scm.DataAccess.Queryable
+namespace Scm.DataAccess
 {
     public interface IQueryableSource<out TEntity>
     {

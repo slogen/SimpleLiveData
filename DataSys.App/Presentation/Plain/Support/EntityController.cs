@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 using DataSys.App.DataModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Scm.DataAccess.Qbservable;
-using Scm.DataAccess.Queryable;
+using Scm.DataAccess;
 
 namespace DataSys.App.Presentation.Plain.Support
 {
@@ -17,7 +16,7 @@ namespace DataSys.App.Presentation.Plain.Support
         where TEntity : AbstractEntity
     {
         protected abstract IQueryableSource<TEntity> Source { get; }
-        protected abstract IObservableSink<TEntity> Sink { get; }
+        protected abstract ISink<TEntity> Sink { get; }
         protected abstract TResult ToProtocol(TEntity entity);
         protected abstract TEntity FromProtocol(TResult item);
 
@@ -44,7 +43,7 @@ namespace DataSys.App.Presentation.Plain.Support
         public async Task<ActionResult<TResult>> Put(TResult newItem, CancellationToken cancellationToken)
         {
             var entity = FromProtocol(newItem);
-            var saved = await Sink.Add(Observable.Return(entity).LastOrDefaultAsync());
+            var saved = await Sink.Add(Observable.Return(entity));
             if (saved <= 0)
                 return NotFound(entity.Id);
             return Ok(entity.Id); // TODO: Link to created object

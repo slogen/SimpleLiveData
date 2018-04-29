@@ -2,12 +2,11 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using DataSys.App.DataModel;
-using Scm.DataAccess.Qbservable;
-using Scm.DataAccess.Queryable;
+using Scm.DataAccess;
+using Scm.DataAccess.Efc2;
 using Scm.DataStorage.Efc2;
 using Scm.Linq;
 using Scm.Sys;
@@ -19,7 +18,7 @@ namespace DataSys.App.Tests.Support
         IQbservableSource<Installation>,
         IQueryableSource<Signal>,
         IQbservableSource<Signal>,
-        IObservableSink<Data>,
+        ISink<Data>,
         IQbservableSource<Data>,
         IDisposable
     {
@@ -87,9 +86,15 @@ namespace DataSys.App.Tests.Support
         public IQbservable<Data> ObserveData => _dataTrack.AsQbservable();
         public IQbservableSource<Data> Data => this;
 
-        public IConnectableObservable<long> Add<TSource>(IObservable<TSource> entities, IScheduler scheduler = null)
-            where TSource : Data
-            => entities.Do(AddData).Select((x, i) => i + 1L).Publish(0);
+        public IObservable<long> Change(IObservable<IGroupedObservable<EntityChange, Data>> change)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IObservable<long> DynamicChange(IObservable<IGroupedObservable<EntityChange, object>> change)
+        {
+            throw new NotImplementedException();
+        }
 
         public TResult Observe<TResult>(Func<IQbservable<Data>, TResult> f)
             => f(ObserveData);
@@ -146,6 +151,7 @@ namespace DataSys.App.Tests.Support
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
 
         ~AbstractTestSource()
         {

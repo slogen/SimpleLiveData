@@ -1,5 +1,4 @@
 ﻿using Scm.DataAccess;
-using Scm.DataAccess.Queryable;
 
 namespace DataSys.App.Presentation.OData.Support
 {

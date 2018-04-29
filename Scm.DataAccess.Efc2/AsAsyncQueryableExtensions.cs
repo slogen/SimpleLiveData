@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 
-namespace Scm.DataStorage.Efc2
+namespace Scm.DataAccess.Efc2
 {
     public static class AsAsyncQueryableExtensions
     {

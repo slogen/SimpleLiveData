@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reactive.Linq;
 
-namespace Scm.DataAccess.Qbservable
+namespace Scm.DataAccess
 {
     public interface IQbservableSource<out TEntity>
     {

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using DataSys.App.DataAccess;
 using DataSys.App.DataModel;
+using DataSys.App.DataStorage;
 using DataSys.App.Presentation.SignalR;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Extensions;
@@ -19,8 +21,11 @@ namespace DataSys.App.Hosting
             services.AddSignalR()
                 .AddJsonProtocol(cfg =>
                     cfg.PayloadSerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
-            services.AddODataQueryFilter();
-            services.AddOData();
+            services.AddODataQueryFilter().AddOData();
+            services.AddDbContextPool<AppDbContext>(cfg => { });
+            services.Add(ServiceDescriptor.Singleton<AppSubjectContext>(new AppSubjectContext()));
+                services.Add(ServiceDescriptor.Scoped<IAppUnitOfWork>(
+                    sp => new AppUnitOfWork(sp.GetService<AppDbContext>(), sp.GetService<AppSubjectContext>())));
             services.AddMvc();
         }
 

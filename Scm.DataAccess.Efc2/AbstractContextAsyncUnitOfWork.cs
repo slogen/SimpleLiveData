@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Scm.DataAccess.Support;
 
-namespace Scm.DataStorage.Efc2
+namespace Scm.DataAccess.Efc2
 {
     public abstract class AbstractContextAsyncUnitOfWork<TDbContext> : AbstractSingleCommitAsyncUnitOfWork
         where TDbContext : DbContext

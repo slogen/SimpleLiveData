@@ -3,8 +3,7 @@ using DataSys.App.DataAccess;
 using DataSys.App.DataModel;
 using DataSys.App.Presentation.Plain.Support;
 using Microsoft.AspNetCore.Mvc;
-using Scm.DataAccess.Qbservable;
-using Scm.DataAccess.Queryable;
+using Scm.DataAccess;
 using Scm.Sys;
 
 namespace DataSys.App.Presentation.Plain
@@ -13,15 +12,15 @@ namespace DataSys.App.Presentation.Plain
     // TODO: Find a way to avoid clashing with the OData Controller
     public class InstallationXController : EntityController<Installation, Protocol.Installation>
     {
-        public InstallationXController(IDataUnitOfWork unitOfWork)
+        public InstallationXController(IAppUnitOfWork unitOfWork)
         {
             UnitOfWork = unitOfWork;
         }
 
-        public IDataUnitOfWork UnitOfWork { get; }
+        public IAppUnitOfWork UnitOfWork { get; }
 
-        protected override IQueryableSource<Installation> Source => UnitOfWork.Installations;
-        protected override IObservableSink<Installation> Sink => throw new NotImplementedException();
+        protected override IQueryableSource<Installation> Source => UnitOfWork.Persistent<Installation>();
+        protected override ISink<Installation> Sink => throw new NotImplementedException();
 
         protected override Protocol.Installation ToProtocol(Installation entity)
             => new Protocol.Installation(entity.Id, entity.Name, entity.InstallationPeriod.From,

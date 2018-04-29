@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using DataSys.App.DataAccess;
-using DataSys.App.DataModel;
+using DataSys.App.DataStorage;
 using DataSys.App.Hosting;
 using DataSys.App.Tests.Support;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using Scm.DataAccess.Qbservable;
-using Scm.DataAccess.Queryable;
-using Scm.DataAccess.Support;
 
 namespace DataSys.App.Tests.Test
 {
@@ -20,44 +16,15 @@ namespace DataSys.App.Tests.Test
         protected JsonSerializer JsonSerializer { get; } = new JsonSerializer();
         protected virtual TestSource MakeTestSource() => new TestSource();
 
-        public IDataUnitOfWork DataUnitOfWork(IServiceProvider sp)
+        public IAppUnitOfWork DataUnitOfWork(IServiceProvider sp)
         {
-            return new TestDataUnitOfWork(this);
+            return sp.GetService<AppUnitOfWork>();
         }
 
         protected override void ConfigureTestServices(IServiceCollection svcs)
         {
             base.ConfigureTestServices(svcs);
-            svcs.Add(ServiceDescriptor.Scoped(DataUnitOfWork));
-        }
-
-        public class TestDataUnitOfWork : AbstractNonCommittingUnitOfWork, IDataUnitOfWork
-        {
-            public TestSourceBasedTests Parent;
-
-            public TestDataUnitOfWork(TestSourceBasedTests parent)
-            {
-                Parent = parent;
-            }
-
-            private TestSource TestSource => Parent.TestSource;
-
-            public IQueryableSource<Installation> Installations => TestSource.Installations;
-
-            public IQueryableSource<Signal> Signals => TestSource.Signals;
-
-            public IQbservableSource<Data> Data => TestSource.Data;
-
-            protected override void Dispose(bool disposing)
-            {
-                //if (disposing)
-                //    Parent._testSource?.Dispose();
-            }
-
-            protected override Task CommitAsyncOnce(CancellationToken cancellationToken)
-            {
-                return Task.CompletedTask; // no-op
-            }
+            svcs.AddDbContextPool<AppDbContext>(cfg => { cfg.UseInMemoryDatabase("appdb"); });
         }
     }
 }

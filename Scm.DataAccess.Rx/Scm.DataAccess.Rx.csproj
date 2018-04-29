@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Scm.Concurrency\Scm.Concurrency.csproj" />
+    <ProjectReference Include="..\Scm.DataStorage.Subject\Scm.DataStorage.Subject.csproj" />
   </ItemGroup>
 
 </Project>
