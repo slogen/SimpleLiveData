@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <AssemblyName>DataSys.App.Tests</AssemblyName>
+
+    <RootNamespace>DataSys.App.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Scm.Web\Scm.Web.csproj" />
-    <ProjectReference Include="..\SimpleLiveData\SimpleLiveData.csproj" />
+    <ProjectReference Include="..\SimpleLiveData\DataSys.App.csproj" />
   </ItemGroup>
 
 </Project>

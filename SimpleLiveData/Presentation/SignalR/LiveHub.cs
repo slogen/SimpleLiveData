@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reactive.Linq;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.SignalR;
 using SimpleLiveData.App.DataAccess;
+using SimpleLiveData.App.DataModel;
 
 namespace SimpleLiveData.App.Presentation.SignalR
 {
@@ -31,9 +33,9 @@ namespace SimpleLiveData.App.Presentation.SignalR
         public string Hello() => "World!";
 
 
-        public IObservable<HubData> Observe()
+        public IObservable<IData> Observe(ODataQueryOptions<IData> queryOptions = null)
         {
-            var obs = Source.Data.Observe(datas => datas.Select(data => new HubData(data))
+            var obs = Source.Data.Observe(datas => datas.Select(data => data)
                 .Do(
                     x => Debug.WriteLine(x),
                     ex => Debug.WriteLine(ex),

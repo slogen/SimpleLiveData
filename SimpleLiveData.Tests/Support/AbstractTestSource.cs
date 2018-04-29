@@ -3,16 +3,41 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
 using Scm.DataAccess.Qbservable;
 using Scm.DataAccess.Queryable;
+using Scm.DataStorage.Efc2;
 using Scm.Linq;
 using Scm.Sys;
 using SimpleLiveData.App.DataModel;
 
-namespace SimpleLiveData.Tests
+namespace SimpleLiveData.Tests.Support
 {
+    public class SubscribeTrack<T> : IObservable<T>
+    {
+        private readonly BehaviorSubject<long> _subcriptions = new BehaviorSubject<long>(0);
+        private long _subscribeCount;
+
+        public SubscribeTrack(IObservable<T> observable)
+        {
+            Observable = observable.Finally(_subcriptions.OnCompleted);
+        }
+
+        public IObservable<T> Observable { get; }
+        public IObservable<long> Subscribtions => _subcriptions.AsObservable();
+
+        public IDisposable Subscribe(IObserver<T> observer)
+        {
+            var sub = Observable.Subscribe(observer);
+            var id = Interlocked.Increment(ref _subscribeCount);
+            _subcriptions.OnNext(id);
+            return Disposable.Create(() => { _subcriptions.OnNext(-id); });
+        }
+    }
+
     public abstract class AbstractTestSource :
         IQueryableSource<Installation>,
         IQbservableSource<Installation>,
@@ -50,7 +75,7 @@ namespace SimpleLiveData.Tests
                 .SelectMany(g => g.ToList().Select(l => new Installation(g.Key) {Data = l})));
 
         public TResult Query<TResult>(Func<IQueryable<Installation>, TResult> f)
-            => f(InstallationsById.Values.AsQueryable());
+            => f(InstallationsById.Values.AsAsyncQueryable());
 
         #endregion
 
@@ -72,14 +97,18 @@ namespace SimpleLiveData.Tests
                 .SelectMany(g => g.ToList().Select(l => new Signal(g.Key) {Data = l})));
 
         public TResult Query<TResult>(Func<IQueryable<Signal>, TResult> f)
-            => f(SignalsById.Values.AsQueryable());
+            => f(SignalsById.Values.AsAsyncQueryable());
 
         #endregion
 
         #region Data
 
         private readonly ISubject<Data> _data = new Subject<Data>();
-        public IQbservable<Data> ObserveData => _data.AsObservable().AsQbservable();
+        private SubscribeTrack<Data> _dataTrack;
+        public SubscribeTrack<Data> DataTracked => _dataTrack ?? (_dataTrack = new SubscribeTrack<Data>(_data));
+
+        public IObservable<int> DataSubscribeCount = new BehaviorSubject<int>(0);
+        public IQbservable<Data> ObserveData => _dataTrack.AsQbservable();
         public IQbservableSource<Data> Data => this;
 
         public IConnectableObservable<long> Add<TSource>(IObservable<TSource> entities, IScheduler scheduler = null)

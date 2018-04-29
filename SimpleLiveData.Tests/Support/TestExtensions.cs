@@ -1,7 +1,7 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace SimpleLiveData.Tests
+namespace SimpleLiveData.Tests.Support
 {
     public static class TestExtensions
     {

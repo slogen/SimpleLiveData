@@ -6,6 +6,10 @@ namespace SimpleLiveData.App.DataModel
 {
     public class Signal : AbstractNamedEntity
     {
+        public Signal()
+        {
+        }
+
         public Signal(Guid id, string name) : base(id, name)
         {
         }

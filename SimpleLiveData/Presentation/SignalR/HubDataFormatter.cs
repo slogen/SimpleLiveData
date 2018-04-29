@@ -10,9 +10,9 @@ using Scm.Web;
 
 namespace SimpleLiveData.App.Presentation.SignalR
 {
-    public class HubDataFormatter : TextOutputFormatter
+    public class JsonObservableFormatter<T> : TextOutputFormatter
     {
-        protected Type TargetType = typeof(IObservable<HubData>);
+        protected Type TargetType = typeof(IObservable<T>);
 
         public override bool CanWriteResult(OutputFormatterCanWriteContext context)
         {
@@ -34,8 +34,8 @@ namespace SimpleLiveData.App.Presentation.SignalR
             using (var w = context.WriterFactory(context.HttpContext.Response.Body, selectedEncoding))
             using (var jw = new JsonTextWriter(w))
             {
-                await ser.SerializeAsync(jw, ((IObservable<HubData>) context.Object).ToEnumerable(),
-                        objectType: typeof(IEnumerable<HubData>), cancellationToken: ct)
+                await ser.SerializeAsync(jw, ((IObservable<T>) context.Object).ToEnumerable(),
+                        objectType: typeof(IEnumerable<T>), cancellationToken: ct)
                     .ConfigureAwait(false);
             }
         }

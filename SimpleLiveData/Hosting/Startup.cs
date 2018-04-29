@@ -1,10 +1,18 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Net;
+using System.Text;
 using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
+using Newtonsoft.Json;
+using Scm.Web;
 using SimpleLiveData.App.DataModel;
 using SimpleLiveData.App.Presentation.SignalR;
 
@@ -24,19 +32,20 @@ namespace SimpleLiveData.App.Hosting
 
         [SuppressMessage("ReSharper", "ArgumentsStyleStringLiteral", Justification = "Clarity")]
         [SuppressMessage("ReSharper", "ArgumentsStyleOther", Justification = "Clarity")]
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
             // Any connection or hub wire up and configuration should go here
-            app.UseSignalR(routes =>
-                routes.MapHub<LiveHub>("/signalr/livedata"));
-
-            app.UseMvc(routes =>
-            {
-                routes.MapODataServiceRoute(
-                    routeName: "odataserviceroute",
-                    routePrefix: "odata",
-                    model: BuildEdmModel(app.ApplicationServices));
-            });
+            app
+                .UseSignalR(routes => routes.MapHub<LiveHub>("/signalr/livedata"))
+                .UseMvc(routes =>
+                {
+                    routes.MapODataServiceRoute(
+                        routeName: "odataserviceroute",
+                        routePrefix: "odata",
+                        model: BuildEdmModel(app.ApplicationServices));
+                    
+                });
         }
 
         public IEdmModel BuildEdmModel(IServiceProvider serviceProvider)

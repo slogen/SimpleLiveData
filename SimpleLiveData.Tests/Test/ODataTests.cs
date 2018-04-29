@@ -8,7 +8,7 @@ using Scm.Sys;
 using Scm.Web;
 using Xunit;
 
-namespace SimpleLiveData.Tests
+namespace SimpleLiveData.Tests.Test
 {
     public class ODataTests : TestSourceBasedTests
     {

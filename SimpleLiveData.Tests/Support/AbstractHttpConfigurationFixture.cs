@@ -7,7 +7,7 @@ using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 
-namespace SimpleLiveData.Tests
+namespace SimpleLiveData.Tests.Support
 {
     public abstract class AbstractHttpConfigurationFixture : IDisposable
     {

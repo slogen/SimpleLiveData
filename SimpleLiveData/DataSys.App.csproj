@@ -5,9 +5,12 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <ApplicationIcon />
     <StartupObject />
+    <AssemblyName>DataSys.App</AssemblyName>
+    <RootNamespace>DataSys.App</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.1.0-preview2-final" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.1.0-preview2-final" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.0-preview2-final" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.0.0-beta2" />
@@ -21,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DataSys.Protocol\DataSys.Protocol.csproj" />
     <ProjectReference Include="..\Scm.DataAccess.Qbservable\Scm.DataAccess.Qbservable.csproj" />
     <ProjectReference Include="..\Scm.DataAccess.Queryable\Scm.DataAccess.Queryable.csproj" />
     <ProjectReference Include="..\Scm.DataAccess\Scm.DataAccess.csproj" />
@@ -47,7 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="App\DataStorage\" />
+    <Folder Include="DataStorage\" />
   </ItemGroup>
 
 </Project>

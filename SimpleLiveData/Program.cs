@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Hosting;
+using SimpleLiveData.App.Hosting;
 
 namespace SimpleLiveData
 {
@@ -6,7 +7,10 @@ namespace SimpleLiveData
     {
         private static void Main()
         {
-            throw new NotImplementedException();
+            new WebHostBuilder()
+                .UseStartup<Startup>()
+                .Build()
+                .Run();
         }
     }
 }

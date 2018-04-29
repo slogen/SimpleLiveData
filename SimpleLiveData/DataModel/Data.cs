@@ -7,6 +7,10 @@ namespace SimpleLiveData.App.DataModel
 {
     public class Data : IData
     {
+        public Data()
+        {
+        }
+
         public Data(Guid installationId, Guid signalId, DateTime timeStamp, float value)
         {
             InstallationId = installationId;

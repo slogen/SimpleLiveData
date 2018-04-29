@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
 
-namespace SimpleLiveData.Tests
+namespace SimpleLiveData.Tests.Support
 {
     public class FastScheduler : VirtualTimeScheduler<DateTime, double>
     {

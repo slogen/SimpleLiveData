@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Scm.Presentation.OData;
 using Scm.Rx;
 
-namespace SimpleLiveData.Tests
+namespace SimpleLiveData.Tests.Support
 {
     /// <summary>
     /// Base class to setup tests for Data Applications.

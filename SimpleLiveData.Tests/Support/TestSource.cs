@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SimpleLiveData.Tests
+namespace SimpleLiveData.Tests.Support
 {
     public class TestSource :
         AbstractTestSource

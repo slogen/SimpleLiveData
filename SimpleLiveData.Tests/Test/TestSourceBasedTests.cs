@@ -9,8 +9,9 @@ using Scm.DataAccess.Support;
 using SimpleLiveData.App.DataAccess;
 using SimpleLiveData.App.DataModel;
 using SimpleLiveData.App.Hosting;
+using SimpleLiveData.Tests.Support;
 
-namespace SimpleLiveData.Tests
+namespace SimpleLiveData.Tests.Test
 {
     public class TestSourceBasedTests : DataAppTests<Startup>
     {

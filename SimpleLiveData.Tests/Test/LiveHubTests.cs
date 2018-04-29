@@ -7,10 +7,10 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Scm.Web;
-using SimpleLiveData.App.Presentation.SignalR;
+using SimpleLiveData.App.DataModel;
 using Xunit;
 
-namespace SimpleLiveData.Tests
+namespace SimpleLiveData.Tests.Test
 {
     public class LiveHubTests : TestSourceBasedTests
     {
@@ -25,12 +25,12 @@ namespace SimpleLiveData.Tests
                 .WithTransport(TransportType.LongPolling);
             var hubConnection = builder.Build();
             await hubConnection.StartAsync();
-            var obs = hubConnection.Observe<HubData>("Observe");
+            var obs = hubConnection.Observe<Data>("Observe", new object[] {null});
             var obsTask = obs
                 .Do(x => Debug.WriteLine(x))
                 .Timestamp().Take(10).ToList()
                 .ToTask(CancellationToken);
-            await obs.Ready.FirstAsync(x => x > 0);
+            await TestSource.DataTracked.Subscribtions.Where(x => x > 0).FirstAsync();
             // var obs = TestSource.Data.Observe(x => x.Take(10).Timestamp().ToList()).ToTask(CancellationToken);
             var incoming = TestSource.ProduceData().Take(10).ToList();
             var results = await obsTask;
