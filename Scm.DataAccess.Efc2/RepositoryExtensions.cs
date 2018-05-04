@@ -3,24 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Scm.DataAccess.Efc2
 {
-    public static class RepositoryExtensions
+    public static class DbSetRepositoryExtensions
     {
         public static DbSetRepository<TContext> Repository<TContext>(this TContext context)
             where TContext : DbContext => new DbSetRepository<TContext>(context);
-
-        public class DbSetRepository<TEntity, TContext> : AbstractDbContextRepository<TEntity>
-            where TEntity : class
-            where TContext : DbContext
-        {
-            public DbSetRepository(TContext context)
-            {
-                Context = context;
-            }
-
-            public TContext Context { get; }
-
-            protected override DbSet<TEntity> Set => Context.Set<TEntity>();
-        }
 
         public class DbSetRepository<TContext> where TContext : DbContext
         {

@@ -5,7 +5,7 @@ using Scm.DataAccess.Support;
 
 namespace Scm.DataAccess.Efc2
 {
-    public abstract class AbstractContextAsyncUnitOfWork<TDbContext> : AbstractSingleCommitAsyncUnitOfWork
+    public abstract class AbstractDbContextAsyncUnitOfWork<TDbContext> : AbstractSingleCommitAsyncUnitOfWork
         where TDbContext : DbContext
     {
         protected abstract TDbContext Context { get; }

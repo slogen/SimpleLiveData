@@ -2,7 +2,7 @@
 
 namespace Scm.DataAccess.Efc2
 {
-    public class DbContextAsyncUnitOfWork<TDbContext> : AbstractContextAsyncUnitOfWork<TDbContext>
+    public class DbContextAsyncUnitOfWork<TDbContext> : AbstractDbContextAsyncUnitOfWork<TDbContext>
         where TDbContext : DbContext
     {
         public DbContextAsyncUnitOfWork(TDbContext context)

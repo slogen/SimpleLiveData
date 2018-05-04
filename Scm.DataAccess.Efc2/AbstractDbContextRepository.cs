@@ -39,7 +39,7 @@ namespace Scm.DataAccess.Efc2
 
         public IObservable<IEntityEvent<object>> DynamicChange(
             IObservable<IGroupedObservable<EntityChange, object>> changes)
-            => Change(changes.SelectGrouped(grp => grp.Cast<TEntity>())).Cast<IEntityEvent<object>>();
+            => Change(changes.GroupedSelect(grp => grp.Cast<TEntity>())).Cast<IEntityEvent<object>>();
 
         protected abstract class AbstractEntityEntryEvent : AbstractEntityEvent<TEntity>, IEntityEvent<object>
         {
