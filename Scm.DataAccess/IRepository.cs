@@ -6,6 +6,7 @@
     }
 
     public interface IRepository<TEntity> : IPersistentEntity<TEntity>
+        where TEntity : class
     {
     }
 }

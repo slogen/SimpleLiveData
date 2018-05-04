@@ -10,8 +10,10 @@ namespace Scm.DataAccess.Rx
         public static SubjectMeet<TContext> Meet<TContext>(this TContext context)
             where TContext : SubjectContext => new SubjectMeet<TContext>(context);
 
-        public class SubjectMeet<TEntity, TContext> : DataStorage.Subject.SinkExtensions.AbstractSubjectSink<TEntity>, IMeet<TEntity>
+        public class SubjectMeet<TEntity, TContext> : DataStorage.Subject.SinkExtensions.AbstractSubjectSink<TEntity>,
+            IMeet<TEntity>
             where TContext : SubjectContext
+            where TEntity : class
         {
             public SubjectMeet(TContext context)
             {

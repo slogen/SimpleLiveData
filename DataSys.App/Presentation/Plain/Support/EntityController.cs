@@ -43,7 +43,7 @@ namespace DataSys.App.Presentation.Plain.Support
         public async Task<ActionResult<TResult>> Put(TResult newItem, CancellationToken cancellationToken)
         {
             var entity = FromProtocol(newItem);
-            var saved = await Sink.Add(Observable.Return(entity));
+            var saved = await Sink.Add(Observable.Return(entity)).Count();
             if (saved <= 0)
                 return NotFound(entity.Id);
             return Ok(entity.Id); // TODO: Link to created object

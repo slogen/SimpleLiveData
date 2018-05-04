@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reactive.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Scm.Rx;
 
 namespace Scm.DataAccess.Efc2
@@ -17,25 +18,70 @@ namespace Scm.DataAccess.Efc2
         public TResult Observe<TResult>(Func<IQbservable<TEntity>, TResult> f)
             => Query(q => f(q.ToQbservable()));
 
-        public IObservable<long> Change(IObservable<IGroupedObservable<EntityChange, TEntity>> changes)
+        public IObservable<IEntityEvent<TEntity>> Change(IObservable<IGroupedObservable<EntityChange, TEntity>> changes)
         {
-            return changes.Select(grp =>
+            var obs = changes.Select(grp =>
             {
                 switch (grp.Key)
                 {
                     case EntityChange.Add:
-                        return grp.Do(entity => Set.Add(entity));
+                        return grp.Select(entity => AddEvent.From(Set.Add(entity)));
                     case EntityChange.Modify:
-                        return grp.Do(entity => Set.Update(entity));
+                        return grp.Select(entity => ModifyEvent.From(Set.Update(entity)));
                     case EntityChange.Delete:
-                        return grp.Do(entity => Set.Remove(entity));
+                        return grp.Select(entity => DeleteEvent.From(Set.Remove(entity)));
                     default:
                         throw new NotSupportedException($"Cannot {grp.Key} on {GetType()}");
                 }
-            }).Merge().HotCount();
+            }).Merge();
+            return obs;
         }
 
-        public IObservable<long> DynamicChange(IObservable<IGroupedObservable<EntityChange, object>> changes)
-            => Change(changes.SelectGrouped(grp => grp.Cast<TEntity>()));
+        public IObservable<IEntityEvent<object>> DynamicChange(
+            IObservable<IGroupedObservable<EntityChange, object>> changes)
+            => Change(changes.SelectGrouped(grp => grp.Cast<TEntity>())).Cast<IEntityEvent<object>>();
+
+        protected abstract class AbstractEntityEntryEvent : AbstractEntityEvent<TEntity>, IEntityEvent<object>
+        {
+            protected AbstractEntityEntryEvent(EntityEntry<TEntity> entityEntry)
+            {
+                EntityEntry = entityEntry;
+            }
+
+            public EntityEntry<TEntity> EntityEntry { get; }
+            public override TEntity Entity => EntityEntry.Entity;
+
+            object IEntityEvent<object>.Entity => Entity;
+        }
+
+        protected class AddEvent : AbstractEntityEntryEvent
+        {
+            public AddEvent(EntityEntry<TEntity> entityEntry) : base(entityEntry)
+            {
+            }
+
+            public override EntityChange Change => EntityChange.Add;
+            public static IEntityEvent<TEntity> From(EntityEntry<TEntity> entityEntry) => new AddEvent(entityEntry);
+        }
+
+        protected class ModifyEvent : AbstractEntityEntryEvent
+        {
+            public ModifyEvent(EntityEntry<TEntity> entityEntry) : base(entityEntry)
+            {
+            }
+
+            public override EntityChange Change => EntityChange.Modify;
+            public static IEntityEvent<TEntity> From(EntityEntry<TEntity> entityEntry) => new ModifyEvent(entityEntry);
+        }
+
+        protected class DeleteEvent : AbstractEntityEntryEvent
+        {
+            public DeleteEvent(EntityEntry<TEntity> entityEntry) : base(entityEntry)
+            {
+            }
+
+            public override EntityChange Change => EntityChange.Delete;
+            public static IEntityEvent<TEntity> From(EntityEntry<TEntity> entityEntry) => new DeleteEvent(entityEntry);
+        }
     }
 }

@@ -30,5 +30,10 @@ namespace Scm.Rx
                             Observable.FromAsync(async ct =>
                                 await accumulator(await acc.ToTask(ct).ConfigureAwait(false), next, ct)))
                     .Concat();
+
+        public static IObservable<TResult> SelectAsync<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, CancellationToken, Task<TResult>> selector)
+            => source.ScanAsync(default(TResult), (pre, x, ct) => selector(x, ct));
     }
 }

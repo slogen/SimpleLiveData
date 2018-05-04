@@ -1,21 +1,28 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
+using DataSys.App.Tests.Support;
 using DataSys.Protocol;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Scm.Sys;
 using Scm.Web;
 using Xunit;
 
 namespace DataSys.App.Tests.Test
 {
-    public class PlainTests : TestSourceBasedTests
+    public class PlainTests : TestSourceBasedTests, IClassFixture<TestAppUnitOfWorkFactory>
     {
+        [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter", Justification = "Specific type required for IoC")]
+        public PlainTests(TestAppUnitOfWorkFactory appUnitOfWorkFactory) : base(appUnitOfWorkFactory)
+        {
+        }
+
         [Fact]
         public async Task GetById()
         {
-            TestSource.Prepare(3, 3);
-            var i1 = await TestSource.Installations.Query(ins => ins.FirstOrDefaultAsync());
+            await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
+            var i1 = await TestSource.ObserveInstallations(ins => ins.ToObservable().FirstOrDefaultAsync());
             var task = Client.GetJsonAsync(
                 new Uri(Server.BaseAddress, $"/api/Installation/{i1.Id}"),
                 JsonSerializer

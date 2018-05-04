@@ -27,6 +27,7 @@ namespace Scm.DataAccess.Combined
                 .Where(e => e.State != EntityState.Unchanged && e.State != EntityState.Detached)
                 .OrderBy(x => x.State != EntityState.Deleted)
                 .ThenBy(x => x.State != EntityState.Modified)
+                .Select(x => new {x.State, x.Entity})
                 .ToList();
 
             await DbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -34,7 +35,8 @@ namespace Scm.DataAccess.Combined
             await changes.ToObservable(Scheduler)
                 .GroupBy(x => x.Entity.GetType())
                 .Select(grp =>
-                    SubjectContext.Sink(grp.Key).DynamicChange(grp.Select(e => e.ToChange()).GroupBy(x => x.Change)))
+                    SubjectContext.Sink(grp.Key)
+                        .DynamicChange(grp.GroupBy(x => x.State.ToEntityChange(), x => x.Entity)))
                 .Concat()
                 .LastOrDefaultAsync()
                 .ToTask(cancellationToken)

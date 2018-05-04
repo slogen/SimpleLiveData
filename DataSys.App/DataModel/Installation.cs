@@ -25,6 +25,17 @@ namespace DataSys.App.DataModel
         public virtual ICollection<Data> Data { get; set; } =
             new SortedSet<Data>(DataModel.Data.Comparer.ByTimeThenInstallationThenSignal);
 
-        public Period InstallationPeriod { get; set; }
+        public Period InstallationPeriod
+        {
+            get => new Period(InstalledAt, DecommisionedAt);
+            set
+            {
+                InstalledAt = value.From;
+                DecommisionedAt = value.To;
+            }
+        }
+
+        public DateTime? InstalledAt { get; set; }
+        public DateTime? DecommisionedAt { get; set; }
     }
 }

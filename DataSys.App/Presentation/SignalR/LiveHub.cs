@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Reactive.Linq;
 using DataSys.App.DataAccess;
 using DataSys.App.DataModel;
 using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.SignalR;
+using Scm.DataAccess;
 
 namespace DataSys.App.Presentation.SignalR
 {
@@ -35,14 +34,10 @@ namespace DataSys.App.Presentation.SignalR
 
         public IObservable<IData> Observe(ODataQueryOptions<IData> queryOptions = null)
         {
-            var obs = Source.Live<Data>().Observe((IQbservable<Data> datas) => datas.Select(data => data)
-                .Do(
-                    x => Debug.WriteLine(x),
-                    ex => Debug.WriteLine(ex),
-                    () => Debug.WriteLine("COMPLETED"))
-                .Finally(
-                    () => Debug.WriteLine("Finally")
-                ));
+            // TODO: Apply query options
+            var src = Source.Live<Data>();
+            IQbservableSource<Data> srcq = src;
+            var obs = srcq.Observe();
             return obs;
         }
     }

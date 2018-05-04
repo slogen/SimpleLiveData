@@ -8,6 +8,7 @@ using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Newtonsoft.Json;
@@ -22,10 +23,10 @@ namespace DataSys.App.Hosting
                 .AddJsonProtocol(cfg =>
                     cfg.PayloadSerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             services.AddODataQueryFilter().AddOData();
-            services.AddDbContextPool<AppDbContext>(cfg => { });
-            services.Add(ServiceDescriptor.Singleton<AppSubjectContext>(new AppSubjectContext()));
-                services.Add(ServiceDescriptor.Scoped<IAppUnitOfWork>(
-                    sp => new AppUnitOfWork(sp.GetService<AppDbContext>(), sp.GetService<AppSubjectContext>())));
+            services.AddDbContextPool<AppDbContext>(cfg => { cfg.UseInMemoryDatabase("appdb"); });
+            services.Add(ServiceDescriptor.Singleton(new AppSubjectContext()));
+            services.Add(ServiceDescriptor.Scoped<IAppUnitOfWork>(
+                sp => new AppUnitOfWork(sp.GetService<AppDbContext>(), sp.GetService<AppSubjectContext>())));
             services.AddMvc();
         }
 

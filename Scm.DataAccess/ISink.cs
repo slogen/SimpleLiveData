@@ -5,11 +5,12 @@ namespace Scm.DataAccess
 {
     public interface ISink
     {
-        IObservable<long> DynamicChange(IObservable<IGroupedObservable<EntityChange, object>> change);
+        IObservable<IEntityEvent<object>> DynamicChange(IObservable<IGroupedObservable<EntityChange, object>> change);
     }
 
-    public interface ISink<in TEntity> : ISink
+    public interface ISink<TEntity> : ISink
+        where TEntity : class
     {
-        IObservable<long> Change(IObservable<IGroupedObservable<EntityChange, TEntity>> change);
+        IObservable<IEntityEvent<TEntity>> Change(IObservable<IGroupedObservable<EntityChange, TEntity>> change);
     }
 }
