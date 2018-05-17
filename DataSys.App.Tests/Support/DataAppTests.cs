@@ -1,6 +1,7 @@
 ﻿using System.Reactive.Concurrency;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
@@ -28,7 +29,7 @@ namespace DataSys.App.Tests.Support
             await next(context).ConfigureAwait(false);
         }
 
-        protected virtual void ConfigureTestServices(IServiceCollection svcs)
+        protected virtual void PreConfigureTestServices(IServiceCollection svcs)
         {
             svcs.Add(ServiceDescriptor.Singleton(typeof(IScheduler), Scheduler));
             svcs.Add(ServiceDescriptor.Singleton(typeof(IODataOptions),
@@ -38,16 +39,17 @@ namespace DataSys.App.Tests.Support
                 }));
         }
 
+        protected virtual void PostConfigure(IApplicationBuilder app)
+        {
+            app.Use(next => context => OnRequest(context, next));
+        }
+
         protected override IWebHostBuilder ConfigureBuilder(IWebHostBuilder builder)
         {
             return builder
-                    // Easier breakpoints on requests to debug routing
-                    .Configure(app => app.Use(next => context => OnRequest(context, next)))
-                    // Configure stuff used in tests
-                    .ConfigureTestServices(ConfigureTestServices)
-                    // Dispatch to "real" startup
-                    .UseStartup<TStartup>()
-                ;
+                    .ConfigureTestServices(PreConfigureTestServices)
+                    // Dispatch to "real" startup, which will overwrite any .Configure
+                    .UseStartup<TStartup>();
         }
     }
 }

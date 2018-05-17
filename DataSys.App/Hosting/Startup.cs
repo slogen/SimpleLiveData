@@ -17,7 +17,7 @@ namespace DataSys.App.Hosting
 {
     public class Startup
     {
-        public void ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
             services.AddSignalR()
                 .AddJsonProtocol(cfg =>
@@ -32,7 +32,7 @@ namespace DataSys.App.Hosting
 
         [SuppressMessage("ReSharper", "ArgumentsStyleStringLiteral", Justification = "Clarity")]
         [SuppressMessage("ReSharper", "ArgumentsStyleOther", Justification = "Clarity")]
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
             // Any connection or hub wire up and configuration should go here

@@ -4,6 +4,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 
@@ -14,8 +15,8 @@ namespace DataSys.App.Tests.Support
         public virtual IWebHostBuilder Builder =>
             _builder ?? (_builder = ConfigureBuilder(new WebHostBuilder()));
 
-        public virtual TestServer Server => _server ?? (_server = MakeServer());
-        public virtual HttpClient Client => _client ?? (_client = MakeClient());
+        public virtual Task<TestServer> Server => _server ?? (_server = MakeServer());
+        public virtual Task<HttpClient> Client => _client ?? (_client = MakeClient());
         public Guid Id { get; } = Guid.NewGuid();
 
         public void Dispose()
@@ -26,14 +27,11 @@ namespace DataSys.App.Tests.Support
 
         protected abstract IWebHostBuilder ConfigureBuilder(IWebHostBuilder builder);
 
-        protected virtual TestServer MakeServer()
-        {
-            var srv = new TestServer(Builder);
-            return srv;
-        }
+        protected virtual Task<TestServer> MakeServer()
+        => Task.Factory.StartNew(() => new TestServer(Builder));
 
-        protected virtual HttpClient MakeClient()
-            => Server.CreateClient();
+        protected virtual async Task<HttpClient> MakeClient()
+            => (await Server.ConfigureAwait(false)).CreateClient();
 
 
         ~AbstractHttpConfigurationFixture()
@@ -44,8 +42,8 @@ namespace DataSys.App.Tests.Support
         #region Internal variables
 
         private IWebHostBuilder _builder;
-        private TestServer _server;
-        private HttpClient _client;
+        private Task<TestServer> _server;
+        private Task<HttpClient> _client;
 
         private static long _undisposedCount;
         private static readonly ISubject<Unit> MissingDisposeSubject = new Subject<Unit>();

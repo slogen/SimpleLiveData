@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using DataSys.App.Presentation.Plain;
 using DataSys.App.Tests.Support;
 using DataSys.Protocol;
 using FluentAssertions;
@@ -22,13 +23,14 @@ namespace DataSys.App.Tests.Test
         public async Task GetById()
         {
             await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
+            var server = await Server.ConfigureAwait(false);
+            var client = await Client.ConfigureAwait(false);
             var i1 = await TestSource.ObserveInstallations(ins => ins.ToObservable().FirstOrDefaultAsync());
-            var task = Client.GetJsonAsync(
-                new Uri(Server.BaseAddress, $"/api/Installation/{i1.Id}"),
-                JsonSerializer
+            var got = await client.GetJsonAsync<Installation>(
+                new Uri(server.BaseAddress, $"{InstallationXController.RoutePrefix}/{i1.Id}"),
+                JsonSerializer,
+                CancellationToken
             );
-            var result = await task.ConfigureAwait(false);
-            var got = await result.Convert<Installation>(CancellationToken).ConfigureAwait(false);
             got.Should().BeEquivalentTo(new {i1.Id, i1.Name, i1.InstallationPeriod.From, i1.InstallationPeriod.To});
         }
     }

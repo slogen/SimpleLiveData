@@ -25,9 +25,10 @@ namespace DataSys.App.Tests.Test
         public async Task ObservingThoughApiWorks()
         {
             await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
+            var server = await Server.ConfigureAwait(false);
             var builder = new HubConnectionBuilder()
                 .WithUrl("http://test/signalr/livedata")
-                .WithMessageHandler(_ => Server.CreateHandler())
+                .WithMessageHandler(_ => server.CreateHandler())
                 .WithConsoleLogger()
                 .WithTransport(TransportType.LongPolling);
             var hubConnection = builder.Build();

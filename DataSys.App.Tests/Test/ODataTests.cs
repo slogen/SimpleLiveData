@@ -30,14 +30,14 @@ namespace DataSys.App.Tests.Test
         public async Task ODataNameOfInstallation()
         {
             await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
-            var task = Client.GetJsonAsync(
+            var server = await Server.ConfigureAwait(false);
+            var lst = await Client.GetJsonAsync<List<Named>>(
                 // "/odata/Installation?$expand=Data&$filter=contains(name, '1')"
                 // $"/odata/Installation({_app.TestSource.Installations.Query(x => x.First()).Id})" // -- BROKEN!
-                new Uri(Server.BaseAddress, "/odata/Installation?$select=Name"),
-                JsonSerializer
+                new Uri(server.BaseAddress, "/odata/Installation?$select=Name"),
+                JsonSerializer,
+                CancellationToken
             );
-            var result = await task.ConfigureAwait(false);
-            var lst = await result.Convert<List<Named>>(CancellationToken).ConfigureAwait(false);
             var expect = await TestSource.ObserveInstallations(insts => insts.Select(i => new {i.Name})).ToList();
             lst.Should().BeEquivalentTo(expect);
         }

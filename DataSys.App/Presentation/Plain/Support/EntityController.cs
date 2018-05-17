@@ -11,10 +11,11 @@ using Scm.DataAccess;
 
 namespace DataSys.App.Presentation.Plain.Support
 {
-    [Route("api/[controller]")]
+    [Route(RoutePrefix)]
     public abstract class EntityController<TEntity, TResult> : Controller
         where TEntity : AbstractEntity
     {
+        public const string RoutePrefix = "api/[controller]";
         protected abstract IQueryableSource<TEntity> Source { get; }
         protected abstract ISink<TEntity> Sink { get; }
         protected abstract TResult ToProtocol(TEntity entity);

@@ -8,10 +8,11 @@ using Scm.Sys;
 
 namespace DataSys.App.Presentation.Plain
 {
-    [Route("api/Installation")]
+    [Route(RoutePrefix)]
     // TODO: Find a way to avoid clashing with the OData Controller
     public class InstallationXController : EntityController<Installation, Protocol.Installation>
     {
+        public new const string RoutePrefix = "api/installation";
         public InstallationXController(IAppUnitOfWork unitOfWork)
         {
             UnitOfWork = unitOfWork;
