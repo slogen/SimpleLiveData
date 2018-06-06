@@ -30,7 +30,7 @@ namespace DataSys.App.Tests.Test
             await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
             var server = await Server.ConfigureAwait(false);
             var builder = new HubConnectionBuilder()
-                .WithUrl($"http://test/{LiveHub.Route}")
+                .WithUrl($"http://test{LiveHub.Route}")
                 .WithMessageHandler(_ => server.CreateHandler())
                 ;
             var hubConnection = builder.Build();
