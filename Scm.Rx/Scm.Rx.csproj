@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Scm.Concurrency\Scm.Concurrency.csproj" />
+    <ProjectReference Include="..\Scm.Sys\Scm.Sys.csproj" />
   </ItemGroup>
 
 </Project>
