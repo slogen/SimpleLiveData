@@ -31,6 +31,10 @@ namespace DataSys.App.Presentation.SignalR
 
         public string Hello() => "World!";
 
+        public class Sequenced<T> {
+            public long Index { get; }
+            public T Value { get; }
+        }
 
         public IObservable<IData> Observe(ODataQueryOptions<IData> queryOptions = null)
         {
