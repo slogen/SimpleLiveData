@@ -37,7 +37,7 @@ namespace DataSys.App.Hosting
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
             // Any connection or hub wire up and configuration should go here
             app
-                .UseSignalR(routes => routes.MapHub<LiveHub>("/signalr/livedata"))
+                .UseSignalR(routes => routes.MapHub<LiveHub>(LiveHub.Route))
                 .UseMvc(routes =>
                 {
                     routes.MapODataServiceRoute(

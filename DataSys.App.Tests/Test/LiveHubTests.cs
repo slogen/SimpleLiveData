@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DataSys.App.DataModel;
+using DataSys.App.Presentation.SignalR;
 using DataSys.App.Tests.Support;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http.Connections;
@@ -27,32 +30,43 @@ namespace DataSys.App.Tests.Test
             await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
             var server = await Server.ConfigureAwait(false);
             var builder = new HubConnectionBuilder()
-                .WithUrl("http://test/signalr/livedata")
+                .WithUrl($"http://test/{LiveHub.Route}")
                 .WithMessageHandler(_ => server.CreateHandler())
-                .WithConsoleLogger()
-                .WithTransport(TransportType.LongPolling);
+                ;
             var hubConnection = builder.Build();
             await hubConnection.StartAsync();
-            var obs = hubConnection.Observe<Data>("Observe", new object[] {null});
+            var obs = hubConnection.Observe<Data>(nameof(LiveHub.Observe), new object[] {null});
+            var takeCount = 10;
+            var sem = new SemaphoreSlim(0); // Coordinate progress between produced data and listener
+
             var obsTask = obs
-                .Do(x => Debug.WriteLine(x))
-                .Take(10)
+                .Take(takeCount)
+                .Select((v, idx) => new { v, idx })
+                // Start a new producer whenever we have received 5 items
+                .Do(x => { if (x.idx % 5 == 0) sem.Release(); })
+                .Select(x => x.v)
                 .ToListAsync(CancellationToken);
 
-            var incomingTask = TestSource.ProduceData(
-                    Observable.Range(0, 2).Select(_ => DateTime.UtcNow))
+            var pushTask = TestSource.ProduceData(
+                // Wait for sem for each batch of data
+                    sem.ObserveRelease().Take(2).Select(_ => DateTime.UtcNow))
                 .SelectMany(x => x)
-                .Take(10)
                 .ToListAsync(CancellationToken);
-            // Wait for that to actuall be started
-            while (obsTask.Status == TaskStatus.WaitingForActivation || obsTask.Status == TaskStatus.WaitingToRun)
-                await Task.Delay(TimeSpan.FromMilliseconds(1000), CancellationToken).ConfigureAwait(false);
 
-            var results = await obsTask.ConfigureAwait(false);
-            var incoming = await incomingTask.ConfigureAwait(false);
-            results.Should().BeEquivalentTo(incoming,
+            // All ready, start pusing
+            sem.Release();
+
+            var observed = await obsTask.ConfigureAwait(false);
+            var pushed = await pushTask.ConfigureAwait(false);
+
+            var expect = pushed.Take(takeCount);
+            observed.Should().BeEquivalentTo(expect,
                 cfg => cfg.Excluding(x => x.Installation).Excluding(x => x.Signal));
-            // TODO: Test the timing
+            // Reception should contained interleaved data
+            observed.Select(x => x.InstallationId)
+                .Should().NotBeAscendingInOrder()
+                .And.NotBeDescendingInOrder();
         }
     }
+
 }

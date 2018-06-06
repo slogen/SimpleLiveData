@@ -9,6 +9,7 @@ namespace DataSys.App.Presentation.SignalR
 {
     public class LiveHub : Hub
     {
+        public const string Route = "/signalr/livedata";
         public LiveHub(IAppUnitOfWork source)
         {
             Source = source;
@@ -28,18 +29,10 @@ namespace DataSys.App.Presentation.SignalR
                 base.Dispose(disposing);
             }
         }
-
-        public string Hello() => "World!";
-
-        public class Sequenced<T> {
-            public long Index { get; }
-            public T Value { get; }
-        }
-
         public IObservable<IData> Observe(ODataQueryOptions<IData> queryOptions = null)
         {
-            // TODO: Apply query options
             var src = Source.Live<Data>();
+            // TODO: Apply query options
             IQbservableSource<Data> srcq = src;
             var obs = srcq.Observe();
             return obs;
