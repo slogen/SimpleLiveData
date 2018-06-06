@@ -71,8 +71,9 @@ namespace DataSys.App.Tests.Test
             var server = await Server.ConfigureAwait(false);
             var handler = server.CreateHandler();
             var authority = server.BaseAddress.ToString();
-            var getUrl = authority + "/.well-known/openid-configuration";
-            var get = await client.GetAsync(getUrl, CancellationToken).ConfigureAwait(false);
+            //var getUrl = authority + "/.well-known/openid-configuration";
+            //await Task.Delay(TimeSpan.FromSeconds(5)); // TODO: REMOVE DEBUG
+            //var get = await client.GetAsync(getUrl, CancellationToken).ConfigureAwait(false);
             var discoClient = new DiscoveryClient(authority, handler);
             var disco = await discoClient.GetAsync(CancellationToken).ConfigureAwait(false);
             if (!disco.IsError)
@@ -84,6 +85,8 @@ namespace DataSys.App.Tests.Test
             var tc = TestIdentityServerConfiguration.Default.TestClient;
             var tokenClient = new TokenClient(disco.TokenEndpoint, tc.ClientId, tc.ClientSecrets.First().Value);
             var tokenResponse = await tokenClient.RequestClientCredentialsAsync(tc.AllowedScopes.Single()).ConfigureAwait(false);
+            if (tokenResponse.IsError)
+                throw new Exception($"Client authentication failed: {tokenResponse.Error} {tokenResponse.ErrorDescription}\n{tokenResponse.Raw}");
             client.SetBearerToken(tokenResponse.AccessToken);
         }
         protected override async Task<HttpClient> MakeClient()
