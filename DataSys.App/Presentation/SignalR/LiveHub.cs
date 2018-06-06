@@ -29,12 +29,10 @@ namespace DataSys.App.Presentation.SignalR
                 base.Dispose(disposing);
             }
         }
-        public IObservable<IData> Observe(ODataQueryOptions<IData> queryOptions = null)
+        public IObservable<IChange<IData>> Observe(ODataQueryOptions<IData> queryOptions = null)
         {
             var src = Source.Live<Data>();
-            // TODO: Apply query options
-            IQbservableSource<Data> srcq = src;
-            var obs = srcq.Observe();
+            var obs = src.Observe();
             return obs;
         }
     }

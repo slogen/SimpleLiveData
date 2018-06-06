@@ -4,7 +4,8 @@
     {
     }
 
-    public interface ILiveEntity<TEntity> : IQbservableSource<TEntity>, ISink<TEntity>, ILiveEntity,
+    public interface ILiveEntity<TEntity> :
+        ILiveEntity,
         IQbservableSource<IChange<TEntity>>
         where TEntity : class
     {

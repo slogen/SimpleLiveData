@@ -11,6 +11,7 @@ using DataSys.App.Tests.Support;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
+using Scm.DataAccess;
 using Scm.Rx;
 using Scm.Web;
 using Xunit;
@@ -24,6 +25,15 @@ namespace DataSys.App.Tests.Test
         {
         }
 
+        public class ChangeData : IChange<Data>
+        {
+            public Data Entity { get; set; }
+
+            public EntityChange Change { get; set; }
+
+            object IChange.Entity => Entity;
+        }
+
         [Fact]
         public async Task ObservingThoughApiWorks()
         {
@@ -35,7 +45,7 @@ namespace DataSys.App.Tests.Test
                 ;
             var hubConnection = builder.Build();
             await hubConnection.StartAsync();
-            var obs = hubConnection.Observe<Data>(nameof(LiveHub.Observe), new object[] {null});
+            var obs = hubConnection.Observe<ChangeData>(nameof(LiveHub.Observe), new object[] {null});
             var takeCount = 10;
             var sem = new SemaphoreSlim(0); // Coordinate progress between produced data and listener
 
@@ -56,7 +66,8 @@ namespace DataSys.App.Tests.Test
             // All ready, start pusing
             sem.Release();
 
-            var observed = await obsTask.ConfigureAwait(false);
+            var observedChanges = await obsTask.ConfigureAwait(false);
+            var observed = observedChanges.Select(c => c.Entity);
             var pushed = await pushTask.ConfigureAwait(false);
 
             var expect = pushed.Take(takeCount);
