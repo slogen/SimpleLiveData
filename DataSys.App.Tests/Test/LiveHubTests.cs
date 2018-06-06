@@ -1,36 +1,44 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using DataSys.App.DataModel;
 using DataSys.App.Presentation.SignalR;
 using DataSys.App.Tests.Support;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
+using Newtonsoft.Json;
 using Scm.DataAccess;
 using Scm.Rx;
 using Scm.Web;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace DataSys.App.Tests.Test
 {
     public class LiveHubTests : TestSourceBasedTests, IClassFixture<TestAppUnitOfWorkFactory>
     {
+        public ITestOutputHelper Output { get; }
+
         [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter", Justification = "Specific type required for IoC")]
-        public LiveHubTests(TestAppUnitOfWorkFactory appUnitOfWorkFactory) : base(appUnitOfWorkFactory)
+        public LiveHubTests(TestAppUnitOfWorkFactory appUnitOfWorkFactory, ITestOutputHelper output) : base(appUnitOfWorkFactory)
         {
+            Output = output;
         }
 
+        [DataContract]
         public class ChangeData : IChange<Data>
         {
+            [DataMember]
             public Data Entity { get; set; }
 
+            [DataMember]
             public EntityChange Change { get; set; }
 
+            [JsonIgnore]
             object IChange.Entity => Entity;
         }
 
@@ -45,22 +53,28 @@ namespace DataSys.App.Tests.Test
                 ;
             var hubConnection = builder.Build();
             await hubConnection.StartAsync();
-            var obs = hubConnection.Observe<ChangeData>(nameof(LiveHub.Observe), new object[] {null});
+            var obs = hubConnection.Observe<ChangeData>(nameof(LiveHub.Observe), new object[] { null });
             var takeCount = 10;
-            var sem = new SemaphoreSlim(0); // Coordinate progress between produced data and listener
+            var sem = new SemaphoreSlim(1); // Coordinate progress between produced data and listener
 
             var obsTask = obs
+                .TraceTest(Output)
                 .Take(takeCount)
                 .Select((v, idx) => new { v, idx })
                 // Start a new producer whenever we have received 5 items
-                .Do(x => { if (x.idx % 5 == 0) sem.Release(); })
+                .Do(x => { if (x.idx % 1 == 0) sem.Release(); })
+                .TraceTest(Output)
                 .Select(x => x.v)
                 .ToListAsync(CancellationToken);
 
             var pushTask = TestSource.ProduceData(
-                // Wait for sem for each batch of data
-                    sem.ObserveRelease().Take(2).Select(_ => DateTime.UtcNow))
+                    // Wait for sem for each batch of data
+                    sem.ObserveRelease().Take(2).Select(_ => DateTime.UtcNow)
+                    .TraceTest(Output)
+                    )
+                .TraceTest(Output)
                 .SelectMany(x => x)
+                .TraceTest(Output)
                 .ToListAsync(CancellationToken);
 
             // All ready, start pusing
@@ -79,5 +93,4 @@ namespace DataSys.App.Tests.Test
                 .And.NotBeDescendingInOrder();
         }
     }
-
 }
