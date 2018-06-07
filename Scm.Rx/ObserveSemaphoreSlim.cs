@@ -8,7 +8,8 @@ namespace Scm.Rx
     {
         public static IObservable<long> ObserveRelease(this SemaphoreSlim semaphore)
         {
-            return Observable.Create<long>(async (obs, ct) => {
+            return Observable.Create<long>(async (obs, ct) =>
+            {
                 var i = 0L;
                 while (!ct.IsCancellationRequested)
                 {
@@ -18,6 +19,4 @@ namespace Scm.Rx
             });
         }
     }
-
-
 }

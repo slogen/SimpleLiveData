@@ -10,6 +10,7 @@ namespace DataSys.App.Presentation.SignalR
     public class LiveHub : Hub
     {
         public const string Route = "/signalr/livedata";
+
         public LiveHub(IAppUnitOfWork source)
         {
             Source = source;
@@ -29,6 +30,7 @@ namespace DataSys.App.Presentation.SignalR
                 base.Dispose(disposing);
             }
         }
+
         public IObservable<IChange<IData>> Observe(ODataQueryOptions<IData> queryOptions = null)
         {
             var src = Source.Live<Data>();

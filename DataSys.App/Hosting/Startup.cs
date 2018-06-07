@@ -19,22 +19,23 @@ namespace DataSys.App.Hosting
     {
         public virtual void ConfigureServices(IServiceCollection services)
         {
-            services.AddSignalR()
-                .AddJsonProtocol(cfg =>
-                    cfg.PayloadSerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
-            services.AddODataQueryFilter().AddOData();
             services.AddDbContextPool<AppDbContext>(cfg => { cfg.UseInMemoryDatabase("appdb"); });
             services.Add(ServiceDescriptor.Singleton(new AppSubjectContext()));
             services.Add(ServiceDescriptor.Scoped<IAppUnitOfWork>(
                 sp => new AppUnitOfWork(sp.GetService<AppDbContext>(), sp.GetService<AppSubjectContext>())));
             services.AddMvc();
+            services.AddSignalR()
+                .AddJsonProtocol(cfg =>
+                    cfg.PayloadSerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+            services.AddODataQueryFilter().AddOData();
         }
 
         [SuppressMessage("ReSharper", "ArgumentsStyleStringLiteral", Justification = "Clarity")]
         [SuppressMessage("ReSharper", "ArgumentsStyleOther", Justification = "Clarity")]
         public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
+            if (env.IsDevelopment())
+                app.UseDeveloperExceptionPage();
             // Any connection or hub wire up and configuration should go here
             app
                 .UseSignalR(routes => routes.MapHub<LiveHub>(LiveHub.Route))

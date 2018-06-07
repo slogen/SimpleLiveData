@@ -1,11 +1,11 @@
-﻿using Scm.Sys;
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using Scm.Rx.Trace;
+using Scm.Sys;
 
 namespace Scm.Rx
 {
-
     public static class TraceExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -15,6 +15,7 @@ namespace Scm.Rx
             ICallerInfo callerInfo,
             bool? enabled = null)
             => source.Wrap(new TextWriterHereTracer(writer, callerInfo, enabled).Trace);
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IObservable<T> TraceHere<T>(
             this IObservable<T> source,
@@ -23,7 +24,9 @@ namespace Scm.Rx
             [CallerMemberName] string callerMemberName = null,
             [CallerFilePath] string callerFilePath = null,
             [CallerLineNumber] int callerLineNumber = 0)
-            => source.Trace(writer ?? Console.Error, CallerInfo.Here(callerMemberName, callerFilePath, callerLineNumber), enabled);
+            => source.Trace(writer ?? Console.Error,
+                CallerInfo.Here(callerMemberName, callerFilePath, callerLineNumber), enabled);
+
         public static IObservable<T> Wrap<T>(
             this IObservable<T> source,
             Func<IObservable<T>, IObservable<T>> wrapper)

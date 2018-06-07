@@ -3,9 +3,8 @@ using System.Linq;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Query;
 using Scm.DataAccess;
-using Scm.Presentation.OData;
 
-namespace DataSys.App.Presentation.OData.Support
+namespace Scm.Presentation.OData
 {
     public abstract class AbstractUnitOfWorkODataControllerBase<TUnitOfWork, TEntity>
         : AbstractUnitOfWorkODataControllerBase<TUnitOfWork, IQueryableSource<TEntity>, TEntity>

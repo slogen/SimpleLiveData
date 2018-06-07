@@ -24,7 +24,7 @@ namespace Scm.DataStorage.Subject
 
         public IObservable<IEntityEvent<object>> DynamicChange(
             IObservable<IGroupedObservable<EntityChange, object>> change)
-            => Change(change.GroupedSelect(grp => Observable.Cast<TEntity>(grp))).Cast<IEntityEvent<object>>();
+            => Change(change.GroupedSelect(grp => grp.Cast<TEntity>())).Cast<IEntityEvent<object>>();
 
         protected class EntityEvent : AbstractEntityEvent<TEntity>, IEntityEvent<object>
         {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 namespace Scm.Concurrency
@@ -10,7 +7,8 @@ namespace Scm.Concurrency
     {
         public static async Task WaitAsync(this Task task, CancellationToken cancellationToken)
         {
-            await (await Task.WhenAny(task, Task.Delay(-1, cancellationToken)).ConfigureAwait(false)).ConfigureAwait(false);
+            await (await Task.WhenAny(task, Task.Delay(-1, cancellationToken)).ConfigureAwait(false))
+                .ConfigureAwait(false);
         }
     }
 }

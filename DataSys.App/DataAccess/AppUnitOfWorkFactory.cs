@@ -7,14 +7,14 @@ namespace DataSys.App.DataAccess
     {
         private AppSubjectContext AppSubjectContext { get; } = new AppSubjectContext();
 
+        protected virtual string DbContextName => "AppDb";
+
         public IAppUnitOfWork UnitOfWork()
         {
             var dbCtx = DbContext();
             var ctx = new AppUnitOfWork(dbCtx, AppSubjectContext);
             return ctx;
         }
-
-        protected virtual string DbContextName => "AppDb";
 
         protected virtual AppDbContext DbContext() =>
             new AppDbContext(new DbContextOptionsBuilder<AppDbContext>().UseInMemoryDatabase(DbContextName).Options);

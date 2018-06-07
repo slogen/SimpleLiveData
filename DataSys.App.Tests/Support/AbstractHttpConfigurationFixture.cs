@@ -28,7 +28,7 @@ namespace DataSys.App.Tests.Support
         protected abstract IWebHostBuilder ConfigureBuilder(IWebHostBuilder builder);
 
         protected virtual Task<TestServer> MakeServer()
-        => Task.Factory.StartNew(() => new TestServer(Builder));
+            => Task.Factory.StartNew(() => new TestServer(Builder));
 
         protected virtual async Task<HttpClient> MakeClient()
             => (await Server.ConfigureAwait(false)).CreateClient();

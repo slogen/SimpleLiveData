@@ -2,36 +2,42 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Configuration;
 
 namespace Datasys.App.Console
 {
-    public class Startup : SecurityTestSourceBasedTests.TestStartup
-    {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            base.ConfigureServices(services);
-        }
-
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
-            base.Configure(app, env);
-        }
-    }
-
     public class Program
     {
         public static void Main(string[] args)
         {
-            System.Console.WriteLine("B1");
-            //WebHost.CreateDefaultBuilder(args)
-            new WebHostBuilder()
-                .UseKestrel()
+            BuildB(args)
                 .UseStartup<Startup>()
                 .Build()
                 .Run();
+        }
+
+        static IWebHostBuilder BuildA(string[] args)
+        {
+            System.Console.WriteLine("A");
+            return new WebHostBuilder()
+                .UseKestrel()
+                .CaptureStartupErrors(true)
+                .UseSetting(WebHostDefaults.DetailedErrorsKey, "true")
+                .UseEnvironment(EnvironmentName.Development);
+        }
+
+        static IWebHostBuilder BuildB(string[] args)
+        {
+            System.Console.WriteLine("B");
+            return WebHost.CreateDefaultBuilder(args);
+        }
+
+        public class Startup : SecurityTestSourceBasedTests.TestStartup
+        {
+            public override void Configure(IApplicationBuilder app, IHostingEnvironment env)
+            {
+                if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
+                base.Configure(app, env);
+            }
         }
     }
 }

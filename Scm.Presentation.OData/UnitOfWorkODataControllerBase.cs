@@ -1,6 +1,6 @@
 ﻿using Scm.DataAccess;
 
-namespace DataSys.App.Presentation.OData.Support
+namespace Scm.Presentation.OData
 {
     public abstract class UnitOfWorkODataControllerBase<TUnitOfWork, TEntity> :
         AbstractUnitOfWorkODataControllerBase<TUnitOfWork, TEntity>

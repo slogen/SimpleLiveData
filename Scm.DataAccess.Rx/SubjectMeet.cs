@@ -18,10 +18,10 @@ namespace Scm.DataAccess.Rx
         protected TContext Context { get; }
         protected override ISubject<IChange<TEntity>> Subject => Context.Subject<TEntity>();
 
-        public TResult Observe<TResult>(Func<IQbservable<TEntity>, TResult> f)
-            => Observe(q => f(q.Where(x => x.Change != EntityChange.Delete).Select(x => x.Entity)));
-
         public TResult Observe<TResult>(Func<IQbservable<IChange<TEntity>>, TResult> f)
             => f(Subject.AsQbservable());
+
+        public TResult Observe<TResult>(Func<IQbservable<TEntity>, TResult> f)
+            => Observe(q => f(q.Where(x => x.Change != EntityChange.Delete).Select(x => x.Entity)));
     }
 }

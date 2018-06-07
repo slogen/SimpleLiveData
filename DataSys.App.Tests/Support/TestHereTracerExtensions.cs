@@ -4,7 +4,7 @@ using Scm.Rx;
 using Scm.Sys;
 using Xunit.Abstractions;
 
-namespace DataSys.App.Tests.Test
+namespace DataSys.App.Tests.Support
 {
     public static class TestHereTracerExtensions
     {
@@ -13,6 +13,7 @@ namespace DataSys.App.Tests.Test
             [CallerMemberName] string callerMemberName = null,
             [CallerFilePath] string callerFilePath = null,
             [CallerLineNumber] int callerLineNumber = 0)
-         => source.Wrap(new TestHereTracer(output, CallerInfo.Here(callerMemberName, callerFilePath, callerLineNumber), enabled).Trace);
+            => source.Wrap(new TestHereTracer(output,
+                CallerInfo.Here(callerMemberName, callerFilePath, callerLineNumber), enabled).Trace);
     }
 }

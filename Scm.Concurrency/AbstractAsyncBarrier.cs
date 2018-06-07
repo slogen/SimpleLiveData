@@ -8,12 +8,22 @@ namespace Scm.Concurrency
     public abstract class AbstractAsyncBarrier
     {
         private int _remain;
-        private TaskCompletionSource<int> Reached = null;
         private int _waitCount;
+        private TaskCompletionSource<int> Reached;
+
+        protected AbstractAsyncBarrier(int waitCount)
+        {
+            if (waitCount <= 0)
+                throw new ArgumentException($"Cannot wait for {waitCount}", nameof(waitCount));
+            WaitCount = waitCount;
+            _remain = waitCount;
+        }
+
         public int WaitCount
         {
             get { return _waitCount; }
-            set {
+            set
+            {
                 if (value <= 0)
                     throw new ArgumentException("Cannot wait for {value}", "value");
                 lock (this)
@@ -23,25 +33,23 @@ namespace Scm.Concurrency
                 }
             }
         }
-        public int Remain {
+
+        public int Remain
+        {
             get { return _remain; }
-            protected set {
+            protected set
+            {
                 Contract.Assert(Monitor.IsEntered(this));
                 _remain = value;
             }
         }
-        protected AbstractAsyncBarrier(int waitCount)
-        {
-            if (waitCount <= 0)
-                throw new ArgumentException($"Cannot wait for {waitCount}", nameof(waitCount));
-            WaitCount = waitCount;
-            _remain = waitCount;
-        }
+
         protected abstract void BarrierReached();
         protected abstract void BarrierCancelled();
+
         public void Reset()
         {
-            lock ( this )
+            lock (this)
             {
                 _remain = WaitCount;
                 var source = Reached;
@@ -50,6 +58,7 @@ namespace Scm.Concurrency
                 Reached = null;
             }
         }
+
         public Task WaitAsync(CancellationToken cancellationToken)
         {
             TaskCompletionSource<int> source;
@@ -64,6 +73,7 @@ namespace Scm.Concurrency
                     BarrierReached();
                     return source?.Task ?? Task.CompletedTask;
                 }
+
                 if (source == null)
                     Reached = source = new TaskCompletionSource<int>();
             }
@@ -72,15 +82,18 @@ namespace Scm.Concurrency
             if (cancellationToken.CanBeCanceled)
             {
                 // If waiting is cancelled, pass that on to all other waiters
-                var cancelReg = cancellationToken.Register(() => {
+                var cancelReg = cancellationToken.Register(() =>
+                {
                     source.TrySetCanceled();
                     lock (this)
                     {
                         BarrierCancelled();
-                    }});
+                    }
+                });
                 // Make sure we unregister the cancellation registration
                 source.Task.ContinueWith(_ => cancelReg.Dispose(), TaskContinuationOptions.ExecuteSynchronously);
             }
+
             return source.Task;
         }
     }

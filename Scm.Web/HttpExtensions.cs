@@ -13,6 +13,9 @@ namespace Scm.Web
 {
     public static class HttpExtensions
     {
+        public static HttpCompletionOption DefaultGetJsonAsyncCompletionOptions =
+            HttpCompletionOption.ResponseHeadersRead;
+
         public static Encoding Encoding(this HttpResponseMessage response)
         {
             // TODO: Guess from response
@@ -66,9 +69,6 @@ namespace Scm.Web
             await AssertSuccess(resp).ConfigureAwait(false);
             return resp;
         }
-
-        public static HttpCompletionOption DefaultGetJsonAsyncCompletionOptions =
-            HttpCompletionOption.ResponseHeadersRead;
 
         public static async Task<IAsyncConvertible> GetJsonAsync(this HttpClient client, Uri uri,
             JsonSerializer jsonSerializer,

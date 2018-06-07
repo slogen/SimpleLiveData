@@ -6,7 +6,6 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using DataSys.App.Tests.Support;
 using FluentAssertions;
-using Scm.Sys;
 using Scm.Web;
 using Xunit;
 

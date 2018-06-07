@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using DataSys.App.Tests.Test;
 using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace TestIdentity
 {
@@ -14,12 +10,35 @@ namespace TestIdentity
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            BuildB(args)
+                .UseStartup<Startup>()
+                .Build()
+                .Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .Build();
+        static IWebHostBuilder BuildA(string[] args)
+        {
+            Console.WriteLine("A");
+            return new WebHostBuilder()
+                .UseKestrel()
+                .CaptureStartupErrors(true)
+                .UseSetting(WebHostDefaults.DetailedErrorsKey, "true")
+                .UseEnvironment(EnvironmentName.Development);
+        }
+
+        static IWebHostBuilder BuildB(string[] args)
+        {
+            Console.WriteLine("B");
+            return WebHost.CreateDefaultBuilder(args);
+        }
+
+        public class Startup : SecurityTestSourceBasedTests.TestStartup
+        {
+            public override void Configure(IApplicationBuilder app, IHostingEnvironment env)
+            {
+                if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
+                base.Configure(app, env);
+            }
+        }
     }
 }

@@ -1,11 +1,12 @@
-﻿using Scm.Sys;
-using System.IO;
+﻿using System.IO;
+using Scm.Sys;
 
-namespace Scm.Rx
+namespace Scm.Rx.Trace
 {
     public class TextWriterHereTracer : AbstractHereTracer
     {
-        public TextWriterHereTracer(TextWriter writer, ICallerInfo callerInfo, bool? enabled = null) : base(callerInfo, enabled)
+        public TextWriterHereTracer(TextWriter writer, ICallerInfo callerInfo, bool? enabled = null) : base(callerInfo,
+            enabled)
         {
             Writer = writer;
         }

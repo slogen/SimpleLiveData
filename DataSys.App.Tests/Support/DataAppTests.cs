@@ -47,9 +47,9 @@ namespace DataSys.App.Tests.Support
         protected override IWebHostBuilder ConfigureBuilder(IWebHostBuilder builder)
         {
             return builder
-                    .ConfigureTestServices(PreConfigureTestServices)
-                    // Dispatch to "real" startup, which will overwrite any .Configure
-                    .UseStartup<TStartup>();
+                .ConfigureTestServices(PreConfigureTestServices)
+                // Dispatch to "real" startup, which will overwrite any .Configure
+                .UseStartup<TStartup>();
         }
     }
 }
