@@ -37,5 +37,22 @@ namespace Scm.Concurrency.Tests
                 act.Should().ThrowExactly<TaskCanceledException>();
             }
         }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "new used to create side-effect in test")]
+        public void InitializeWaitCountBelowZeroFails(int setCount)
+        {
+            setCount.Invoking(i => new AutoResetAsyncBarrier(i)).Should().Throw<ArgumentException>();
+        }
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "new used to create side-effect in test")]
+        public void SettingWaitCountBelowZeroFails(int setCount)
+        {
+            new AutoResetAsyncBarrier(1).Invoking(b => b.WaitCount = setCount).Should().Throw<ArgumentException>();
+        }
     }
 }
