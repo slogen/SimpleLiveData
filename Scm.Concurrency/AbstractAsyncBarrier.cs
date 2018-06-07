@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,7 +8,7 @@ namespace Scm.Concurrency
     {
         private int _remain;
         private int _waitCount;
-        private TaskCompletionSource<int> Reached;
+        private TaskCompletionSource<int> _reached;
 
         protected AbstractAsyncBarrier(int waitCount)
         {
@@ -21,28 +20,21 @@ namespace Scm.Concurrency
 
         public int WaitCount
         {
-            get { return _waitCount; }
+            get => _waitCount;
             set
             {
                 if (value <= 0)
-                    throw new ArgumentException("Cannot wait for {value}", "value");
+                    throw new ArgumentException("Cannot wait for {value}", nameof(value));
                 lock (this)
                 {
+                    _reached?.TrySetCanceled();
+                    BarrierCancelled();
                     _waitCount = value;
-                    Reset();
                 }
             }
         }
 
-        public int Remain
-        {
-            get { return _remain; }
-            protected set
-            {
-                Contract.Assert(Monitor.IsEntered(this));
-                _remain = value;
-            }
-        }
+        public int Remain => _remain;
 
         protected abstract void BarrierReached();
         protected abstract void BarrierCancelled();
@@ -52,10 +44,9 @@ namespace Scm.Concurrency
             lock (this)
             {
                 _remain = WaitCount;
-                var source = Reached;
-                if (source != null)
-                    source.TrySetCanceled();
-                Reached = null;
+                var source = _reached;
+                source?.TrySetCanceled();
+                _reached = null;
             }
         }
 
@@ -65,17 +56,16 @@ namespace Scm.Concurrency
             // Atomically calculate whether that caused is to complete
             lock (this)
             {
-                source = Reached;
+                source = _reached;
                 if (--_remain <= 0)
                 {
-                    if (source != null)
-                        source.TrySetResult(0);
+                    source?.TrySetResult(0);
                     BarrierReached();
                     return source?.Task ?? Task.CompletedTask;
                 }
 
                 if (source == null)
-                    Reached = source = new TaskCompletionSource<int>();
+                    _reached = source = new TaskCompletionSource<int>();
             }
 
             // We now know that completion is waiting 
