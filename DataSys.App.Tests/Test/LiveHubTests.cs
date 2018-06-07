@@ -46,8 +46,8 @@ namespace DataSys.App.Tests.Test
             await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
             var server = await Server.ConfigureAwait(false);
             var builder = new HubConnectionBuilder()
-                    .WithUrl($"http://test{LiveHub.Route}")
-                    .WithMessageHandler(_ => server.CreateHandler())
+                    .WithUrl($"http://test{LiveHub.Route}", 
+                        cfg => cfg.HttpMessageHandlerFactory = _ => server.CreateHandler())
                 ;
             var hubConnection = builder.Build();
             await hubConnection.StartAsync();
