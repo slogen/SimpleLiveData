@@ -62,7 +62,7 @@ namespace DataSys.App.Tests.Test
                 .Take(takeCount)
                 .Select((v, idx) => new { v, idx })
                 // Start a new producer whenever we have received 5 items
-                .Do(x => { if (x.idx % 1 == 0) sem.Release(); })
+                .Do(x => { if (x.idx % 5 == 0) sem.Release(); })
                 .TraceTest(Output)
                 .Select(x => x.v)
                 .ToListAsync(CancellationToken);
