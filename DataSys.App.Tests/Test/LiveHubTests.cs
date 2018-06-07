@@ -51,7 +51,7 @@ namespace DataSys.App.Tests.Test
                 ;
             var hubConnection = builder.Build();
             await hubConnection.StartAsync();
-            var obs = hubConnection.Observe<ChangeData>(nameof(LiveHub.Observe), new object[] {null});
+            var obs = hubConnection.Observe<ChangeData>(nameof(LiveHub.Observe));
             var takeCount = 10;
             var sem = new SemaphoreSlim(1); // Coordinate progress between produced data and listener
 

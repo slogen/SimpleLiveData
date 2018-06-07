@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Reactive.Linq;
+using System.Threading.Channels;
 using DataSys.App.DataAccess;
 using DataSys.App.DataModel;
 using Microsoft.AspNet.OData.Query;
@@ -31,11 +32,13 @@ namespace DataSys.App.Presentation.SignalR
             }
         }
 
-        public IObservable<IChange<IData>> Observe(ODataQueryOptions<IData> queryOptions = null)
+        public ChannelReader<IChange<IData>> Observe(
+            //ODataQueryOptions<IData> queryOptions = null
+            )
         {
             var src = Source.Live<Data>();
             var obs = src.Observe();
-            return obs;
+            return obs.Cast<IChange<IData>>().ToChannelReader();
         }
     }
 }

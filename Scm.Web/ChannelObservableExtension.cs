@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Channels;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Scm.Web
@@ -8,6 +11,7 @@ namespace Scm.Web
     {
         public static IObservable<T> Observe<T>(this HubConnection hubConnection, string methodName)
             => hubConnection.Observe<T>(methodName, args: null);
+
 
         /// <summary>
         /// Subscribe to remote <paramref name="methodName"/>(<paramref name="args"/>).
@@ -21,7 +25,7 @@ namespace Scm.Web
             var observable = Observable.Create<T>(async (obs, ct) =>
                 {
                     var reader = await hubConnection
-                        .StreamAsChannelAsync<T>(methodName, args ?? new object[0], ct).ConfigureAwait(false);
+                        .StreamAsChannelCoreAsync<T>(methodName, args ?? new object[0], ct).ConfigureAwait(false);
                     try
                     {
                         while (await reader.WaitToReadAsync(ct).ConfigureAwait(false))
