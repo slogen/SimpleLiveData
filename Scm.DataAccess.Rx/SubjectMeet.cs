@@ -20,8 +20,5 @@ namespace Scm.DataAccess.Rx
 
         public TResult Observe<TResult>(Func<IQbservable<IChange<TEntity>>, TResult> f)
             => f(Subject.AsQbservable());
-
-        public TResult Observe<TResult>(Func<IQbservable<TEntity>, TResult> f)
-            => Observe(q => f(q.Where(x => x.Change != EntityChange.Delete).Select(x => x.Entity)));
     }
 }
