@@ -43,9 +43,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scm.DataAccess.Rx", "Scm.Da
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Datasys.App.Console", "Datasys.App.Console\Datasys.App.Console.csproj", "{5B247B00-9A91-4342-9FE4-D3063E65EB51}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestIdentity", "TestIdentity\TestIdentity.csproj", "{233E359B-E745-4F29-9ABE-494878FC10A3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scm.Presentation.Mvc", "Scm.Presentation.Mvc\Scm.Presentation.Mvc.csproj", "{7152783F-8650-4096-9630-AFCE9A26CC65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scm.Presentation.Mvc", "Scm.Presentation.Mvc\Scm.Presentation.Mvc.csproj", "{7152783F-8650-4096-9630-AFCE9A26CC65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -133,10 +131,6 @@ Global
 		{5B247B00-9A91-4342-9FE4-D3063E65EB51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B247B00-9A91-4342-9FE4-D3063E65EB51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B247B00-9A91-4342-9FE4-D3063E65EB51}.Release|Any CPU.Build.0 = Release|Any CPU
-		{233E359B-E745-4F29-9ABE-494878FC10A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{233E359B-E745-4F29-9ABE-494878FC10A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{233E359B-E745-4F29-9ABE-494878FC10A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{233E359B-E745-4F29-9ABE-494878FC10A3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7152783F-8650-4096-9630-AFCE9A26CC65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7152783F-8650-4096-9630-AFCE9A26CC65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7152783F-8650-4096-9630-AFCE9A26CC65}.Release|Any CPU.ActiveCfg = Release|Any CPU
