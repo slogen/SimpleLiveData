@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Scm.Web
 {
@@ -10,6 +11,7 @@ namespace Scm.Web
             return segs[segs.Length - 1];
         }
 
+        [SuppressMessage("ReSharper", "TailRecursiveCall", Justification = "Tail recursion much more readable here")]
         public static Uri Slash(this Uri uri, string relativeUri)
             => uri.LastSegment().EndsWith("/")
                 ? new Uri(uri, relativeUri)

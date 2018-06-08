@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace Scm.Sys
 {
@@ -19,6 +20,7 @@ namespace Scm.Sys
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [SuppressMessage("ReSharper", "ExplicitCallerInfoArgument", Justification = "Pass callerinfo to target")]
         public static CallerInfo Here(
             [CallerMemberName] string callerMemberName = null,
             [CallerFilePath] string callerFilePath = null,

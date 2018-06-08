@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Linq;
 
-namespace Scm.Rx.Tests
+namespace Scm.Rx
 {
     public class TrackObservableEvents<T>: IObservable<T>
     {

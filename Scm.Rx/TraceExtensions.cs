@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Scm.Rx.Trace;
@@ -17,6 +18,7 @@ namespace Scm.Rx
             => source.Wrap(new TextWriterHereTracer(writer, callerInfo, enabled).Trace);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [SuppressMessage("ReSharper", "ExplicitCallerInfoArgument", Justification = "Pass callerinfo to target")]
         public static IObservable<T> TraceHere<T>(
             this IObservable<T> source,
             TextWriter writer = null,
@@ -31,9 +33,7 @@ namespace Scm.Rx
             this IObservable<T> source,
             Func<IObservable<T>, IObservable<T>> wrapper)
         {
-            if (wrapper == null)
-                return source;
-            return wrapper(source);
+            return wrapper == null ? source : wrapper(source);
         }
     }
 }

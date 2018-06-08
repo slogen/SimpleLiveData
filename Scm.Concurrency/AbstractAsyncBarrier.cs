@@ -34,6 +34,7 @@ namespace Scm.Concurrency
             }
         }
 
+        // ReSharper disable once ConvertToAutoPropertyWithPrivateSetter -- Better expressed as private variable and accessor
         public int Remain => _remain;
 
         protected abstract void BarrierReached();
@@ -69,6 +70,7 @@ namespace Scm.Concurrency
             }
 
             // We now know that completion is waiting 
+            // ReSharper disable once InvertIf -- Will not get more readable
             if (cancellationToken.CanBeCanceled)
             {
                 // If waiting is cancelled, pass that on to all other waiters

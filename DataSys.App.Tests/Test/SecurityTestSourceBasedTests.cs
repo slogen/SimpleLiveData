@@ -35,7 +35,7 @@ namespace DataSys.App.Tests.Test
                 await ConfigureClientDiscoAuthenticationFromTestClient(client, disco).ConfigureAwait(false);
         }
 
-        private async Task ConfigureClientDiscoAuthenticationFromTestClient(HttpClient client, DiscoveryResponse disco)
+        private static async Task ConfigureClientDiscoAuthenticationFromTestClient(HttpClient client, DiscoveryResponse disco)
         {
             var tc = TestIdentityServerConfiguration.Default.TestClient;
             var tokenClient = new TokenClient(disco.TokenEndpoint, tc.ClientId, tc.ClientSecrets.First().Value);

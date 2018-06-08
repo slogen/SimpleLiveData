@@ -4,7 +4,7 @@
     {
     }
 
-    public interface IMeet<TEntity> : ILiveEntity<TEntity>, IMeet
+    public interface IMeet<out TEntity> : ILiveEntity<TEntity>, IMeet
         where TEntity : class
     {
     }

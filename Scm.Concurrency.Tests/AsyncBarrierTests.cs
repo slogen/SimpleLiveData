@@ -14,7 +14,7 @@ namespace Scm.Concurrency.Tests
             new[]
             {
                 new object[] {new ManualResetAsyncBarrier(waitCount)},
-                new[] {new AutoResetAsyncBarrier(waitCount)}
+                new object[] {new AutoResetAsyncBarrier(waitCount)}
             };
 
         [Theory]
@@ -52,7 +52,7 @@ namespace Scm.Concurrency.Tests
                 };
                 cts.Cancel();
                 w.Should().OnlyContain(x => x.IsCanceled,
-                    because: "Cancellation should be synchroneously distributed to all waiters");
+                    "Cancellation should be synchroneously distributed to all waiters");
             }
         }
 
@@ -62,12 +62,9 @@ namespace Scm.Concurrency.Tests
             var b = new AutoResetAsyncBarrier(4);
             using (var cts = CancellationTokenSource.CreateLinkedTokenSource(CancellationToken))
             {
-                var tA = new[]
-                {
-                    b.WaitAsync(CancellationToken),
-                    b.WaitAsync(cts.Token),
-                    b.WaitAsync(CancellationToken)
-                };
+                b.WaitAsync(CancellationToken);
+                b.WaitAsync(cts.Token);
+                b.WaitAsync(CancellationToken);
                 cts.Cancel();
                 var tB2 = b.WaitAsync(CancellationToken);
                 tB2.IsCompleted.Should().BeFalse();
@@ -86,8 +83,8 @@ namespace Scm.Concurrency.Tests
         public void AutoResetBarrierShouldAutoResetUponCompletion()
         {
             var b = new AutoResetAsyncBarrier(2);
-            var t1 = b.WaitAsync(CancellationToken);
-            var t2 = b.WaitAsync(CancellationToken);
+            b.WaitAsync(CancellationToken);
+            b.WaitAsync(CancellationToken);
             var t3 = b.WaitAsync(CancellationToken);
             t3.IsCompleted.Should().BeFalse();
             var t4 = b.WaitAsync(CancellationToken);
@@ -101,12 +98,9 @@ namespace Scm.Concurrency.Tests
             var b = new ManualResetAsyncBarrier(4);
             using (var cts = CancellationTokenSource.CreateLinkedTokenSource(CancellationToken))
             {
-                var tA = new[]
-                {
-                    b.WaitAsync(CancellationToken),
-                    b.WaitAsync(cts.Token),
-                    b.WaitAsync(CancellationToken)
-                };
+                b.WaitAsync(CancellationToken);
+                b.WaitAsync(cts.Token);
+                b.WaitAsync(CancellationToken);
                 cts.Cancel();
                 var tA2 = b.WaitAsync(CancellationToken);
                 tA2.IsCanceled.Should().BeTrue();
@@ -126,8 +120,8 @@ namespace Scm.Concurrency.Tests
         public void ManualResetBarrierShouldResetWhenManuallyReset()
         {
             var b = new ManualResetAsyncBarrier(2);
-            var t1 = b.WaitAsync(CancellationToken);
-            var t2 = b.WaitAsync(CancellationToken);
+            b.WaitAsync(CancellationToken);
+            b.WaitAsync(CancellationToken);
             var t3 = b.WaitAsync(CancellationToken);
             t3.IsCompleted.Should().BeTrue();
             b.Reset();

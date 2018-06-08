@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Scm.Rx;
 using Scm.Sys;
@@ -8,6 +9,7 @@ namespace DataSys.App.Tests.Support
 {
     public static class TestHereTracerExtensions
     {
+        [SuppressMessage("ReSharper", "ExplicitCallerInfoArgument", Justification = "Pass on caller info")]
         public static IObservable<T> TraceTest<T>(this IObservable<T> source, ITestOutputHelper output,
             bool? enabled = null,
             [CallerMemberName] string callerMemberName = null,

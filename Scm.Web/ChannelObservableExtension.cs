@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Channels;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Scm.Web

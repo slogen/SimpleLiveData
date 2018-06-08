@@ -2,7 +2,7 @@
 using System.Threading.Channels;
 using DataSys.App.DataAccess;
 using DataSys.App.DataModel;
-using Microsoft.AspNet.OData.Query;
+using DataSys.App.Presentation.SignalR.Support;
 using Microsoft.AspNetCore.SignalR;
 using Scm.DataAccess;
 

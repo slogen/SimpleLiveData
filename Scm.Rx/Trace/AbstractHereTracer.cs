@@ -7,7 +7,7 @@ namespace Scm.Rx.Trace
     public abstract class AbstractHereTracer : AbstractTracer
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public AbstractHereTracer(
+        protected AbstractHereTracer(
             ICallerInfo callerInfo,
             bool? enabled = null)
         {

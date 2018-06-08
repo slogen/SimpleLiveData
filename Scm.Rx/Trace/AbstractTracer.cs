@@ -17,7 +17,7 @@ namespace Scm.Rx.Trace
             );
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public AbstractTracer()
+        protected AbstractTracer()
         {
         }
 

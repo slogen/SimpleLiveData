@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Channels;
 
-namespace DataSys.App.Presentation.SignalR
+namespace DataSys.App.Presentation.SignalR.Support
 {
     public static class ObservableToChannelReaderExtensions
     {

@@ -18,7 +18,7 @@ namespace Scm.Presentation.Mvc
         where TUnitOfWork: IAsyncUnitOfWork
         where TEntity: class
     {
-        public UnitOfWorkEntityController(TUnitOfWork unitOfWork)
+        protected UnitOfWorkEntityController(TUnitOfWork unitOfWork)
         {
             UnitOfWork = unitOfWork;
         }
