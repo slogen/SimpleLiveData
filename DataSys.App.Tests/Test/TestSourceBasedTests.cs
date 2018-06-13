@@ -1,5 +1,4 @@
 ﻿using DataSys.App.DataAccess;
-using DataSys.App.Hosting;
 using DataSys.App.Tests.Support;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -7,14 +6,14 @@ using Newtonsoft.Json;
 
 namespace DataSys.App.Tests.Test
 {
-    public class TestSourceBasedTests : TestSourceBasedTests<TestSourceBasedTests.TestStartup>
+    public class TestSourceBasedTests : TestSourceBasedTests<TestSourceBasedTests.Startup>
     {
         public TestSourceBasedTests(IAppUnitOfWorkFactory appUnitOfWorkFactory) : base(appUnitOfWorkFactory)
         {
         }
-
-        public class TestStartup : Startup
+        public class Startup : Hosting.Startup
         {
+
         }
     }
 
@@ -34,10 +33,10 @@ namespace DataSys.App.Tests.Test
         protected JsonSerializer JsonSerializer { get; } = new JsonSerializer();
         protected virtual TestSource MakeTestSource() => new TestSource(AppUnitOfWorkFactory);
 
-        protected override void PreConfigureTestServices(IServiceCollection svcs)
+        protected override void ConfigureTestServices(IServiceCollection svcs)
         {
             svcs.Replace(ServiceDescriptor.Scoped(sp => AppUnitOfWorkFactory.UnitOfWork()));
-            base.PreConfigureTestServices(svcs);
+            base.ConfigureTestServices(svcs);
         }
     }
 }

@@ -9,7 +9,7 @@ using Xunit;
 
 namespace DataSys.App.Tests.Test
 {
-    public class PositiveSecurityTests : SecurityTestSourceBasedTests, IClassFixture<TestAppUnitOfWorkFactory>
+    public class PositiveSecurityTests : TestSourceBasedTests, IClassFixture<TestAppUnitOfWorkFactory>
     {
         [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter", Justification = "Specific type required for IoC")]
         public PositiveSecurityTests(TestAppUnitOfWorkFactory appUnitOfWorkFactory) : base(appUnitOfWorkFactory)
@@ -18,7 +18,7 @@ namespace DataSys.App.Tests.Test
 
         protected async Task<List<IdentityController.ClaimHeld>> Query(string path)
         {
-            var server = await Server.ConfigureAwait(false);
+            var server = Server;
             return await Client.GetJsonAsync<List<IdentityController.ClaimHeld>>(
                 server.BaseAddress.Slash(IdentityController.RoutePrefix).Slash(path),
                 JsonSerializer,

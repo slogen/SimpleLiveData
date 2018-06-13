@@ -29,7 +29,7 @@ namespace DataSys.App.Tests.Test
         public async Task ODataNameOfInstallation()
         {
             await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
-            var server = await Server.ConfigureAwait(false);
+            var server = Server;
             var lst = await Client.GetJsonAsync<List<Named>>(
                 // "/odata/Installation?$expand=Data&$filter=contains(name, '1')"
                 // $"/odata/Installation({_app.TestSource.Installations.Query(x => x.First()).Id})" // -- BROKEN!

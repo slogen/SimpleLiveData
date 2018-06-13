@@ -44,7 +44,7 @@ namespace DataSys.App.Tests.Test
         public async Task ObservingThoughApiWorks()
         {
             await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
-            var server = await Server.ConfigureAwait(false);
+            var server = Server;
             var builder = new HubConnectionBuilder()
                     .WithUrl($"http://test{LiveHub.Route}", 
                         cfg => cfg.HttpMessageHandlerFactory = _ => server.CreateHandler())

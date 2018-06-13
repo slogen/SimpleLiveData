@@ -22,7 +22,7 @@ namespace DataSys.App.Tests.Test
         public async Task GetById()
         {
             await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
-            var server = await Server.ConfigureAwait(false);
+            var server = Server;
             var client = await Client.ConfigureAwait(false);
             var i1 = await TestSource.ObserveInstallations(ins => ins.ToObservable().FirstOrDefaultAsync());
             var got = await client.GetJsonAsync<Installation>(

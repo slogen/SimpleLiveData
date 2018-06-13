@@ -10,7 +10,7 @@ namespace Datasys.App.Console
     {
         public static void Main(string[] args)
         {
-            BuildB(args)
+            BuildA(args)
                 .UseStartup<Startup>()
                 .Build()
                 .Run();
@@ -28,13 +28,14 @@ namespace Datasys.App.Console
                 .UseEnvironment(EnvironmentName.Development);
         }
 
+        [SuppressMessage("ReSharper", "UnusedMember.Local", Justification = "Experiments exchange A and B")]
         private static IWebHostBuilder BuildB(string[] args)
         {
             System.Console.WriteLine("B");
             return WebHost.CreateDefaultBuilder(args);
         }
 
-        public class Startup : SecurityTestSourceBasedTests.TestStartup
+        public class Startup : SecurityTestSourceBasedTests.Startup
         {
             public override void Configure(IApplicationBuilder app, IHostingEnvironment env)
             {
