@@ -1,20 +1,23 @@
 ﻿using System;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Threading;
 
-namespace DataSys.App.Tests.Support
+namespace Scm.Sys
 {
+    public class MissingDisposeEventArgs : EventArgs
+    {
+        public WeakReference Object { get; }
+        public MissingDisposeEventArgs(WeakReference obj) {
+            Object = obj;
+        }
+    }
     public abstract class MissingDisposeDetection: IDisposable
     {
         private static long _undisposedCount;
-        private static readonly ISubject<WeakReference> MissingDisposeSubject = new Subject<WeakReference>();
-        public static IObservable<WeakReference> MissingDispose => MissingDisposeSubject.AsObservable();
-
+        public static event EventHandler<MissingDisposeEventArgs> MissingDispose;
         private static void NotifyMissingDispose(WeakReference instance)
         {
             Interlocked.Increment(ref _undisposedCount);
-            MissingDisposeSubject.OnNext(instance);
+            MissingDispose?.Invoke(null, new MissingDisposeEventArgs(instance));
         }
         protected virtual void Dispose(bool disposing)
         {
