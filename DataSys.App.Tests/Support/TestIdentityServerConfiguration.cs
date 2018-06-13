@@ -14,6 +14,8 @@ namespace DataSys.App.Tests.Support
 
         public virtual IEnumerable<Client> Id4Clients => new[] { _testClient ?? (_testClient = MakeTestClient()) };
 
+        public string ClientSecret => "secret";
+
         public IEnumerable<ApiResource> ApiResources => new[] {Api};
 
         protected virtual Client MakeTestClient() => new Client
@@ -22,7 +24,7 @@ namespace DataSys.App.Tests.Support
             AllowedGrantTypes = {GrantType.ClientCredentials},
             ClientSecrets =
             {
-                new Secret("secret".Sha256())
+                new Secret(ClientSecret.Sha256())
             },
             AllowedScopes = {Api.Name}
         };

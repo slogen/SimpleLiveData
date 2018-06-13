@@ -6,6 +6,7 @@ namespace DataSys.App.Tests.Support.Hosting
 {
     public interface IIdentity4ServerConfiguration
     {
+        string ClientSecret { get; }
         IEnumerable<Client> Id4Clients { get; }
         void ConfigureServices(IServiceCollection services);
     }

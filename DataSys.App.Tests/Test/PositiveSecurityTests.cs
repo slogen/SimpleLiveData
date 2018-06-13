@@ -9,7 +9,7 @@ using Xunit;
 
 namespace DataSys.App.Tests.Test
 {
-    public class PositiveSecurityTests : TestSourceBasedTests, IClassFixture<TestAppUnitOfWorkFactory>
+    public class PositiveSecurityTests : SecurityTestSourceBasedTests, IClassFixture<TestAppUnitOfWorkFactory>
     {
         [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter", Justification = "Specific type required for IoC")]
         public PositiveSecurityTests(TestAppUnitOfWorkFactory appUnitOfWorkFactory) : base(appUnitOfWorkFactory)

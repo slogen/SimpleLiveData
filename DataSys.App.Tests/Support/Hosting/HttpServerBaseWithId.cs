@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using DataSys.App.Tests.Support.Hosting;
 using IdentityModel.Client;
 using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -35,23 +37,38 @@ namespace DataSys.App.Tests.Support
         #endregion
 
         #region Regular server -- Setup Authentication
-        protected override IWebHostBuilder MakeBuilder() => base.MakeBuilder().Configure(app => app.UseAuthentication());
         protected override void ConfigureTestServices(IServiceCollection svcs)
             => ConfigureIdentityServerAuthenticationOptions(svcs);
-        protected virtual void ConfigureIdentityServerAuthenticationOptions(IServiceCollection svcs)
-            => svcs.AddSingleton(IdentityServerAuthenticationOptions());
-        protected virtual IdentityServerAuthenticationOptions IdentityServerAuthenticationOptions()
-            => new IdentityServerAuthenticationOptions
-            {
-                Authority = "http://localhost:5001",
-                RequireHttpsMetadata = false,
-                ApiName = Identity4ServerConfiguration.Id4Clients.First().AllowedScopes.First(),
 
-                // Traffic to the IdServer should go through handlers to that in-mem server
-                JwtBackChannelHandler = IdServer.CreateHandler(),
-                IntrospectionDiscoveryHandler = IdServer.CreateHandler(),
-                IntrospectionBackChannelHandler = IdServer.CreateHandler()
-            };
+        protected virtual void ConfigureIdentityServerAuthenticationOptions(IServiceCollection svcs)
+        {
+            svcs.AddAuthentication(o =>
+                {
+                    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(o =>
+                {
+                    o.Authority = "http://localhost:5001";
+                    o.RequireHttpsMetadata = false;
+                    o.Audience = Identity4ServerConfiguration.Id4Clients.First().AllowedScopes.First();
+                    // Traffic to the IdServer should go through handlers to that in-mem server
+                    o.BackchannelHttpHandler = IdServer.CreateHandler();
+                })
+                //.AddIdentityServerAuthentication(IdentityServerAuthenticationOptions)
+                ;
+        }
+
+        protected virtual void IdentityServerAuthenticationOptions(IdentityServerAuthenticationOptions options)
+        {
+            options.Authority = "http://localhost:5001";
+            options.RequireHttpsMetadata = false;
+            options.ApiName = Identity4ServerConfiguration.Id4Clients.First().AllowedScopes.First();
+            // Traffic to the IdServer should go through handlers to that in-mem server
+            options.JwtBackChannelHandler = IdServer.CreateHandler();
+            options.IntrospectionDiscoveryHandler = IdServer.CreateHandler();
+            options.IntrospectionBackChannelHandler = IdServer.CreateHandler();
+        }
         #endregion
 
         #region OpenConnect Client setup (Using Identity4Server -- Client)
@@ -66,10 +83,11 @@ namespace DataSys.App.Tests.Support
             //var getUrl = authority + "/.well-known/openid-configuration";
             //var get = await client.GetAsync(getUrl, CancellationToken).ConfigureAwait(false);
             var discoClient = new DiscoveryClient(authority, handler);
+            var secret = Identity4ServerConfiguration.ClientSecret;
             var idClient = Identity4ServerConfiguration.Id4Clients.First();
             var disco = await discoClient.GetAsync(cancellationToken).ConfigureAwait(false);
             if (!disco.IsError)
-                await ConfigureClientDiscoAuthenticationFromTestClient(disco, idClient.ClientId, idClient.ClientSecrets.First().Value, idClient.AllowedScopes.First(), cancellationToken).ConfigureAwait(false);
+                await ConfigureClientDiscoAuthenticationFromTestClient(client, disco, idClient.ClientId, secret, idClient.AllowedScopes.First(), cancellationToken).ConfigureAwait(false);
         }
 
         public class ClientDiscoAuthenticationFailed: Exception
@@ -81,12 +99,13 @@ namespace DataSys.App.Tests.Support
                 Response = tokenResponse;
             }
         }
-        private async Task ConfigureClientDiscoAuthenticationFromTestClient(DiscoveryResponse disco, string clientId, string secret, string scope, CancellationToken cancellationToken)
+        private async Task ConfigureClientDiscoAuthenticationFromTestClient(HttpClient client, DiscoveryResponse disco, string clientId, string secret, string scope, CancellationToken cancellationToken)
         {
             var tokenClient = new TokenClient(disco.TokenEndpoint, clientId, secret, IdServer.CreateHandler());
             var tokenResponse = await tokenClient.RequestClientCredentialsAsync(scope, cancellationToken: cancellationToken).ConfigureAwait(false);
-            if (!tokenResponse.IsError)
-                (await Client.ConfigureAwait(false)).SetBearerToken(tokenResponse.AccessToken);
+            if (tokenResponse.IsError)
+                return;
+            client.SetBearerToken(tokenResponse.AccessToken);
         }
         #endregion
 
