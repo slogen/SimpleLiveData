@@ -20,6 +20,8 @@
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
     <PackageReference Include="Microsoft.Reactive.Testing" Version="4.0.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="xunit" Version="2.4.0-beta.2.build4010" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0-beta.2.build4010" />

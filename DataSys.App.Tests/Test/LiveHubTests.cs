@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using DataSys.App.DataModel;
 using DataSys.App.Presentation.SignalR;
 using DataSys.App.Tests.Support;
+using DataSys.App.Tests.Support.App;
 using FluentAssertions;
 using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
@@ -46,14 +47,14 @@ namespace DataSys.App.Tests.Test
             await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
             var server = Server;
             var builder = new HubConnectionBuilder()
-                    .WithUrl($"http://test{LiveHub.Route}", 
+                    .WithUrl($"http://test{LiveHub.Route}",
                         cfg => cfg.HttpMessageHandlerFactory = _ => server.CreateHandler())
                 ;
             var hubConnection = builder.Build();
             await hubConnection.StartAsync();
             var obs = hubConnection.Observe<ChangeData>(nameof(LiveHub.Observe));
             const int takeCount = 10;
-            var sem = new SemaphoreSlim(1); // Coordinate progress between produced data and listener
+            var sem = new SemaphoreSlim(2); // Coordinate progress between produced data and listener
 
             var obsTask = obs
                 .TraceTest(Output)

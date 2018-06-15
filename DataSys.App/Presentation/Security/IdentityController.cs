@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,30 +15,19 @@ namespace DataSys.App.Presentation.Security
         [HttpGet]
         [Route(AuthorizeRoute)]
         [Authorize]
-        public virtual IEnumerable<ClaimHeld> ClaimsWhenAuthorize() => User.Claims.Select(c => new ClaimHeld(c));
+        public virtual HeldClaimsPrincipal ClaimsWhenAuthorize() => ToProtocol(User);
 
         [HttpGet]
         [Route(NoAuthorizeRoute)]
-        public virtual IEnumerable<ClaimHeld> ClaimsWhenNoAuthorize() => User.Claims.Select(c => new ClaimHeld(c));
+        public virtual HeldClaimsPrincipal ClaimsWhenNoAuthorize() => ToProtocol(User);
 
         [HttpGet]
         [Route(RoleAAuthorizeRoute)]
         [Authorize(Roles = "RoleA")]
-        public virtual IEnumerable<ClaimHeld> ClaimsWhenRoleAAuthorize() => User.Claims.Select(c => new ClaimHeld(c));
+        public virtual HeldClaimsPrincipal ClaimsWhenRoleAAuthorize() => ToProtocol(User);
 
-        public class ClaimHeld
-        {
-            private readonly Claim _claim;
-
-            public ClaimHeld(Claim claim)
-            {
-                _claim = claim;
-            }
-
-            public string Issuer => _claim.Issuer;
-            public string OriginalIssuer => _claim.OriginalIssuer;
-            public string ValueType => _claim.ValueType;
-            public string Value => _claim.Value;
-        }
+        protected virtual HeldClaimsPrincipal ToProtocol(ClaimsPrincipal p) => new HeldClaimsPrincipal(p);
     }
+
+    // Cannot directly serrialize claim
 }

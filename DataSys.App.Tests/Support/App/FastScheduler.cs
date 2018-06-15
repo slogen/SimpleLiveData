@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
 
-namespace DataSys.App.Tests.Support
+namespace DataSys.App.Tests.Support.App
 {
     public class FastScheduler : VirtualTimeScheduler<DateTime, double>
     {

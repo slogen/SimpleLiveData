@@ -6,9 +6,9 @@ namespace Scm.Concurrency
 {
     public abstract class AbstractAsyncBarrier
     {
+        private TaskCompletionSource<int> _reached;
         private int _remain;
         private int _waitCount;
-        private TaskCompletionSource<int> _reached;
 
         protected AbstractAsyncBarrier(int waitCount)
         {

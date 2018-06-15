@@ -34,7 +34,7 @@ namespace DataSys.App.Presentation.SignalR
 
         public ChannelReader<IChange<IData>> Observe(
             //ODataQueryOptions<IData> queryOptions = null
-            )
+        )
         {
             var src = Source.Live<Data>();
             var obs = src.Observe();

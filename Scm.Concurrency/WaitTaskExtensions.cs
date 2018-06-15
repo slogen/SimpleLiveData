@@ -9,7 +9,9 @@ namespace Scm.Concurrency
         {
             await task.ContinueWith(t => 0, cancellationToken).WaitAsync(cancellationToken).ConfigureAwait(false);
         }
-        public static async Task<TResult> WaitAsync<TResult>(this Task<TResult> task, CancellationToken cancellationToken)
+
+        public static async Task<TResult> WaitAsync<TResult>(this Task<TResult> task,
+            CancellationToken cancellationToken)
         {
             await (await Task.WhenAny(task, Task.Delay(-1, cancellationToken)).ConfigureAwait(false))
                 .ConfigureAwait(false);

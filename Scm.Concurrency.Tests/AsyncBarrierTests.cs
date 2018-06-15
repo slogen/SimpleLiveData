@@ -133,6 +133,20 @@ namespace Scm.Concurrency.Tests
         }
 
         [Fact]
+        public void SettingWaitCountTriggersCancelOnAuto()
+        {
+            var b = new AutoResetAsyncBarrier(2);
+            var t1 = b.WaitAsync(CancellationToken);
+            b.WaitCount = 2;
+            t1.IsCanceled.Should().BeTrue();
+            var t2 = b.WaitAsync(CancellationToken);
+            t2.IsCompleted.Should().BeFalse();
+            var t3 = b.WaitAsync(CancellationToken);
+            t2.IsCompleted.Should().BeTrue();
+            t3.IsCompleted.Should().BeTrue();
+        }
+
+        [Fact]
         public void SettingWaitCountTriggersCancelOnManual()
         {
             var b = new ManualResetAsyncBarrier(2);
@@ -149,19 +163,6 @@ namespace Scm.Concurrency.Tests
             var t5 = b.WaitAsync(CancellationToken);
             t4.IsCompletedSuccessfully.Should().BeTrue();
             t5.IsCompletedSuccessfully.Should().BeTrue();
-        }
-        [Fact]
-        public void SettingWaitCountTriggersCancelOnAuto()
-        {
-            var b = new AutoResetAsyncBarrier(2);
-            var t1 = b.WaitAsync(CancellationToken);
-            b.WaitCount = 2;
-            t1.IsCanceled.Should().BeTrue();
-            var t2 = b.WaitAsync(CancellationToken);
-            t2.IsCompleted.Should().BeFalse();
-            var t3 = b.WaitAsync(CancellationToken);
-            t2.IsCompleted.Should().BeTrue();
-            t3.IsCompleted.Should().BeTrue();
         }
     }
 }

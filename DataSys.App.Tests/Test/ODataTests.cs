@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using DataSys.App.Tests.Support;
+using DataSys.App.Tests.Support.App;
 using FluentAssertions;
 using Scm.Web;
 using Xunit;

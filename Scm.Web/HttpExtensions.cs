@@ -57,11 +57,7 @@ namespace Scm.Web
         }
 
         public static async Task AssertSuccess(this HttpResponseMessage resp)
-        {
-            if (!resp.IsSuccessStatusCode)
-                throw new HttpRequestException(
-                    $"HTTP Error: {resp.StatusCode}\n{resp.Headers.HeadersString()}\n{await resp.Content.ReadAsStringAsync()}");
-        }
+            => await HttpResponseException.AssertSuccess(resp).ConfigureAwait(false);
 
         public static async Task<HttpResponseMessage> AssertSuccess(this Task<HttpResponseMessage> respTask)
         {

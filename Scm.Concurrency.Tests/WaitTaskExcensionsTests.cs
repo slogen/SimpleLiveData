@@ -11,18 +11,26 @@ namespace Scm.Concurrency.Tests
     {
         protected CancellationToken CancellationToken => default(CancellationToken);
 
-        [Fact]
-        public async Task WaitAsyncShouldCompleteWithTaskResult()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification =
+            "new used to create side-effect in test")]
+        public void InitializeWaitCountBelowZeroFails(int setCount)
         {
-            var x = await Task.FromResult(1).WaitAsync(CancellationToken);
-            x.Should().Be(1);
+            setCount.Invoking(i => new AutoResetAsyncBarrier(i)).Should().Throw<ArgumentException>();
         }
-        [Fact]
-        public async Task WaitAsyncShouldCompleteWithTask()
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification =
+            "new used to create side-effect in test")]
+        public void SettingWaitCountBelowZeroFails(int setCount)
         {
-            var t = Task.Delay(1, CancellationToken).WaitAsync(CancellationToken);
-            await t.ConfigureAwait(false);
+            new AutoResetAsyncBarrier(1).Invoking(b => b.WaitCount = setCount).Should().Throw<ArgumentException>();
         }
+
         [Fact]
         [SuppressMessage("ReSharper", "AccessToDisposedClosure", Justification = "await applied inside using")]
         public void WaitAsyncShouldCancelWhenCancelled()
@@ -37,21 +45,18 @@ namespace Scm.Concurrency.Tests
             }
         }
 
-        [Theory]
-        [InlineData(0)]
-        [InlineData(-1)]
-        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "new used to create side-effect in test")]
-        public void InitializeWaitCountBelowZeroFails(int setCount)
+        [Fact]
+        public async Task WaitAsyncShouldCompleteWithTask()
         {
-            setCount.Invoking(i => new AutoResetAsyncBarrier(i)).Should().Throw<ArgumentException>();
+            var t = Task.Delay(1, CancellationToken).WaitAsync(CancellationToken);
+            await t.ConfigureAwait(false);
         }
-        [Theory]
-        [InlineData(0)]
-        [InlineData(-1)]
-        [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "new used to create side-effect in test")]
-        public void SettingWaitCountBelowZeroFails(int setCount)
+
+        [Fact]
+        public async Task WaitAsyncShouldCompleteWithTaskResult()
         {
-            new AutoResetAsyncBarrier(1).Invoking(b => b.WaitCount = setCount).Should().Throw<ArgumentException>();
+            var x = await Task.FromResult(1).WaitAsync(CancellationToken);
+            x.Should().Be(1);
         }
     }
 }

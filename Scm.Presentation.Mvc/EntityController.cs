@@ -11,22 +11,23 @@ using Scm.DataAccess;
 
 namespace Scm.Presentation.Mvc
 {
-    public abstract class EntityController<TEntity, TResult> : EntityController<Guid, TEntity, TResult> where TEntity : class
+    public abstract class EntityController<TEntity, TResult> : EntityController<Guid, TEntity, TResult>
+        where TEntity : class
     {
     }
 
     // TODO: Move to library
     [Route(RoutePrefix)]
     public abstract class EntityController<TId, TEntity, TResult> : ControllerBase
-        where TEntity: class
+        where TEntity : class
     {
         public const string RoutePrefix = "api/[controller]";
         protected abstract IQueryableSource<TEntity> Source { get; }
         protected abstract ISink<TEntity> Sink { get; }
+        protected abstract Expression<Func<TEntity, TId>> IdExpression { get; }
         protected abstract TResult ToProtocol(TEntity entity);
         protected abstract TEntity FromProtocol(TResult item);
         protected abstract Task SaveChanges(CancellationToken cancellationToken);
-        protected abstract Expression<Func<TEntity, TId>> IdExpression { get; }
         protected abstract TId Id(TEntity entity);
 
         protected virtual IEnumerable<TResult> ToProtocol(IEnumerable<TEntity> entities)
@@ -65,7 +66,8 @@ namespace Scm.Presentation.Mvc
         [ProducesResponseType(200)]
         public ActionResult<IEnumerable<TResult>> List(int offset, int count, CancellationToken cancellationToken)
         {
-            return Ok(ToProtocol(Source.Query(es => es.OrderBy(IdExpression).Skip(offset).Take(count).ToAsyncEnumerable())));
+            return Ok(ToProtocol(Source.Query(es =>
+                es.OrderBy(IdExpression).Skip(offset).Take(count).ToAsyncEnumerable())));
         }
 
         [HttpGet("all")]

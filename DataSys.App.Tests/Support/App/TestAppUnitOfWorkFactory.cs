@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using DataSys.App.DataAccess;
 
-namespace DataSys.App.Tests.Support
+namespace DataSys.App.Tests.Support.App
 {
     public class TestAppUnitOfWorkFactory : AppUnitOfWorkFactory
     {
