@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Scm.DataAccess.Efc2;
 using Scm.DataAccess.Rx;
 using Scm.DataAccess.Support;
@@ -21,26 +24,47 @@ namespace Scm.DataAccess.Combined
         public abstract TSubjectContext SubjectContext { get; }
         public virtual IScheduler Scheduler { get; } = TaskPoolScheduler.Default;
 
-        protected override async Task CommitAsyncOnce(CancellationToken cancellationToken)
+        protected struct EntityChange
         {
-            var changes = DbContext.ChangeTracker.Entries()
-                .Where(e => e.State != EntityState.Unchanged && e.State != EntityState.Detached)
+            public EntityState State { get; }
+            public object Entity { get; }
+            public EntityChange(EntityState state, object entity)
+            {
+                State = state;
+                Entity = entity;
+            }
+        }
+
+        protected virtual IEnumerable<EntityEntry> FindAndOrderChanges()
+            => DbContext.ChangeTracker.Entries()
+                .Where(e => e.State != EntityState.Unchanged && e.State != EntityState.Detached);
+        protected virtual async Task PushChanges(IEnumerable<EntityEntry> changes, CancellationToken cancellationToken)
+        {
+            await PushChanges(changes
+                // push all deletes first
                 .OrderBy(x => x.State != EntityState.Deleted)
+                // then modified
                 .ThenBy(x => x.State != EntityState.Modified)
-                .Select(x => new {x.State, x.Entity})
-                .ToList();
-
-            await DbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
-            await changes.ToObservable(Scheduler)
+                // leaving inserts last
+                .ToObservable(Scheduler))
+                .LastOrDefaultAsync()
+                .ToTask(cancellationToken)
+                .ConfigureAwait(false);
+        }
+        protected virtual IObservable<IEntityEvent<object>> PushChanges(IObservable<EntityEntry> changes)
+        => changes
                 .GroupBy(x => x.Entity.GetType())
                 .Select(grp =>
                     SubjectContext.Sink(grp.Key)
                         .DynamicChange(grp.GroupBy(x => x.State.ToEntityChange(), x => x.Entity)))
-                .Concat()
-                .LastOrDefaultAsync()
-                .ToTask(cancellationToken)
-                .ConfigureAwait(false);
+                .Concat();
+
+        protected override async Task CommitAsyncOnce(CancellationToken cancellationToken)
+        {
+            // Capture changes before saving, so we can push them
+            var changes = FindAndOrderChanges().ToList();
+            await DbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await PushChanges(changes, cancellationToken).ConfigureAwait(false);
         }
 
         protected override void Dispose(bool disposing)
@@ -53,6 +77,7 @@ namespace Scm.DataAccess.Combined
             DbContext.Repository().Of<TEntity>();
 
         public ILiveEntity<TEntity> Live<TEntity>() where TEntity : class => SubjectContext.Meet().Of<TEntity>();
-        public ISink<TEntity> Sink<TEntity>() where TEntity : class => Persistent<TEntity>();
+        public ISink<TEntity> Sink<TEntity>() where TEntity : class
+            => DbContext.Repository().Of<TEntity>();
     }
 }
