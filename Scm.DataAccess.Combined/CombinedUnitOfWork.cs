@@ -23,39 +23,44 @@ namespace Scm.DataAccess.Combined
         public abstract TSubjectContext SubjectContext { get; }
         public virtual IScheduler Scheduler { get; } = TaskPoolScheduler.Default;
 
-        protected struct EntityChange
-        {
-            public EntityState State { get; }
-            public object Entity { get; }
-            public EntityChange(EntityState state, object entity)
-            {
-                State = state;
-                Entity = entity;
-            }
-        }
+        protected bool IncludeEntity(EntityEntry e)
+            => e.State != EntityState.Unchanged && e.State != EntityState.Detached;
 
-        protected virtual IEnumerable<EntityEntry> FindAndOrderChanges()
-            => DbContext.ChangeTracker.Entries()
-                .Where(e => e.State != EntityState.Unchanged && e.State != EntityState.Detached);
-        protected virtual async Task PushChanges(IEnumerable<EntityEntry> changes, CancellationToken cancellationToken)
+        protected struct OriginalState
         {
-            await PushChanges(changes
+            public object Entity { get; }
+            public EntityState State { get; }
+            public OriginalState(object entity, EntityState state)
+            {
+                Entity = entity;
+                State = state;
+            }
+            public static OriginalState FromEntityEntry(EntityEntry entityEntry)
+                => new OriginalState(entityEntry.Entity, entityEntry.State);
+        }
+        protected virtual IEnumerable<OriginalState> FindAndOrderChanges()
+            => DbContext.ChangeTracker.Entries()
+                .Where(IncludeEntity)
                 // push all deletes first
                 .OrderBy(x => x.State != EntityState.Deleted)
                 // then modified
                 .ThenBy(x => x.State != EntityState.Modified)
+                .Select(OriginalState.FromEntityEntry)
                 // leaving inserts last
-                .ToObservable(Scheduler))
+                ;
+        protected virtual async Task PushChanges(IEnumerable<OriginalState> changes, CancellationToken cancellationToken)
+        {
+            await PushChanges(changes.ToObservable(Scheduler), x => x.State, x => x.Entity)
                 .LastOrDefaultAsync()
                 .ToTask(cancellationToken)
                 .ConfigureAwait(false);
         }
-        protected virtual IObservable<IEntityEvent<object>> PushChanges(IObservable<EntityEntry> changes)
-        => changes
-                .GroupBy(x => x.Entity.GetType())
+        protected virtual IObservable<IEntityEvent<object>> PushChanges<TSource>(IObservable<TSource> src, Func<TSource, EntityState> stateOf, Func<TSource, object> entityOf)
+        => src
+                .GroupBy(x => entityOf(x)?.GetType())
                 .Select(grp =>
                     SubjectContext.Sink(grp.Key)
-                        .DynamicChange(grp.GroupBy(x => x.State.ToEntityChange(), x => x.Entity)))
+                        .DynamicChange(grp.GroupBy(x => stateOf(x).ToEntityChange(), x => entityOf(x))))
                 .Concat();
 
         protected override async Task CommitAsyncOnce(CancellationToken cancellationToken)
