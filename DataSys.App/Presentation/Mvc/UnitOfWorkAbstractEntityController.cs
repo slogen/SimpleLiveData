@@ -7,8 +7,8 @@ using Scm.Presentation.Mvc;
 namespace DataSys.App.Presentation.Mvc
 {
     public abstract class
-        UnitOfWorkAbstractEntityController<TUnitOfWork, TEntity, TResult> : UnitOfWorkEntityController<TUnitOfWork,
-            TEntity, TResult>
+        UnitOfWorkAbstractEntityController<TUnitOfWork, TEntity, TResult> 
+            : UnitOfWorkEntityController<TUnitOfWork, TEntity, TResult>
         where TUnitOfWork : IAsyncUnitOfWork
         where TEntity : AbstractEntity
     {

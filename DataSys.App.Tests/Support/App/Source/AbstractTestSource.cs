@@ -52,7 +52,7 @@ namespace DataSys.App.Tests.Support
 
         public IObservable<TResult> ObserveInstallations<TResult>(
             Func<IQueryable<Installation>, IObservable<TResult>> f)
-            => Observable.Using(UnitOfWork, uow => uow.Persistent<Installation>().Query(f));
+            => Observable.Using(UnitOfWork, uow => f(uow.Persistent<Installation>()));
 
         public IObservable<TResult> ObserveInstallations<TResult>(
             Func<IQueryable<Installation>, IEnumerable<TResult>> f)
@@ -69,8 +69,8 @@ namespace DataSys.App.Tests.Support
                         UnitOfWork,
                         uow =>
                             uow.Sink<Data>().Add(
-                                    (from inst in uow.Persistent<Installation>().Query()
-                                        from sig in uow.Persistent<Signal>().Query()
+                                    (from inst in uow.Persistent<Installation>()
+                                        from sig in uow.Persistent<Signal>()
                                         select new {inst, sig})
                                     .Select(x => new Data(x.inst.Id, x.sig.Id, t, f(x.inst, x.sig, t)))
                                     .ToObservable())

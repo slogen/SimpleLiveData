@@ -22,7 +22,7 @@ namespace Scm.Presentation.Mvc
         where TEntity : class
     {
         public const string RoutePrefix = "api/[controller]";
-        protected abstract IQueryableSource<TEntity> Source { get; }
+        protected abstract IQueryable<TEntity> Source { get; }
         protected abstract ISink<TEntity> Sink { get; }
         protected abstract Expression<Func<TEntity, TId>> IdExpression { get; }
         protected abstract TResult ToProtocol(TEntity entity);
@@ -42,7 +42,7 @@ namespace Scm.Presentation.Mvc
         [ProducesResponseType(404)]
         public async Task<ActionResult<TResult>> Get(TId id, CancellationToken cancellationToken)
         {
-            var entity = await Source.Query(es => es.FirstOrDefaultAsync(cancellationToken)).ConfigureAwait(false);
+            var entity = await Source.FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
             if (entity == null)
                 return NotFound(id);
             return Ok(ToProtocol(entity));
@@ -66,8 +66,7 @@ namespace Scm.Presentation.Mvc
         [ProducesResponseType(200)]
         public ActionResult<IEnumerable<TResult>> List(int offset, int count, CancellationToken cancellationToken)
         {
-            return Ok(ToProtocol(Source.Query(es =>
-                es.OrderBy(IdExpression).Skip(offset).Take(count).ToAsyncEnumerable())));
+            return Ok(ToProtocol(Source.OrderBy(IdExpression).Skip(offset).Take(count).ToAsyncEnumerable()));
         }
 
         [HttpGet("all")]

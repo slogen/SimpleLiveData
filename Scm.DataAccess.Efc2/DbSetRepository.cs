@@ -2,7 +2,8 @@
 
 namespace Scm.DataAccess.Efc2
 {
-    public class DbSetRepository<TEntity, TContext> : AbstractDbContextRepository<TEntity>
+    public class DbSetRepository<TEntity, TContext> : 
+        AbstractDbContextRepository<TEntity>
         where TEntity : class
         where TContext : DbContext
     {

@@ -6,8 +6,8 @@ using Scm.DataAccess;
 namespace Scm.Presentation.Mvc
 {
     public abstract class
-        UnitOfWorkEntityController<TUnitOfWork, TEntity, TResult> : UnitOfWorkEntityController<TUnitOfWork, Guid,
-            TEntity, TResult>
+        UnitOfWorkEntityController<TUnitOfWork, TEntity, TResult> : 
+            UnitOfWorkEntityController<TUnitOfWork, Guid, TEntity, TResult>
         where TUnitOfWork : IAsyncUnitOfWork
         where TEntity : class
     {
@@ -17,7 +17,8 @@ namespace Scm.Presentation.Mvc
     }
 
     public abstract class
-        UnitOfWorkEntityController<TUnitOfWork, TId, TEntity, TResult> : EntityController<TId, TEntity, TResult>,
+        UnitOfWorkEntityController<TUnitOfWork, TId, TEntity, TResult> :
+            EntityController<TId, TEntity, TResult>, 
             IDisposable
         where TUnitOfWork : IAsyncUnitOfWork
         where TEntity : class

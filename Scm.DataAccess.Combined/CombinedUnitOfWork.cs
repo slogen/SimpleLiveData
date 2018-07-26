@@ -77,8 +77,8 @@ namespace Scm.DataAccess.Combined
                 DbContext.Dispose();
         }
 
-        public IPersistentEntity<TEntity> Persistent<TEntity>() where TEntity : class =>
-            DbContext.Repository().Of<TEntity>();
+        public IQueryable<TEntity> Persistent<TEntity>() where TEntity : class =>
+            DbContext.Repository().Of<TEntity>().Queryable;
 
         public IQbservable<IChange<TEntity>> Live<TEntity>() where TEntity : class => SubjectContext.Qbserve<TEntity>();
         public ISink<TEntity> Sink<TEntity>() where TEntity : class

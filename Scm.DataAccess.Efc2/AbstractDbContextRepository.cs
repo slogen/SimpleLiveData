@@ -12,11 +12,7 @@ namespace Scm.DataAccess.Efc2
     {
         protected abstract DbSet<TEntity> Set { get; }
 
-        public TResult Query<TResult>(Func<IQueryable<TEntity>, TResult> f)
-            => f(Set);
-
-        public TResult Observe<TResult>(Func<IQbservable<TEntity>, TResult> f)
-            => Query(q => f(q.ToQbservable()));
+        public IQueryable<TEntity> Queryable => Set;
 
         public IObservable<IEntityEvent<TEntity>> Change(IObservable<IGroupedObservable<EntityChange, TEntity>> changes)
         {

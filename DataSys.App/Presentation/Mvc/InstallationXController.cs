@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using DataSys.App.DataAccess;
 using DataSys.App.DataModel;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +11,7 @@ namespace DataSys.App.Presentation.Mvc
     [Route(RoutePrefix)]
     // TODO: Find a way to avoid clashing with the OData Controller
     public class
-        InstallationXController : UnitOfWorkAbstractEntityController<IAppUnitOfWork, Installation, Protocol.Installation
-        >
+        InstallationXController : UnitOfWorkAbstractEntityController<IAppUnitOfWork, Installation, Protocol.Installation>
     {
         public new const string RoutePrefix = "api/installation";
 
@@ -19,7 +19,7 @@ namespace DataSys.App.Presentation.Mvc
         {
         }
 
-        protected override IQueryableSource<Installation> Source => UnitOfWork.Persistent<Installation>();
+        protected override IQueryable<Installation> Source => UnitOfWork.Persistent<Installation>();
         protected override ISink<Installation> Sink => throw new NotImplementedException();
 
         protected override Protocol.Installation ToProtocol(Installation entity)

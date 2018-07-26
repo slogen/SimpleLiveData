@@ -1,4 +1,5 @@
 ﻿using Scm.DataAccess;
+using System.Linq;
 
 namespace Scm.Presentation.OData
 {
@@ -14,6 +15,5 @@ namespace Scm.Presentation.OData
         }
 
         protected sealed override TUnitOfWork GetUnitOfWork() => _unitOfWork;
-        protected abstract override IQueryableSource<TEntity> GetSource();
     }
 }
