@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Scm.DataAccess;
 
@@ -16,6 +17,8 @@ namespace Scm.DataStorage.Subject
 
         public virtual ISubject<IChange<TEntity>> Subject<TEntity>()
             => (ISubject<IChange<TEntity>>) Subject(typeof(TEntity));
+        public virtual IQbservable<IChange<TEntity>> Qbserve<TEntity>()
+            => Subject<TEntity>().AsQbservable();
 
         protected virtual object CreateSubject(Type entityType)
         {

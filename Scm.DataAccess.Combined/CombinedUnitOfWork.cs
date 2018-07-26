@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Scm.DataAccess.Efc2;
-using Scm.DataAccess.Rx;
 using Scm.DataAccess.Support;
 using Scm.DataStorage.Efc2;
 using Scm.DataStorage.Subject;
@@ -76,7 +75,7 @@ namespace Scm.DataAccess.Combined
         public IPersistentEntity<TEntity> Persistent<TEntity>() where TEntity : class =>
             DbContext.Repository().Of<TEntity>();
 
-        public ILiveEntity<TEntity> Live<TEntity>() where TEntity : class => SubjectContext.Meet().Of<TEntity>();
+        public IQbservable<IChange<TEntity>> Live<TEntity>() where TEntity : class => SubjectContext.Qbserve<TEntity>();
         public ISink<TEntity> Sink<TEntity>() where TEntity : class
             => DbContext.Repository().Of<TEntity>();
     }

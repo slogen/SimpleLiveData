@@ -37,8 +37,7 @@ namespace DataSys.App.Presentation.SignalR
         )
         {
             var src = Source.Live<Data>();
-            var obs = src.Observe();
-            return obs.Cast<IChange<IData>>().ToChannelReader();
+            return src.Cast<IChange<IData>>().ToChannelReader();
         }
     }
 }
