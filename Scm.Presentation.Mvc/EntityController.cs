@@ -15,7 +15,6 @@ namespace Scm.Presentation.Mvc
         where TEntity : class
     {
     }
-
     // TODO: Move to library
     [Route(RoutePrefix)]
     public abstract class EntityController<TId, TEntity, TResult> : ControllerBase
@@ -40,7 +39,7 @@ namespace Scm.Presentation.Mvc
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<ActionResult<TResult>> Get(TId id, CancellationToken cancellationToken)
+        public virtual async Task<ActionResult<TResult>> Get(TId id, CancellationToken cancellationToken)
         {
             var entity = await Source.FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
             if (entity == null)
@@ -50,7 +49,7 @@ namespace Scm.Presentation.Mvc
 
         [HttpPut("")]
         [ProducesResponseType(200)]
-        public async Task<ActionResult<TResult>> Put(TResult newItem, CancellationToken cancellationToken)
+        public virtual async Task<ActionResult<TResult>> Put(TResult newItem, CancellationToken cancellationToken)
         {
             var entity = FromProtocol(newItem);
             var id = Id(entity);
@@ -64,7 +63,7 @@ namespace Scm.Presentation.Mvc
         [HttpGet("offset={offset},count={count}")]
         [HttpPost]
         [ProducesResponseType(200)]
-        public ActionResult<IEnumerable<TResult>> List(int offset, int count, CancellationToken cancellationToken)
+        public virtual ActionResult<IEnumerable<TResult>> List(int offset, int count, CancellationToken cancellationToken)
         {
             return Ok(ToProtocol(Source.OrderBy(IdExpression).Skip(offset).Take(count).ToAsyncEnumerable()));
         }
@@ -72,7 +71,7 @@ namespace Scm.Presentation.Mvc
         [HttpGet("all")]
         [HttpPost]
         [ProducesResponseType(200)]
-        public ActionResult<IEnumerable<TResult>> List(CancellationToken cancellationToken)
+        public virtual ActionResult<IEnumerable<TResult>> List(CancellationToken cancellationToken)
             => List(0, int.MaxValue, cancellationToken);
     }
 }
