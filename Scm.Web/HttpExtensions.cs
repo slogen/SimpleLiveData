@@ -22,17 +22,40 @@ namespace Scm.Web
             return System.Text.Encoding.UTF8;
         }
 
-        public static HttpRequestMessage AcceptJson(this HttpRequestMessage req)
+        public static HttpRequestMessage ClearAccept(this HttpRequestMessage req)
         {
-            req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            req.Headers.Accept.Clear();
+            return req;
+        }
+        public static HttpRequestMessage Accept(this HttpRequestMessage req, MediaTypeWithQualityHeaderValue mediaType)
+        {
+            req.Headers.Accept.Add(mediaType);
             return req;
         }
 
-        public static HttpRequestMessage AcceptUtf8(this HttpRequestMessage req)
+        public static HttpRequestMessage Accept(this HttpRequestMessage req, string mediaType) =>
+            req.Accept(new MediaTypeWithQualityHeaderValue(mediaType));
+
+        public static HttpRequestMessage AcceptJson(this HttpRequestMessage req) => req.Accept("application/json");
+
+        public static HttpRequestMessage ClearAcceptCharset(this HttpRequestMessage req)
         {
-            req.Headers.AcceptCharset.Add(new StringWithQualityHeaderValue(System.Text.Encoding.UTF8.WebName));
+            req.Headers.AcceptCharset.Clear();
             return req;
         }
+        public static HttpRequestMessage AcceptCharset(this HttpRequestMessage req, StringWithQualityHeaderValue charset)
+        {
+            req.Headers.AcceptCharset.Add(charset);
+            return req;
+        }
+
+        public static HttpRequestMessage AcceptCharset(this HttpRequestMessage req, string charset) =>
+            req.AcceptCharset(new StringWithQualityHeaderValue(charset));
+
+        public static HttpRequestMessage AcceptCharset(this HttpRequestMessage req, Encoding charset) =>
+            req.AcceptCharset(charset.WebName);
+
+        public static HttpRequestMessage AcceptUtf8(this HttpRequestMessage req) => req.AcceptCharset(System.Text.Encoding.UTF8);
 
         public static async Task<TextReader> BodyText(this HttpResponseMessage resp,
             bool? detectEncodingFromByteOrderMarks = null,
