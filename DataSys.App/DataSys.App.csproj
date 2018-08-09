@@ -30,6 +30,7 @@
     <ProjectReference Include="..\Scm.DataStorage.Efc2\Scm.DataStorage.Efc2.csproj" />
     <ProjectReference Include="..\Scm.DataStorage.Subject\Scm.DataStorage.Subject.csproj" />
     <ProjectReference Include="..\Scm.Linq\Scm.Linq.csproj" />
+    <ProjectReference Include="..\Scm.Presentation.Mvc.Parquet\Scm.Presentation.Mvc.Parquet.csproj" />
     <ProjectReference Include="..\Scm.Presentation.Mvc\Scm.Presentation.Mvc.csproj" />
     <ProjectReference Include="..\Scm.Presentation.OData\Scm.Presentation.OData.csproj" />
     <ProjectReference Include="..\Scm.Rx\Scm.Rx.csproj" />

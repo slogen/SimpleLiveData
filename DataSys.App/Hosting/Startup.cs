@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OData.Edm;
 using Newtonsoft.Json;
+using Scm.Presentation.Mvc.Parquet;
 
 namespace DataSys.App.Hosting
 {
@@ -23,7 +24,10 @@ namespace DataSys.App.Hosting
             services.Add(ServiceDescriptor.Singleton(new AppSubjectContext()));
             services.Add(ServiceDescriptor.Scoped<IAppUnitOfWork>(
                 sp => new AppUnitOfWork(sp.GetService<AppDbContext>(), sp.GetService<AppSubjectContext>())));
-            services.AddMvc();
+            services.AddMvc(options =>
+            {
+                options.OutputFormatters.Add(DefaultParquetOutputFormatter.Default);
+            });
             services.AddSignalR()
                 .AddJsonProtocol(cfg =>
                     cfg.PayloadSerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);

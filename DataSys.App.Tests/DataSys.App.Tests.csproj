@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataSys.App\DataSys.App.csproj" />
+    <ProjectReference Include="..\Scm.Presentation.Mvc.Parquet\Scm.Presentation.Mvc.Parquet.csproj" />
     <ProjectReference Include="..\Scm.Web\Scm.Web.csproj" />
   </ItemGroup>
 
