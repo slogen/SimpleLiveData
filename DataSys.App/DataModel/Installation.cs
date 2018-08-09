@@ -35,7 +35,7 @@ namespace DataSys.App.DataModel
             }
         }
 
-        public DateTime? InstalledAt { get; set; }
-        public DateTime? DecommisionedAt { get; set; }
+        public DateTimeOffset? InstalledAt { get; set; }
+        public DateTimeOffset? DecommisionedAt { get; set; }
     }
 }

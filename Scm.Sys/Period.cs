@@ -8,7 +8,7 @@ namespace Scm.Sys
         {
         }
 
-        public Period(DateTime? from, DateTime? to)
+        public Period(DateTimeOffset? from, DateTimeOffset? to)
         {
             if (from.HasValue && to.HasValue && to.Value < from.Value)
                 throw new NotSupportedException($"Period does not support to < from: [{from.Value};{to.Value})");
@@ -16,8 +16,8 @@ namespace Scm.Sys
             To = to;
         }
 
-        public DateTime? From { get; }
-        public DateTime? To { get; }
+        public DateTimeOffset? From { get; }
+        public DateTimeOffset? To { get; }
 
         public static Period Infinite() => new Period();
         public static Period Starting(DateTime? at) => new Period(at, null);

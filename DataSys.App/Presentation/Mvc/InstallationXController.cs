@@ -29,7 +29,7 @@ namespace DataSys.App.Presentation.Mvc
         protected override Installation FromProtocol(Protocol.Installation item)
         {
             return new Installation(item.Id == Guid.Empty ? Guid.NewGuid() : item.Id, item.Name,
-                new Period(item.From, item.To));
+                new Period(item.From?.UtcDateTime, item.To?.UtcDateTime));
         }
     }
 }
