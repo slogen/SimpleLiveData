@@ -68,7 +68,8 @@ namespace Scm.Presentation.Mvc
             return Ok(ToProtocol(Source.OrderBy(IdExpression).Skip(offset).Take(count).ToAsyncEnumerable()));
         }
 
-        [HttpGet("all")]
+        public const string AllRoute = "all";
+        [HttpGet(AllRoute)]
         [HttpPost]
         [ProducesResponseType(200)]
         public virtual ActionResult<IEnumerable<TResult>> List(CancellationToken cancellationToken)
