@@ -50,6 +50,12 @@ namespace DataSys.App.Tests.Support
             }
         }
 
+        public IEnumerable<Installation> Installations()
+        {
+            using (var uow = UnitOfWork())
+                return uow.Persistent<Installation>().ToList();
+        }
+
         public IObservable<TResult> ObserveInstallations<TResult>(
             Func<IQueryable<Installation>, IObservable<TResult>> f)
             => Observable.Using(UnitOfWork, uow => f(uow.Persistent<Installation>()));
