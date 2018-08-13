@@ -1,7 +1,6 @@
 ﻿using DataSys.App.DataAccess;
 using DataSys.App.DataModel;
 using DataSys.App.Presentation.OData.Support;
-using Scm.DataAccess;
 using Scm.Presentation.OData;
 using System.Linq;
 

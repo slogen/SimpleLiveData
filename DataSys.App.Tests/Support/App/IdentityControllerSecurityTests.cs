@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using DataSys.App.DataAccess;
 using DataSys.App.Presentation.Security;
-using DataSys.App.Tests.Test;
 using Scm.Web;
 using Xunit;
 

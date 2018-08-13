@@ -3,7 +3,7 @@ using DataSys.App.Tests.Support.Hosting;
 using IdentityServer4.Models;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DataSys.App.Tests.Support
+namespace DataSys.App.Tests.Support.App
 {
     public class TestIdentityServerConfiguration : IIdentity4ServerConfiguration
     {

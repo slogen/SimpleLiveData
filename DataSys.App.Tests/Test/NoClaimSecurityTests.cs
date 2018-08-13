@@ -1,7 +1,6 @@
 ﻿using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using DataSys.App.DataAccess;
 using DataSys.App.Presentation.Security;
 using DataSys.App.Tests.Support.App;
 using FluentAssertions;
@@ -11,6 +10,7 @@ namespace DataSys.App.Tests.Test
 {
     public class NoClaimSecurityTests : IdentityControllerSecurityTests
     {
+        // ReSharper disable once SuggestBaseTypeForParameter -- concrete type required by xunit test injection
         public NoClaimSecurityTests(TestAppUnitOfWorkFactory appUnitOfWorkFactory) : base(appUnitOfWorkFactory)
         {
         }

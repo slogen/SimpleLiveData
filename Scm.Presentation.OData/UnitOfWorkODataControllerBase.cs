@@ -1,5 +1,4 @@
 ﻿using Scm.DataAccess;
-using System.Linq;
 
 namespace Scm.Presentation.OData
 {

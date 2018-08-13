@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -55,12 +56,13 @@ namespace Scm.DataAccess.Combined
                 .ToTask(cancellationToken)
                 .ConfigureAwait(false);
         }
+        [SuppressMessage("ReSharper", "ImplicitlyCapturedClosure", Justification = "Acceptable closure capture")]
         protected virtual IObservable<IEntityEvent<object>> PushChanges<TSource>(IObservable<TSource> src, Func<TSource, EntityState> stateOf, Func<TSource, object> entityOf)
         => src
                 .GroupBy(x => entityOf(x)?.GetType())
                 .Select(grp =>
                     SubjectContext.Sink(grp.Key)
-                        .DynamicChange(grp.GroupBy(x => stateOf(x).ToEntityChange(), x => entityOf(x))))
+                        .DynamicChange(grp.GroupBy(x => stateOf(x).ToEntityChange(), entityOf)))
                 .Concat();
 
         protected override async Task CommitAsyncOnce(CancellationToken cancellationToken)

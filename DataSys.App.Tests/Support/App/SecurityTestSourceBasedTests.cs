@@ -1,11 +1,8 @@
-﻿using System;
-using DataSys.App.DataAccess;
-using IdentityServer4.AccessTokenValidation;
+﻿using DataSys.App.DataAccess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace DataSys.App.Tests.Test
+namespace DataSys.App.Tests.Support.App
 {
     public class SecurityTestSourceBasedTests : TestSourceBasedTests<SecurityTestSourceBasedTests.Startup>
     {
@@ -14,11 +11,6 @@ namespace DataSys.App.Tests.Test
         }
         public class Startup : TestSourceBasedTests.Startup
         {
-            public override void ConfigureServices(IServiceCollection services)
-            {
-                base.ConfigureServices(services);
-            }
-
             public override void Configure(IApplicationBuilder app, IHostingEnvironment env)
             {
                 app.UseAuthentication();

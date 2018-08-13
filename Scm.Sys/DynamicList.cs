@@ -12,7 +12,8 @@ namespace Scm.Sys
         {
             if (elementType == null)
                 throw new ArgumentNullException(nameof(elementType));
-            return (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(new[] { elementType }), initialCapacity ?? DefaultInitialCapacity);
+            return (IList)Activator.CreateInstance(typeof(List<>)
+                    .MakeGenericType(elementType), initialCapacity ?? DefaultInitialCapacity);
         }
         public static IList AsList(this IEnumerable enumerable, Type elementType, int? initialCapacity = null)
         {
@@ -20,9 +21,8 @@ namespace Scm.Sys
                 throw new ArgumentNullException(nameof(enumerable));
             if (elementType == null)
                 throw new ArgumentNullException(nameof(elementType));
-            var lt = enumerable as ICollection;
             // Already has some info?
-            if (!ReferenceEquals(lt, null))
+            if (enumerable is ICollection lt)
             {
                 // Might be exactly the right kind?
                 var glt = enumerable.GetType().GetInterfaces().FirstOrDefault(t => {

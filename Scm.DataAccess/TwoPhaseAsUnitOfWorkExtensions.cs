@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
 
 namespace Scm.DataAccess
 {
@@ -17,7 +16,7 @@ namespace Scm.DataAccess
         public static IAsyncUnitOfWork ToUnitOfWork(this ITwoPhaseUnitOfWork twoPhaseUnitOfWork) => new TwoPhaseAsUnitOfWork(twoPhaseUnitOfWork);
         private class TwoPhaseAsUnitOfWork: IAsyncUnitOfWork
         {
-            public ITwoPhaseUnitOfWork Parent { get; }
+            private ITwoPhaseUnitOfWork Parent { get; }
             public TwoPhaseAsUnitOfWork(ITwoPhaseUnitOfWork twoPhaseUnitOfWork) {
                 Parent = twoPhaseUnitOfWork ?? throw new ArgumentNullException(nameof(twoPhaseUnitOfWork));
             }
@@ -33,17 +32,18 @@ namespace Scm.DataAccess
             }
         }
         private class CombineTwoPhases: ITwoPhaseUnitOfWork {
-            public IEnumerable<ITwoPhaseUnitOfWork> UnitsOfWork { get; }
+            private IEnumerable<ITwoPhaseUnitOfWork> UnitsOfWork { get; }
             public CombineTwoPhases(IEnumerable<ITwoPhaseUnitOfWork> unitsOfWork)
             {
                 UnitsOfWork = unitsOfWork ?? throw new ArgumentNullException(nameof(unitsOfWork));
             }
-            protected class CombineTransactionReadies: ITransactionReady
+
+            private class CombineTransactionReadies: ITransactionReady
             {
-                public IEnumerable<ITransactionReady> TransactionReadies { get; }
+                private IEnumerable<ITransactionReady> TransactionReadies { get; }
                 public CombineTransactionReadies(IEnumerable<ITransactionReady> transactionReadies)
                 {
-                    transactionReadies = transactionReadies ?? throw new ArgumentNullException(nameof(transactionReadies));  
+                    TransactionReadies = transactionReadies ?? throw new ArgumentNullException(nameof(transactionReadies));  
                 }
                 public async Task Commit(CancellationToken cancellationToken)
                 {

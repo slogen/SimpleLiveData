@@ -10,9 +10,7 @@ namespace Scm.Sys
         {
             if (t == null)
                 throw new ArgumentNullException(nameof(t));
-            if (!t.IsGenericType)
-                return Enumerable.Empty<Type>();
-            return t.GetGenericArguments();
+            return !t.IsGenericType ? Enumerable.Empty<Type>() : t.GetGenericArguments();
         }
     }
 }

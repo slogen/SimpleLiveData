@@ -1,11 +1,8 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Extensions.Primitives;
 using Parquet;
 using Scm.Sys;
 
@@ -20,7 +17,7 @@ namespace Scm.Presentation.Mvc.Parquet
         {
             // Even though we do not support application/json replay we apparently get called anyway?
             var accept = context.HttpContext.Request.GetTypedHeaders()?.Accept;
-            bool headerSupported = accept?.Any(a => SupportedMediaTypes.Any(m => a.MediaType == m)) ?? false;
+            var headerSupported = accept?.Any(a => SupportedMediaTypes.Any(m => a.MediaType == m)) ?? false;
             return  headerSupported && (context.Object as IEnumerable)?.ElementType() != null;
         }
 

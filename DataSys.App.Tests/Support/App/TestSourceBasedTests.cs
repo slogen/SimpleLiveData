@@ -1,23 +1,19 @@
 ﻿using DataSys.App.DataAccess;
-using DataSys.App.Tests.Support;
-using DataSys.App.Tests.Support.App;
+using DataSys.App.Tests.Support.App.Source;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
 using Serilog;
-using Serilog.Core;
-using Serilog.Events;
-using Serilog.Sinks.SystemConsole.Themes;
 
-namespace DataSys.App.Tests.Test
+namespace DataSys.App.Tests.Support.App
 {
     public class TestSourceBasedTests : TestSourceBasedTests<TestSourceBasedTests.Startup>
     {
         public TestSourceBasedTests(IAppUnitOfWorkFactory appUnitOfWorkFactory) : base(appUnitOfWorkFactory)
         {
         }
-        public class Startup : Hosting.Startup
+        public class Startup : DataSys.App.Hosting.Startup
         {
 
         }
@@ -28,15 +24,6 @@ namespace DataSys.App.Tests.Test
         where TStartup : class
     {
         private TestSource _testSource;
-
-        private static Logger Logger { get; } = new LoggerConfiguration()
-            .MinimumLevel.Debug()
-            //.MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            //.MinimumLevel.Override("System", LogEventLevel.Warning)
-            //.MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
-            .Enrich.FromLogContext()
-            .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}", theme: ConsoleTheme.None)
-            .CreateLogger();
 
         public TestSourceBasedTests(IAppUnitOfWorkFactory appUnitOfWorkFactory)
         {

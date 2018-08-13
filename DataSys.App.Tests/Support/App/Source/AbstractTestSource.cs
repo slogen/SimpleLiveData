@@ -11,7 +11,7 @@ using Scm.DataAccess;
 using Scm.Rx;
 using Scm.Sys;
 
-namespace DataSys.App.Tests.Support
+namespace DataSys.App.Tests.Support.App.Source
 {
     public abstract class AbstractTestSource
     {

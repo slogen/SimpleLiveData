@@ -12,9 +12,7 @@ namespace Scm.Sys
         {
             var diff = dateTime - (epoch ?? dateTime.Kind.Epoch());
             var excess = diff.Ticks % span.Ticks;
-            if (excess == 0)
-                return dateTime;
-            return dateTime.AddTicks(-excess);
+            return excess == 0 ? dateTime : dateTime.AddTicks(-excess);
         }
         public static DateTimeOffset DefaultDateTimeOffsetEpoch { get; set; } = new DateTimeOffset(DefaultDateTimeKind.Epoch());
 
@@ -22,9 +20,7 @@ namespace Scm.Sys
         {
             var diff = dateTimeOffset - (epoch ?? DefaultDateTimeOffsetEpoch);
             var excess = diff.Ticks % span.Ticks;
-            if (excess == 0)
-                return dateTimeOffset;
-            return dateTimeOffset.AddTicks(-excess);
+            return excess == 0 ? dateTimeOffset : dateTimeOffset.AddTicks(-excess);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using DataSys.App.DataAccess;
 
-namespace DataSys.App.Tests.Support
+namespace DataSys.App.Tests.Support.App.Source
 {
     public class TestSource :
         AbstractTestSource

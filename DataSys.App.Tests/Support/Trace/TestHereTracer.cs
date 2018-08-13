@@ -4,7 +4,7 @@ using Scm.Rx.Trace;
 using Scm.Sys;
 using Xunit.Abstractions;
 
-namespace DataSys.App.Tests.Support
+namespace DataSys.App.Tests.Support.Trace
 {
     public class TestHereTracer : AbstractHereTracer
     {
