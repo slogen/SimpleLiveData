@@ -72,6 +72,7 @@ namespace Scm.Presentation.Mvc.Parquet
             int? bufferSize = null)
             where T : new()
         {
+            // ReSharper disable once AccessToDisposedClosure -- use is awaited
             using (var s = await stream.AsSeekableAsync(cancellationToken, bufferSize).ConfigureAwait(false))
                 return await Task.Run(() => ParquetConvert.Deserialize<T>(s), cancellationToken).ConfigureAwait(false);
         }
