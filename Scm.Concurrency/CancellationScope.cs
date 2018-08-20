@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
@@ -6,10 +7,28 @@ namespace Scm.Concurrency
 {
     public static class CancellationScope
     {
-        private static readonly ICancellationScope NoCancellationScope =
+        /// <summary>
+        /// Scope for constant-scope
+        /// </summary>
+        private sealed class CancellationTokenScope : ICancellationScope
+        {
+            public CancellationToken Token { get; }
+
+            public CancellationTokenScope(CancellationToken token)
+            {
+                Token = token;
+            }
+
+            public void Dispose()
+            {
+                // no-op
+            }
+        }
+
+        private static ICancellationScope NoCancellationScope { get; } =
             new CancellationTokenScope(CancellationToken.None);
 
-        private static readonly ICancellationScope CancelledScope =
+        private static ICancellationScope CancelledScope { get; } =
             new CancellationTokenScope(new CancellationToken(true));
 
         public static ICancellationScope None() => NoCancellationScope;
@@ -17,7 +36,7 @@ namespace Scm.Concurrency
         public static ICancellationScope Cancelled() => CancelledScope;
 
         public static ICancellationScope ToScope(this CancellationToken cancellationToken) =>
-            new CancellationTokenScope(cancellationToken);
+            CancellationTokenSource.CreateLinkedTokenSource(cancellationToken).ToScope();
 
         public static ICancellationScope ToScope(this CancellationTokenSource cancellationTokenSource) =>
             new CancellationSourceScope(cancellationTokenSource);
@@ -25,8 +44,7 @@ namespace Scm.Concurrency
         public static ICancellationScope Link(this IEnumerable<CancellationToken> cancellationTokens)
         {
             var tokens = cancellationTokens.Where(x => x.CanBeCanceled).ToArray();
-            return tokens.Length > 1 ? CancellationTokenSource.CreateLinkedTokenSource(tokens).ToScope()
-                : tokens.Length == 1 ? tokens[0].ToScope()
+            return tokens.Length >= 1 ? CancellationTokenSource.CreateLinkedTokenSource(tokens).ToScope()
                 : None();
         }
 
@@ -36,6 +54,12 @@ namespace Scm.Concurrency
             return !additionalCancellationTokens.Any() ? token.ToScope()
                 : token.CanBeCanceled ? new[] {token}.Concat(additionalCancellationTokens).Link()
                 : additionalCancellationTokens.Link();
+        }
+
+        public static ICancellationScope Timeout(this CancellationToken cancellationToken, TimeSpan timeSpan)
+        {
+            var cts = new CancellationTokenSource(timeSpan);
+            return cancellationToken.CanBeCanceled ? cancellationToken.Link(cts.Token) : cts.ToScope();
         }
     }
 }

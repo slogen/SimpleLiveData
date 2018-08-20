@@ -10,6 +10,20 @@ namespace Scm.Rx.Tests
 {
     public class CombinedSubscriptionsTests
     {
+        private class NoComparer: IEqualityComparer<long>
+        {
+            public bool Equals(long x, long y) => true;
+            public int GetHashCode(long obj) => 0;
+        }
+        [Fact]
+        public void CombineShouldUseKeyComparerAndDictionary()
+        {
+            Func<long, IObservable<int>> sourceFactory = x => Observable.Range(0, 3);
+            long Aggregate(long acc, long next) => Math.Max(acc, next);
+            var keyComparer = new NoComparer();
+            var dict = new Dictionary<long, long>();
+            sourceFactory.CombinedSubscriptions(Aggregate, keyComparer, dict);
+        }
         [Fact]
         public void CombineShouldActuallyPerformCombination()
         {

@@ -2,7 +2,7 @@
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
-namespace Scm.Rx.Tests
+namespace Scm.Rx
 {
     public static class PublishReplayExtensions
     {

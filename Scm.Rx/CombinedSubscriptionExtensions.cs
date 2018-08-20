@@ -45,6 +45,7 @@ namespace Scm.Rx
 
             var sub = new Subject<TElement>();
 
+            // ReSharper disable once ImplicitlyCapturedClosure -- lck captured
             void NewSubscriptionIfRequired(TKey nextKey)
             {
                 // New requirements for subscription?
@@ -61,6 +62,7 @@ namespace Scm.Rx
                     }
             }
 
+            // ReSharper disable once ImplicitlyCapturedClosure -- sub captured
             void HandleUnsubscription(long id)
             {
                 lock (lck)
@@ -76,6 +78,7 @@ namespace Scm.Rx
                 }
             }
 
+            // ReSharper disable once ImplicitlyCapturedClosure -- currentSubscription, keyComparer, sourceFactory captured
             return key => Observable.Create<TElement>(obs =>
             {
                 IDisposable unsub;
