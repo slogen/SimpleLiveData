@@ -49,13 +49,18 @@ namespace Scm.Concurrency
             return tcs.Task;
         }
 
-        public static async Task<TResult> OnCompletion<TResult>(this Task task, Func<Task<TResult>> f)
+        public static async Task<TResult> OnCompletionAsync<TResult>(this Task task, Func<Task<TResult>> f)
         {
             await task;
             return await f();
         }
 
-        public static async Task<TResult> OnCancel<TResult>(
+        public static async Task<TResult> OnCompletion<TResult>(this Task task, Func<TResult> f)
+            => await task.OnCompletionAsync(() => Task.FromResult(f())).ConfigureAwait(false);
+        public static async Task<TResult> OnCompletion<TResult>(this Task task, TResult r)
+            => await task.OnCompletion(() => r).ConfigureAwait(false);
+
+        public static async Task<TResult> OnCancelAsync<TResult>(
             this Task<TResult> task, Func<Task<TResult>> onCancellation)
         {
             try
@@ -67,11 +72,21 @@ namespace Scm.Concurrency
             }
         }
 
-        public static async Task OnCancel(this Task task, Func<Task> onCancellation)
-            => await task.OnCompletion(() => Task.FromResult(0)).OnCancel(async () =>
+        public static async Task OnCancelAsync(this Task task, Func<Task> onCancellation)
+            => await task.OnCompletionAsync(() => Task.FromResult(0)).OnCancelAsync(async () =>
             {
                 await onCancellation().ConfigureAwait(false);
                 return 0;
             }).ConfigureAwait(false);
+
+        public static async Task<TResult> OnCancel<TResult>(this Task<TResult> task, Func<TResult> onCancellation)
+            => await task.OnCancelAsync(() => Task.FromResult(onCancellation())).ConfigureAwait(false);
+
+        public static async Task OnCancel(this Task task, Action onCancellation)
+            => await task.OnCompletion(0).OnCancel(() =>
+            {
+                onCancellation?.Invoke();
+                return 0;
+            });
     }
 }
