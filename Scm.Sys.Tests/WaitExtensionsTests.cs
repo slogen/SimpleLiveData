@@ -19,6 +19,17 @@ namespace Scm.Sys.Tests
                 0.Awaiting(async _ => { await task.ConfigureAwait(false); }).Should().Throw<TaskCanceledException>();
             }
         }
+        [Fact]
+        public void WaitAsyncOnWaitHandleAlreadyReadyCoversHotPath()
+        {
+            var sem = new SemaphoreSlim(1);
+            using (var cts = new CancellationTokenSource())
+            {
+                var task = sem.AvailableWaitHandle.WaitAsync(cts.Token);
+                cts.Cancel();
+                0.Awaiting(async _ => { await task.ConfigureAwait(false); }).Should().NotThrow();
+            }
+        }
 
         [Fact]
         public void WaitAsyncOnUncancellationTokenAvoidsRegistering()
