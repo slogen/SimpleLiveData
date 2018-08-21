@@ -15,7 +15,7 @@ namespace Scm.Concurrency
     public class ManualClock : IClock
     {
         public static DateTime DefaultNow = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        public object SyncRoot { get; set; } = new object();
+        public object SyncRoot { get; } = new object();
         public ManualClock(DateTime? now = null)
         {
             _now = now ?? DefaultNow;
@@ -34,32 +34,32 @@ namespace Scm.Concurrency
                 return _pending.Count;
         }
 
-        public static IClock DefaultClock { get; set; } = SystemClockUtc.Default;
         public static TimeSpan? DefaultTimeOut = null;
         public static TimeSpan DefaultCheckInterval = TimeSpan.FromMilliseconds(50);
 
         /// <summary>
         /// Advance the clock <paramref name="amount"/>, or until the next pending event (if there is one)
         /// </summary>
-        public IEnumerable<Task> Advance(TimeSpan? amount = null, CancellationToken cancellationToken = default(CancellationToken))
+        public IList<Task> Advance(TimeSpan? amount = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             lock (SyncRoot)
             {
-                _now = (amount == default(TimeSpan?) ? _pending.Values.FirstOrDefault()?.At : Now() + amount.Value) ?? _now;
+                _now = (amount == default(TimeSpan?) ? _pending.FirstOrDefault()?.At : Now() + amount.Value) ?? _now;
                 return ActivatePending(cancellationToken);
             }
         }
 
-        private IEnumerable<Task> ActivatePending(CancellationToken cancellationToken)
+        private IList<Task> ActivatePending(CancellationToken cancellationToken)
         {
             Contract.Assert(Monitor.IsEntered(SyncRoot));
             var now = Now();
-            var lst = _pending.Values.TakeWhile(pt => pt.At <= now).ToList();
+            var lst = _pending.TakeWhile(pt => pt.At <= now).ToList();
             return lst.Select(p =>
             {
-                p.Activate();
-                return p.WaitActivationAsync(cancellationToken);
-            });
+                p.OnActivate();
+                return p.Removed.WaitAsync(cancellationToken);
+            })
+                .ToList();
         }
 
         protected class Pending : IComparable<Pending>
@@ -73,10 +73,12 @@ namespace Scm.Concurrency
 
             public long Id { get; }
             public DateTime At { get; }
-            private readonly ManualResetEvent _activated = new ManualResetEvent(false);
-            public void Activate() => _activated.Set();
-            public Task WaitActivationAsync(CancellationToken cancellationToken) => _activated.WaitAsync(cancellationToken);
-            public void WaitActivation() => _activated.WaitOne();
+            private readonly ManualResetEventSlim _activated = new ManualResetEventSlim(false);
+            private readonly ManualResetEventSlim _removed = new ManualResetEventSlim(false);
+            public void OnActivate() => _activated.Set();
+            public WaitHandle Activated => _activated.WaitHandle;
+            public WaitHandle Removed => _removed.WaitHandle;
+            public void OnRemove() => _removed.Set();
 
             public int CompareTo(Pending other)
             {
@@ -86,7 +88,7 @@ namespace Scm.Concurrency
                 return diff != 0 ? diff : Id.CompareTo(other.Id);
             }
         }
-        private readonly SortedDictionary<long, Pending> _pending = new SortedDictionary<long, Pending>();
+        private readonly SortedSet<Pending> _pending = new SortedSet<Pending>();
 
         protected virtual Pending FindPending(TimeSpan span)
         {
@@ -95,7 +97,7 @@ namespace Scm.Concurrency
                 if (span <= TimeSpan.Zero)
                     return null;
                 var p = new Pending(Now() + span);
-                _pending.Add(p.Id, p);
+                _pending.Add(p);
                 return p;
             }
         }
@@ -107,12 +109,13 @@ namespace Scm.Concurrency
                 return;
             try
             {
-                await pending.WaitActivationAsync(cancellationToken).ConfigureAwait(false);
+                await pending.Activated.WaitAsync(cancellationToken).ConfigureAwait(false);
             }
             finally
             {
                 lock (SyncRoot)
-                    _pending.Remove(pending.Id, out var _);
+                    _pending.Remove(pending);
+                pending.OnRemove();
             }
         }
         public void Sleep(TimeSpan span)
@@ -122,13 +125,16 @@ namespace Scm.Concurrency
                 return;
             try
             {
-                pending.WaitActivation();
+                pending.Activated.WaitOne();
             }
             finally
             {
                 lock (SyncRoot)
-                    _pending.Remove(pending.Id, out var _);
+                    _pending.Remove(pending);
+                pending.OnRemove();
             }
+
+            pending.Removed.WaitOne();
         }
     }
 }
