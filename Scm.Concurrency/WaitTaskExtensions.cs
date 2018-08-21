@@ -22,27 +22,37 @@ namespace Scm.Concurrency
             }
         }
 
-        public static async Task WaitAsync(this WaitHandle waitHandle, CancellationToken cancellationToken)
+        public static Task WaitAsync(this WaitHandle waitHandle, CancellationToken cancellationToken)
         {
+            // Already completed?
+            if (waitHandle.WaitOne(0))
+                return Task.CompletedTask;
+
             var tcs = new TaskCompletionSource<int>();
             void Callback(object state, bool timedOut)
             {
                 var cbTcs = (TaskCompletionSource<int>)state;
-                if (timedOut)
-                    cbTcs.TrySetCanceled();
-                else
-                    cbTcs.TrySetResult(0);
+                cbTcs.TrySetResult(0);
             }
             var reg = ThreadPool.RegisterWaitForSingleObject(waitHandle, Callback, tcs, -1, executeOnlyOnce: true);
             var c = cancellationToken.CanBeCanceled ? cancellationToken.Register(() => tcs.TrySetCanceled())
                 : default(CancellationTokenRegistration);
             // ReSharper disable once MethodSupportsCancellation -- this continuation should run even if task is cancelled
-            await tcs.Task.ContinueWith(t =>
+#pragma warning disable 4014 // Is continuation for cleanup, not for return
+            tcs.Task.ContinueWith(t =>
+#pragma warning restore 4014
             {
                 if (c != default(CancellationTokenRegistration))
                     c.Dispose();
                 reg.Unregister(waitHandle);
-            }).ConfigureAwait(false);
+            });
+            return tcs.Task;
+        }
+
+        public static async Task<TResult> OnCompletion<TResult>(this Task task, Func<Task<TResult>> f)
+        {
+            await task;
+            return await f();
         }
 
         public static async Task<TResult> OnCancel<TResult>(
@@ -51,10 +61,17 @@ namespace Scm.Concurrency
             try
             {
                 return await task.ConfigureAwait(false);
-            } catch (Exception ex) when (ex is TaskCanceledException)
+            } catch (Exception) when (task.IsCanceled) // when (ex is TaskCanceledException)
             {
                 return await onCancellation().ConfigureAwait(false);
             }
         }
+
+        public static async Task OnCancel(this Task task, Func<Task> onCancellation)
+            => await task.OnCompletion(() => Task.FromResult(0)).OnCancel(async () =>
+            {
+                await onCancellation().ConfigureAwait(false);
+                return 0;
+            }).ConfigureAwait(false);
     }
 }
