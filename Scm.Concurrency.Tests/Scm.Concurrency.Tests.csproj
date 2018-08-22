@@ -19,4 +19,10 @@
     <ProjectReference Include="..\Scm.Linq\Scm.Linq.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Xunit.SkippableFact">
+      <HintPath>..\..\..\..\.nuget\packages\xunit.skippablefact\1.3.6\lib\netstandard1.1\Xunit.SkippableFact.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Linq.Expressions;
 using DataSys.App.DataModel;
 using Scm.DataAccess;
 using Scm.Presentation.Mvc;
 
-namespace DataSys.App.Presentation.Mvc
+namespace DataSys.App.Presentation.Mvc.Support
 {
     public abstract class
         UnitOfWorkAbstractEntityController<TUnitOfWork, TEntity, TResult> 

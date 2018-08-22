@@ -3,7 +3,7 @@ using DataSys.App.DataAccess;
 using DataSys.App.DataModel;
 using Scm.DataAccess;
 
-namespace DataSys.App.Presentation.Mvc
+namespace DataSys.App.Presentation.Mvc.Support
 {
     public abstract class
         AppUnitOfWorkAbstractEntityController<TEntity> : AppUnitOfWorkAbstractEntityController<TEntity, TEntity>

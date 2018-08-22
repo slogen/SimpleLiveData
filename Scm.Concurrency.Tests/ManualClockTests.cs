@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -12,13 +10,15 @@ namespace Scm.Concurrency.Tests
     public class ManualClockTests
     {
         public CancellationToken CancellationToken => default(CancellationToken);
-        [Fact]
-        public async Task ManualClockShouldSupportMultiplePendingOperationsAndSynchroneousOperations()
+        [Theory]
+        [InlineData(5)]
+        [InlineData(50)]
+        public async Task ManualClockShouldSupportMultiplePendingOperationsAndSynchroneousOperations(int concurCount)
         {
             var clock = new ManualClock();
             var step = TimeSpan.FromSeconds(1);
-            var threadCount = 10;
-            var concurrent = Enumerable.Range(0, threadCount)
+            Skip.If(concurCount < 4);
+            var concurrent = Enumerable.Range(0, concurCount)
                 .Select(i =>
                 {
                     if (i % 2 == 0) // Do async
@@ -47,7 +47,7 @@ namespace Scm.Concurrency.Tests
             // Only 0 should be able to run
             await Task.WhenAll(concurrent.Where(x => x.Key <= 1).Select(x => x.Value)).ConfigureAwait(false);
             concurrent.Where(x => x.Key > 1).Should().OnlyContain(x => !x.Value.IsCompleted);
-            clock.PendingCount().Should().BeGreaterThan(2).And.BeLessOrEqualTo(threadCount - 2);
+            clock.PendingCount().Should().BeGreaterOrEqualTo(2).And.BeLessOrEqualTo(concurCount - 2);
             await Task.WhenAll(clock.Advance(step)).ConfigureAwait(false);
             clock.PendingCount().Should().Be(0);
             var done = await Task.WhenAll(concurrent.Values).ConfigureAwait(false);
