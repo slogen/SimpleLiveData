@@ -19,4 +19,10 @@
     <ProjectReference Include="..\Scm.Sys\Scm.Sys.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="System.Reactive">
+      <HintPath>..\..\..\..\.nuget\packages\system.reactive\4.0.0\lib\netstandard2.0\System.Reactive.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
