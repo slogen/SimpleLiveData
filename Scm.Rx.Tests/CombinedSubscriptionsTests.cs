@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using System.Threading;
 using FluentAssertions;
 using Xunit;
@@ -16,14 +17,15 @@ namespace Scm.Rx.Tests
             public int GetHashCode(long obj) => 0;
         }
         [Fact]
-        public void CombineShouldUseKeyComparerAndDictionary()
+        public void CombineShouldUseKeyComparer()
         {
             Func<long, IObservable<int>> sourceFactory = x => Observable.Range(0, 3);
             long Aggregate(long acc, long next) => Math.Max(acc, next);
             var keyComparer = new NoComparer();
-            var dict = new Dictionary<long, long>();
-            sourceFactory.CombinedSubscriptions(Aggregate, keyComparer, dict);
+            sourceFactory.CombinedSubscriptions(Aggregate, default(long), keyComparer);
+
         }
+
         [Fact]
         public void CombineShouldActuallyPerformCombination()
         {
@@ -37,7 +39,7 @@ namespace Scm.Rx.Tests
             });
             Func<long, IObservable<int>> sourceFactory = x => source.Where(i => i <= x);
             long Aggregate(long acc, long next) => Math.Max(acc, next);
-            var c = sourceFactory.CombinedSubscriptions(Aggregate);
+            var c = sourceFactory.CombinedSubscriptions(Aggregate, -1L);
             var c0 = c(0);
             var l0 = new List<int>();
             var c3 = c(3);
