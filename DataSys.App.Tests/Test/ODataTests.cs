@@ -4,7 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using DataSys.App.Tests.Support.App;
+using DataSys.Protocol;
 using FluentAssertions;
+using Microsoft.OData;
 using Scm.Web;
 using Xunit;
 
@@ -17,27 +19,28 @@ namespace DataSys.App.Tests.Test
         {
         }
 
-        [SuppressMessage("ReSharper", "ClassNeverInstantiated.Local", Justification = "Deserialized")]
-        [SuppressMessage("ReSharper", "UnusedMember.Local", Justification = "Protocol for deserialize")]
-        private class Named
+        protected async Task<IList<Installation>> QueryInstallations(string args)
         {
-            public string Name { get; set; }
+            return await Client.GetJsonAsync<List<Installation>>(
+                new Uri(Server.BaseAddress, $"/odata/Installation?${args}"),
+                JsonSerializer,
+                CancellationToken
+            ).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task ODataNameOfInstallation()
         {
             await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
-            var server = Server;
-            var lst = await Client.GetJsonAsync<List<Named>>(
-                // "/odata/Installation?$expand=Data&$filter=contains(name, '1')"
-                // $"/odata/Installation({_app.TestSource.Installations.Query(x => x.First()).Id})" // -- BROKEN!
-                new Uri(server.BaseAddress, "/odata/Installation?$select=Name"),
-                JsonSerializer,
-                CancellationToken
-            );
-            var expect = TestSource.Installations().Select(i => new {i.Name});
-            lst.Should().BeEquivalentTo(expect);
+            var lst = await QueryInstallations("select=Name,Id").ConfigureAwait(false);
+            lst.Should().BeEquivalentTo(TestSource.Installations(), cfg => cfg.ExcludingMissingMembers());
+        }
+        [Fact]
+        public async Task ODataOrderingNonExistingPropertiesThrows()
+        {
+            await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
+            0.Awaiting(async _ => await QueryInstallations("select=Name,TotallyNotAProperty").ConfigureAwait(false))
+                .Should().Throw<ODataException>();
         }
     }
 }
