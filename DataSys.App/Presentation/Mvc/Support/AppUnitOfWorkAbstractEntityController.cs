@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DataSys.App.DataAccess;
 using DataSys.App.DataModel;
 using Scm.DataAccess;
@@ -23,7 +24,6 @@ namespace DataSys.App.Presentation.Mvc.Support
         protected AppUnitOfWorkAbstractEntityController(IAppUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
-        protected override IQueryable<TEntity> Source => UnitOfWork.Persistent<TEntity>();
-        protected override ISink<TEntity> Sink => UnitOfWork.Sink<TEntity>();
+        protected override IIdRepository<Guid, TEntity> Source => UnitOfWork.IdRepository<Guid, TEntity>(x => x.Id);
     }
 }

@@ -33,7 +33,7 @@ namespace DataSys.App.Tests.Test
         {
             await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
             var lst = await QueryInstallations("select=Name,Id").ConfigureAwait(false);
-            lst.Should().BeEquivalentTo(TestSource.Installations(), cfg => cfg.ExcludingMissingMembers());
+            lst.Should().BeEquivalentTo(TestSource.Installations, cfg => cfg.ExcludingMissingMembers());
         }
         [Fact]
         public async Task ODataOrderingNonExistingPropertiesThrows()

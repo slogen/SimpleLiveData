@@ -15,9 +15,7 @@ namespace DataSys.App.Presentation.Mvc.Support
         protected UnitOfWorkAbstractEntityController(TUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
-
-
-        protected override Expression<Func<TEntity, Guid>> IdExpression => e => e.Id;
+        
         protected override Guid Id(TEntity entity) => entity.Id;
     }
 }

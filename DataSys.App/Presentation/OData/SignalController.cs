@@ -1,4 +1,5 @@
-﻿using DataSys.App.DataAccess;
+﻿using System;
+using DataSys.App.DataAccess;
 using DataSys.App.DataModel;
 using DataSys.App.Presentation.OData.Support;
 using Scm.Presentation.OData;
@@ -12,6 +13,6 @@ namespace DataSys.App.Presentation.OData
         {
         }
 
-        protected override IQueryable<Signal> Source => UnitOfWork.Persistent<Signal>();
+        protected override IQueryable<Signal> Source => UnitOfWork.IdRepository<Guid, Signal>(x => x.Id).Queryable;
     }
 }

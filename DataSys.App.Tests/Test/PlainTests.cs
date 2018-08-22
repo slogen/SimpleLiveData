@@ -23,7 +23,7 @@ namespace DataSys.App.Tests.Test
         {
             await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
             var client = await Client.ConfigureAwait(false);
-            var i = TestSource.Installations().Last();
+            var i = TestSource.Installations.Last();
             var got = await client.GetJsonAsync<Installation>(
                 new Uri(Server.BaseAddress, $"{InstallationXController.RoutePrefix}/{i.Id}"),
                 JsonSerializer,

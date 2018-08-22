@@ -8,39 +8,44 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scm.DataAccess;
+using Scm.Linq;
+using Scm.Web;
 
 namespace Scm.Presentation.Mvc
 {
-    public abstract class EntityController<TEntity, TResult> : EntityController<Guid, TEntity, TResult>
+    public abstract class EntityController<TEntity, TResult> : EntityController<IIdRepository<Guid, TEntity>, Guid, TEntity, TResult>
+        where TEntity : class
+    { }
+    public abstract class EntityController<TId, TEntity, TProtocol> : EntityController<IIdRepository<TId, TEntity>, TId, TEntity, TProtocol>
         where TEntity : class
     {
     }
     [Route(RoutePrefix)]
-    public abstract class EntityController<TId, TEntity, TResult> : ControllerBase
+    public abstract class EntityController<TRepository, TId, TEntity, TProtocol> : ControllerBase
         where TEntity : class
+        where TRepository: IIdRepository<TId, TEntity>
     {
         public const string RoutePrefix = "api/[controller]";
-        protected abstract IQueryable<TEntity> Source { get; }
-        protected abstract ISink<TEntity> Sink { get; }
-        protected abstract Expression<Func<TEntity, TId>> IdExpression { get; }
-        protected abstract TResult ToProtocol(TEntity entity);
-        protected abstract TEntity FromProtocol(TResult item);
+        protected abstract TRepository Source { get; }
+        protected abstract TProtocol ToProtocol(TEntity entity);
+        protected virtual TEntity FromProtocol(TProtocol item) => throw new NotImplementedException();
+        protected virtual void Copy(TEntity src, TEntity dest) => throw new NotImplementedException();
         protected abstract Task SaveChanges(CancellationToken cancellationToken);
         protected abstract TId Id(TEntity entity);
-
-        protected virtual IEnumerable<TResult> ToProtocol(IEnumerable<TEntity> entities)
+ 
+        protected virtual IEnumerable<TProtocol> ToProtocol(IEnumerable<TEntity> entities)
             => entities.Select(ToProtocol);
 
-        protected virtual IEnumerable<TResult> ToProtocol(IAsyncEnumerable<TEntity> entities)
+        protected virtual IEnumerable<TProtocol> ToProtocol(IAsyncEnumerable<TEntity> entities)
             => entities.Select(ToProtocol).ToEnumerable();
 
         [HttpGet("{id}")]
         [HttpPost]
         [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
-        public virtual async Task<ActionResult<TResult>> Get(TId id, CancellationToken cancellationToken)
+        [ProducesResponseType(404, Type = typeof(Guid))]
+        public virtual async Task<ActionResult<TProtocol>> Get(TId id, CancellationToken cancellationToken)
         {
-            var entity = await Source.FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+            var entity = await Source.ByIdAsync(id, cancellationToken).ConfigureAwait(false);
             if (entity == null)
                 return NotFound(id);
             return Ok(ToProtocol(entity));
@@ -48,30 +53,68 @@ namespace Scm.Presentation.Mvc
 
         [HttpPut("")]
         [ProducesResponseType(200)]
-        public virtual async Task<ActionResult<TResult>> Put(TResult newItem, CancellationToken cancellationToken)
+        [ProducesResponseType(404, Type = typeof(Guid))]
+        public virtual async Task<ActionResult<TProtocol>> Put(TProtocol newItem, CancellationToken cancellationToken)
         {
             var entity = FromProtocol(newItem);
             var id = Id(entity);
-            var added = await Sink.Add(Observable.Return(entity)).Count();
+            var added = await Source.Add(Observable.Return(entity)).Count();
             if (added <= 0)
                 return NotFound(id);
             await SaveChanges(cancellationToken).ConfigureAwait(false);
-            return Ok(id); // TODO: Link to created object
+            return Ok(id);
         }
+        [HttpPatch("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404, Type = typeof(Guid))]
+        public virtual async Task<ActionResult<TProtocol>> Patch(TId id, TProtocol newItem, CancellationToken cancellationToken)
+        {
+            var oldEntity = await Source.ByIdAsync(id, cancellationToken);
+            if (oldEntity == null)
+                return NotFound(id);
+            var newEntity = FromProtocol(newItem);
+            Copy(newEntity, oldEntity);
+            await SaveChanges(cancellationToken).ConfigureAwait(false);
+            return Ok(oldEntity);
+        }
+        [HttpGet("ids/offset={offset},count={count}")]
+        [HttpPost]
+        [ProducesResponseType(200)]
+        public virtual ActionResult<IEnumerable<TId>> IdList(int? offset, int? count, CancellationToken cancellationToken)
+        {
+            var q = Source.Queryable.Select(Source.IdExpression).OrderBy(x => x).AsQueryable();
+            if (offset.HasValue)
+                q = q.Skip(offset.Value);
+            if (count.HasValue)
+                q = q.Take(count.Value);
+            return Ok(q.ToAsyncEnumerable());
+        }
+
+        [HttpGet("ids/all")]
+        [HttpPost]
+        [ProducesResponseType(200)]
+        public virtual ActionResult<IEnumerable<TId>> IdList(CancellationToken cancellationToken)
+            => IdList(null, null, cancellationToken);
 
         [HttpGet("offset={offset},count={count}")]
         [HttpPost]
         [ProducesResponseType(200)]
-        public virtual ActionResult<IEnumerable<TResult>> List(int offset, int count, CancellationToken cancellationToken)
+        public virtual ActionResult<IEnumerable<TProtocol>> List(int? offset, int? count,
+            CancellationToken cancellationToken)
         {
-            return Ok(ToProtocol(Source.OrderBy(IdExpression).Skip(offset).Take(count).ToAsyncEnumerable()));
+            var q = Source.Queryable.OrderBy(Source.IdExpression).AsQueryable();
+            if (offset.HasValue)
+                q = q.Skip(offset.Value);
+            if (count.HasValue)
+                q = q.Take(count.Value);
+            return Ok(q.ToAsyncEnumerable());
         }
 
         public const string AllRoute = "all";
         [HttpGet(AllRoute)]
         [HttpPost]
         [ProducesResponseType(200)]
-        public virtual ActionResult<IEnumerable<TResult>> List(CancellationToken cancellationToken)
-            => List(0, int.MaxValue, cancellationToken);
+        public virtual ActionResult<IEnumerable<TProtocol>> List(CancellationToken cancellationToken)
+            => List(null, null, cancellationToken);
     }
 }

@@ -30,5 +30,32 @@ namespace Scm.Linq
 
         public static Func<TArg1, TArg2, TArg3, T> Func<TArg1, TArg2, TArg3, T>(this Func<TArg1, TArg2, TArg3, T> f) =>
             f;
+
+        /// <summary>
+        /// Creates an expression comparing two instances of <typeparamref name="T"/>
+        /// </summary>
+        public static Expression<Func<T, T, bool>> Eq<T>()
+        {
+            var t = typeof(T);
+            if (!t.IsPrimitive)
+                throw new NotSupportedException($"Cannot equilityc compare {t}");
+            var left = Expression.Parameter(t, "left");
+            var right = Expression.Parameter(t, "right");
+
+            return Expression.Lambda<Func<T, T, bool>>(Expression.Equal(left, right), left, right);
+
+        }
+
+        public static Expression<Func<T, bool>> Eq<T>(T id)
+        {
+            var t = typeof(T);
+            if (!t.IsValueType)
+                throw new NotSupportedException($"Cannot equilityc compare {t}");
+            var left = Expression.Constant(id, t);
+            var right = Expression.Parameter(t, "right");
+
+            return Expression.Lambda<Func<T, bool>>(Expression.Equal(left, right), right);
+        }
+
     }
 }

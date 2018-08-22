@@ -11,6 +11,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Scm.DataAccess\Scm.DataAccess.csproj" />
+    <ProjectReference Include="..\Scm.Linq\Scm.Linq.csproj" />
+    <ProjectReference Include="..\Scm.Web\Scm.Web.csproj" />
   </ItemGroup>
 
 </Project>

@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Scm.Concurrency\Scm.Concurrency.csproj" />
+    <ProjectReference Include="..\Scm.Linq\Scm.Linq.csproj" />
     <ProjectReference Include="..\Scm.Rx\Scm.Rx.csproj" />
     <ProjectReference Include="..\Scm.Sys\Scm.Sys.csproj" />
   </ItemGroup>

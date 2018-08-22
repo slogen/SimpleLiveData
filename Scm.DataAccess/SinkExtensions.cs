@@ -19,6 +19,13 @@ namespace Scm.DataAccess
         public static IObservable<TEntity> Add<TEntity>(this ISink<TEntity> sink, IObservable<TEntity> entities)
             where TEntity : class
             => sink.Change(EntityChange.Add, entities);
+        public static IObservable<TEntity> Modify<TEntity>(this ISink<TEntity> sink, IObservable<TEntity> entities)
+            where TEntity : class
+            => sink.Change(EntityChange.Modify, entities);
+
+        public static async Task Modify<TEntity>(this ISink<TEntity> sink, TEntity entity, CancellationToken cancellationToken)
+            where TEntity : class
+            => await sink.Modify(Observable.Return(entity)).ToTask(cancellationToken).ConfigureAwait(false);
 
         public static IObservable<TEntity> Delete<TEntity>(this ISink<TEntity> sink, IObservable<TEntity> entities)
             where TEntity : class

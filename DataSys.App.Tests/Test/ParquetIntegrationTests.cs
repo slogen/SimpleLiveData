@@ -76,7 +76,7 @@ namespace DataSys.App.Tests.Test
                             $"{InstallationXController.RoutePrefix}/{InstallationXController.AllRoute}")
                         .GetRequest())
                 .ConfigureAwait(false);
-            got.Should().BeEquivalentTo(TestSource.Installations(),
+            got.Should().BeEquivalentTo(TestSource.Installations,
                 cfg => cfg.ExcludingMissingMembers()
                     // Currently Guid is not serialized :(
                     .Excluding(x => x.Id));

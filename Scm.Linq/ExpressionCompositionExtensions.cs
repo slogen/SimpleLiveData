@@ -7,6 +7,8 @@ namespace Scm.Linq
 {
     public static class ExpressionCompositionExtensions
     {
+
+
         /// <summary>
         /// Compose <paramref name="f"/> *after* <paramref name="g"/> in the mathematical sense: (f.After(g))(x) == f(g(x))
         /// </summary>

@@ -42,27 +42,30 @@ namespace DataSys.App.Tests.Support.App.Source
         {
             using (var uow = UnitOfWork())
             {
-                await uow.Sink<Installation>().Add(Observable.Range(0, installations).Select(Installation))
-                    .Count().ToTask(cancellationToken).ConfigureAwait(false);
-                await uow.Sink<Signal>().Add(Observable.Range(0, signals).Select(Signal))
-                    .Count().ToTask(cancellationToken).ConfigureAwait(false);
+                await uow.Repository<Installation>().AddRangeAsync(Enumerable.Range(0, installations).Select(Installation), cancellationToken)
+                    .ConfigureAwait(false);
+                await uow.Repository<Signal>().AddRangeAsync(Enumerable.Range(0, signals).Select(Signal), cancellationToken)
+                    .ConfigureAwait(false);
                 await uow.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             }
         }
 
-        public IEnumerable<Installation> Installations()
+        public IEnumerable<Installation> Installations
         {
-            using (var uow = UnitOfWork())
-                return uow.Persistent<Installation>().ToList();
+            get
+            {
+                using (var uow = UnitOfWork())
+                    return uow.Installations.Queryable.ToList();
+            }
         }
-
-        public IObservable<TResult> ObserveInstallations<TResult>(
-            Func<IQueryable<Installation>, IObservable<TResult>> f)
-            => Observable.Using(UnitOfWork, uow => f(uow.Persistent<Installation>()));
-
-        public IObservable<TResult> ObserveInstallations<TResult>(
-            Func<IQueryable<Installation>, IEnumerable<TResult>> f)
-            => ObserveInstallations(q => f(q).ToObservable());
+        public IEnumerable<Signal> Signals
+        {
+            get
+            {
+                using (var uow = UnitOfWork())
+                    return uow.Signals.Queryable.ToList();
+            }
+        }
 
         public IObservable<IList<Data>> ProduceData(IObservable<DateTime> times,
             Func<Installation, Signal, DateTime, float> f = null)
@@ -71,19 +74,22 @@ namespace DataSys.App.Tests.Support.App.Source
                 f = (i, s, t) =>
                     (float) Math.Sin(0.0 + i.Id.GetHashCode() + s.Id.GetHashCode() + t.Ticks);
             var obs = times.Select(t =>
-                    Observable.Using(
-                        UnitOfWork,
-                        uow =>
-                            uow.Sink<Data>().Add(
-                                    (from inst in uow.Persistent<Installation>()
-                                        from sig in uow.Persistent<Signal>()
+                    Observable.FromAsync(async ct =>
+                        {
+                            using (var uow = UnitOfWork())
+                            {
+                                var data = (
+                                        from inst in Installations
+                                        from sig in Signals
                                         select new {inst, sig})
                                     .Select(x => new Data(x.inst.Id, x.sig.Id, t, f(x.inst, x.sig, t)))
-                                    .ToObservable())
-                                .SideEffectLast(uow.SaveChangesAsync).ToList()
-                                .Publish().RefCount()
-                    ))
-                .Concat();
+                                    .ToList();
+                                await uow.Repository<Data>().AddRangeAsync(data, ct).ConfigureAwait(false);
+                                await uow.SaveChangesAsync(ct);
+                                return data;
+                            }
+                        }))
+                        .Concat();
             return obs.Publish().RefCount();
         }
     }

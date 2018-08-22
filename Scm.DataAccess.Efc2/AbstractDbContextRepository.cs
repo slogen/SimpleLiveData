@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Scm.Linq;
 using Scm.Rx;
 
 namespace Scm.DataAccess.Efc2
@@ -12,72 +17,23 @@ namespace Scm.DataAccess.Efc2
     {
         protected abstract DbSet<TEntity> Set { get; }
 
+
         public IQueryable<TEntity> Queryable => Set;
+        public void Add(TEntity entity) => Set.Add(entity);
+        public async Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
+            => await Set.AddRangeAsync(entities, cancellationToken).ConfigureAwait(false);
 
-        public IObservable<IEntityEvent<TEntity>> Change(IObservable<IGroupedObservable<EntityChange, TEntity>> changes)
-        {
-            var obs = changes.Select(grp =>
-            {
-                switch (grp.Key)
-                {
-                    case EntityChange.Add:
-                        return grp.Select(entity => AddEvent.From(Set.Add(entity)));
-                    case EntityChange.Modify:
-                        return grp.Select(entity => ModifyEvent.From(Set.Update(entity)));
-                    case EntityChange.Delete:
-                        return grp.Select(entity => DeleteEvent.From(Set.Remove(entity)));
-                    default:
-                        throw new NotSupportedException($"Cannot {grp.Key} on {GetType()}");
-                }
-            }).Merge();
-            return obs;
-        }
-
-        public IObservable<IEntityEvent<object>> DynamicChange(
-            IObservable<IGroupedObservable<EntityChange, object>> changes)
-            => Change(changes.GroupedSelect(grp => grp.Cast<TEntity>())).Cast<IEntityEvent<object>>();
-
-        protected abstract class AbstractEntityEntryEvent : AbstractEntityEvent<TEntity>, IEntityEvent<object>
-        {
-            protected AbstractEntityEntryEvent(EntityEntry<TEntity> entityEntry)
-            {
-                EntityEntry = entityEntry;
-            }
-
-            public EntityEntry<TEntity> EntityEntry { get; }
-            public override TEntity Entity => EntityEntry.Entity;
-
-            object IEntityEvent<object>.Entity => Entity;
-        }
-
-        protected class AddEvent : AbstractEntityEntryEvent
-        {
-            public AddEvent(EntityEntry<TEntity> entityEntry) : base(entityEntry)
-            {
-            }
-
-            public override EntityChange Change => EntityChange.Add;
-            public static IEntityEvent<TEntity> From(EntityEntry<TEntity> entityEntry) => new AddEvent(entityEntry);
-        }
-
-        protected class ModifyEvent : AbstractEntityEntryEvent
-        {
-            public ModifyEvent(EntityEntry<TEntity> entityEntry) : base(entityEntry)
-            {
-            }
-
-            public override EntityChange Change => EntityChange.Modify;
-            public static IEntityEvent<TEntity> From(EntityEntry<TEntity> entityEntry) => new ModifyEvent(entityEntry);
-        }
-
-        protected class DeleteEvent : AbstractEntityEntryEvent
-        {
-            public DeleteEvent(EntityEntry<TEntity> entityEntry) : base(entityEntry)
-            {
-            }
-
-            public override EntityChange Change => EntityChange.Delete;
-            public static IEntityEvent<TEntity> From(EntityEntry<TEntity> entityEntry) => new DeleteEvent(entityEntry);
-        }
+        public async Task RemoveRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
+            => await Task.Factory.StartNew(() => Set.RemoveRange(entities), cancellationToken).ConfigureAwait(false);
     }
+
+    public abstract class AbstractDbContextRepository<TId, TEntity> : AbstractDbContextRepository<TEntity>, IIdRepository<TId, TEntity>
+        where TEntity : class
+    {
+        public abstract Expression<Func<TEntity, TId>> IdExpression { get; }
+
+        public async Task<TEntity> ByIdAsync(TId id, CancellationToken cancellationToken)
+            => await Set.SingleOrDefaultAsync(IdExpression.Before(F.Eq(id)), cancellationToken).ConfigureAwait(false);
+    }
+
 }
