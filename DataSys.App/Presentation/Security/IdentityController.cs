@@ -30,6 +30,8 @@ namespace DataSys.App.Presentation.Security
 
         protected virtual HeldClaimsPrincipal ToProtocol(ClaimsPrincipal p) => new HeldClaimsPrincipal(p);
 
+
+        // Cannot directly serrialize claim, so we have a protocol :)
         public class ClaimHeld
         {
             public ClaimHeld(Claim claim)
@@ -75,6 +77,4 @@ namespace DataSys.App.Presentation.Security
             public string Label { get; set; }
         }
     }
-
-    // Cannot directly serrialize claim
 }
