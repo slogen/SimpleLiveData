@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Scm.Rx\Scm.Rx.csproj" />
     <ProjectReference Include="..\Scm.Sys\Scm.Sys.csproj" />
   </ItemGroup>
 
