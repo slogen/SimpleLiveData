@@ -1,7 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using DataSys.App.Tests.Support.App;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Datasys.App.Console
@@ -10,38 +7,23 @@ namespace Datasys.App.Console
     {
         public static void Main(string[] args)
         {
-            BuildA(args)
+            BuildWebHost(args)
                 .UseStartup<Startup>()
                 .Build()
                 .Run();
         }
 
-        [SuppressMessage("ReSharper", "UnusedMember.Local", Justification = "Experimentally exchanging")]
-        [SuppressMessage("ReSharper", "UnusedParameter.Local", Justification = "Passed for uniformity")]
-        private static IWebHostBuilder BuildA(string[] args)
+        private static IWebHostBuilder BuildWebHost(string[] args)
         {
-            System.Console.WriteLine("A");
-            return new WebHostBuilder()
-                .UseKestrel()
+            System.Console.WriteLine("B");
+            return WebHost.CreateDefaultBuilder(args)
                 .CaptureStartupErrors(true)
                 .UseSetting(WebHostDefaults.DetailedErrorsKey, "true")
                 .UseEnvironment(EnvironmentName.Development);
         }
 
-        [SuppressMessage("ReSharper", "UnusedMember.Local", Justification = "Experiments exchange A and B")]
-        private static IWebHostBuilder BuildB(string[] args)
+        public class Startup : DataSys.App.Hosting.Startup
         {
-            System.Console.WriteLine("B");
-            return WebHost.CreateDefaultBuilder(args);
-        }
-
-        public class Startup : SecurityTestSourceBasedTests.Startup
-        {
-            public override void Configure(IApplicationBuilder app, IHostingEnvironment env)
-            {
-                if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
-                base.Configure(app, env);
-            }
         }
     }
 }

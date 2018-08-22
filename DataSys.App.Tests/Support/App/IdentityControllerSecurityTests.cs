@@ -19,10 +19,10 @@ namespace DataSys.App.Tests.Support.App
         protected string ExpectClientName => Identity4ServerConfiguration.Id4Clients.Single().ClientName;
         protected string ExpectClientId => Identity4ServerConfiguration.Id4Clients.Single().ClientId;
 
-        protected async Task<HeldClaimsPrincipal> Query(string path)
+        protected async Task<IdentityController.HeldClaimsPrincipal> Query(string path)
         {
             var server = Server;
-            return await Client.GetJsonAsync<HeldClaimsPrincipal>(
+            return await Client.GetJsonAsync<IdentityController.HeldClaimsPrincipal>(
                 server.BaseAddress.Slash(IdentityController.RoutePrefix).Slash(path),
                 JsonSerializer,
                 CancellationToken

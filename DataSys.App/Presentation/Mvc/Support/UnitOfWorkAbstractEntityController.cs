@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using DataSys.App.DataModel;
 using Scm.DataAccess;
@@ -15,6 +16,7 @@ namespace DataSys.App.Presentation.Mvc
         protected UnitOfWorkAbstractEntityController(TUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
+
 
         protected override Expression<Func<TEntity, Guid>> IdExpression => e => e.Id;
         protected override Guid Id(TEntity entity) => entity.Id;

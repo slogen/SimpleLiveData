@@ -37,7 +37,7 @@ namespace DataSys.App.Tests.Test
                 JsonSerializer,
                 CancellationToken
             );
-            var expect = await TestSource.ObserveInstallations(insts => insts.Select(i => new {i.Name})).ToList();
+            var expect = TestSource.Installations().Select(i => new {i.Name});
             lst.Should().BeEquivalentTo(expect);
         }
     }
