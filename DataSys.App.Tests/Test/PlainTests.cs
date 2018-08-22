@@ -23,13 +23,13 @@ namespace DataSys.App.Tests.Test
         {
             await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
             var client = await Client.ConfigureAwait(false);
-            var i1 = TestSource.Installations().First();
+            var i = TestSource.Installations().Last();
             var got = await client.GetJsonAsync<Installation>(
-                new Uri(Server.BaseAddress, $"{InstallationXController.RoutePrefix}/{i1.Id}"),
+                new Uri(Server.BaseAddress, $"{InstallationXController.RoutePrefix}/{i.Id}"),
                 JsonSerializer,
                 CancellationToken
             );
-            var expected = new Installation(i1.Id, i1.Name, i1.InstallationPeriod.From, i1.InstallationPeriod.To);
+            var expected = new Installation(i.Id, i.Name, i.InstallationPeriod.From, i.InstallationPeriod.To);
             got.Should().BeEquivalentTo(expected);
         }
     }

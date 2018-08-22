@@ -15,7 +15,6 @@ namespace Scm.Presentation.Mvc
         where TEntity : class
     {
     }
-    // TODO: Move to library
     [Route(RoutePrefix)]
     public abstract class EntityController<TId, TEntity, TResult> : ControllerBase
         where TEntity : class
