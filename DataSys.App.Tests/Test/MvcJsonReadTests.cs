@@ -11,19 +11,22 @@ using Xunit;
 
 namespace DataSys.App.Tests.Test
 {
-    public class PlainTests : TestSourceBasedTests, IClassFixture<TestAppUnitOfWorkFactory>
+    [Collection(nameof(StandardClientServer33ReadOnly))]
+    public class MvcJsonReadTests : InClientServerStateContextTest<StandardClientServer33ReadOnly>
     {
-        [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter", Justification = "Specific type required for IoC")]
-        public PlainTests(TestAppUnitOfWorkFactory appUnitOfWorkFactory) : base(appUnitOfWorkFactory)
+        public MvcJsonReadTests(StandardClientServer33ReadOnly context) : base(context)
         {
         }
 
-        [Fact]
-        public async Task GetTurbinesByIdReturnsExpectedJson()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(2)]
+        public async Task GetTurbinesByIdReturnsExpectedJson(int index)
         {
-            await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
+            await Prepared.ConfigureAwait(false);
             var client = await Client.ConfigureAwait(false);
-            var i = TestSource.Installations.Last();
+            var i = TestSource.Installations.Skip(index).First();
             var got = await client.GetJsonAsync<Installation>(
                 new Uri(Server.BaseAddress, $"{InstallationXController.RoutePrefix}/{i.Id}"),
                 JsonSerializer,

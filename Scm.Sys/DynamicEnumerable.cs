@@ -30,20 +30,36 @@ namespace Scm.Sys
                 return $"Unable to deduce elementtype from {source}";
             }
         }
+
+        private static IEnumerable<Type> GenericTypes(this object o)
+            => o.GetType().GetInterfaces()
+                .Where(t => t.IsGenericType);
         public static Type ElementType(this IEnumerable enumerable)
         {
             if (enumerable == null)
                 throw new ArgumentNullException(nameof(enumerable));
-            var enumTypes = enumerable.GetType().GetInterfaces().Where(t =>
-            {
-                if (!t.IsGenericType)
-                    return false;
-                var tg = t.GetGenericTypeDefinition();
-                return tg == typeof(IEnumerable<>);
-            }).ToList();
+            var enumTypes = enumerable.GenericTypes()
+                .Where(t => t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                .ToList();
             if (enumTypes.Count != 1)
                 throw new InconclusiveElementTypeException(enumerable, enumTypes, nameof(enumerable));
             return enumTypes.Single().GenericArguments().Single();
+        }
+
+        public static Type ElementType(this object o)
+        {
+            if (o == null)
+                return null;
+            var enumTypes = o.GenericTypes()
+                    .Where(t => t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                    .ToList();
+            var asyncEnumTypes = o.GenericTypes()
+                .Where(t => t.GetGenericTypeDefinition() == typeof(IAsyncEnumerable<>))
+                .ToList();
+            var candidates = enumTypes.Concat(asyncEnumTypes).Select(x => x.GenericTypeArguments.Single()).Distinct().ToList();
+            if (candidates.Count <= 0 || candidates.Count > 1)
+                throw new InconclusiveElementTypeException(o, enumTypes.Concat(asyncEnumTypes), nameof(o));
+            return candidates.Single();
         }
     }
 }

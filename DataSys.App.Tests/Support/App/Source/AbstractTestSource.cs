@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using DataSys.App.DataAccess;
 using DataSys.App.DataModel;
-using Scm.DataAccess;
-using Scm.Rx;
 using Scm.Sys;
 
 namespace DataSys.App.Tests.Support.App.Source

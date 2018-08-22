@@ -1,4 +1,6 @@
-﻿using DataSys.App.DataAccess;
+﻿using System;
+using System.Threading.Tasks;
+using DataSys.App.DataAccess;
 using DataSys.App.Tests.Support.App.Source;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,11 +25,14 @@ namespace DataSys.App.Tests.Support.App
     public class TestSourceBasedTests<TStartup> : DataAppTests<TStartup>
         where TStartup : class
     {
-        private TestSource _testSource;
+        private readonly Lazy<Task> _prepared;
+        private readonly Lazy<TestSource> _testSource;
 
         public TestSourceBasedTests(IAppUnitOfWorkFactory appUnitOfWorkFactory)
         {
             AppUnitOfWorkFactory = appUnitOfWorkFactory;
+            _prepared = new Lazy<Task>(Prepare);
+            _testSource = new Lazy<TestSource>(MakeTestSource);
         }
 
         protected override IWebHostBuilder ConfigureBuilder(IWebHostBuilder builder)
@@ -36,9 +41,11 @@ namespace DataSys.App.Tests.Support.App
         }
 
         public IAppUnitOfWorkFactory AppUnitOfWorkFactory { get; }
-        protected TestSource TestSource => _testSource ?? (_testSource = MakeTestSource());
+        protected TestSource TestSource => _testSource.Value;
         protected JsonSerializer JsonSerializer { get; } = new JsonSerializer();
         protected virtual TestSource MakeTestSource() => new TestSource(AppUnitOfWorkFactory);
+        protected virtual Task Prepare() => TestSource.Prepare(3, 3, CancellationToken);
+        protected Task Prepared => _prepared.Value; 
 
         protected override void ConfigureTestServices(IServiceCollection svcs)
         {

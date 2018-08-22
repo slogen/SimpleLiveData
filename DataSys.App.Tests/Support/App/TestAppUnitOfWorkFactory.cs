@@ -15,4 +15,9 @@ namespace DataSys.App.Tests.Support.App
         public long Id { get; }
         protected override string DbContextName => $"TestAppDb{Id}";
     }
+
+    public class TestAppUnitOfWorkFactoryPrepared3
+    {
+
+    }
 }

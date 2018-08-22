@@ -18,16 +18,15 @@ namespace Scm.Presentation.Mvc.Parquet
             // Even though we do not support application/json replay we apparently get called anyway?
             var accept = context.HttpContext.Request.GetTypedHeaders()?.Accept;
             var headerSupported = accept?.Any(a => SupportedMediaTypes.Any(m => a.MediaType == m)) ?? false;
-            return  headerSupported && (context.Object as IEnumerable)?.ElementType() != null;
+            if (!headerSupported)
+                return false;
+            var elementType = context.Object.ElementType();
+            return elementType != null;
         }
 
         public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context)
         {
-            // ReSharper disable PossibleMultipleEnumeration -- Only enumerated once
-            var o = (IEnumerable)context.Object;
-            var a = o.AsArray(o.ElementType());
-            // ReSharper restore PossibleMultipleEnumeration
-
+            var a = await context.Object.ObjectAsArray(context.HttpContext.RequestAborted).ConfigureAwait(false);
             var response = context.HttpContext.Response;
             await a.ParquetSerializeAsync(response.Body, context.HttpContext.RequestAborted, null, CompressionMethod, RowGroupSize).ConfigureAwait(false);
         }

@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
@@ -13,16 +14,18 @@ namespace DataSys.App.Tests.Support.Hosting
     /// </summary>
     public abstract class HttpServerBase : MissingDisposeDetection
     {
-        private Task<HttpClient> _client;
-        private TestServer _server;
-        protected virtual CancellationToken CancellationToken => default(CancellationToken);
-        protected TestServer Server => _server ?? (_server = new TestServer(ConfigureBuilder(MakeBuilder())));
+        private readonly Lazy<Task<HttpClient>> _client;
+        private readonly Lazy<TestServer> _server;
 
-        protected Task<HttpClient> Client
+        protected HttpServerBase()
         {
-            get => _client ?? (_client = MakeClient(CancellationToken));
-            set => _client = value;
+            _client = new Lazy<Task<HttpClient>>(() => MakeClient(CancellationToken));
+            _server = new Lazy<TestServer>(MakeServer);
         }
+        protected virtual CancellationToken CancellationToken => default(CancellationToken);
+        protected TestServer Server => _server.Value;
+
+        protected Task<HttpClient> Client => _client.Value;
 
         protected virtual IWebHostBuilder MakeBuilder() => new WebHostBuilder();
 
@@ -33,6 +36,8 @@ namespace DataSys.App.Tests.Support.Hosting
         {
         }
 
+        protected virtual TestServer MakeServer() => new TestServer(ConfigureBuilder(MakeBuilder()));
+
         protected virtual Task<HttpClient> MakeClient(CancellationToken cancellationToken) =>
             Task.FromResult(Server.CreateClient());
 
@@ -42,11 +47,13 @@ namespace DataSys.App.Tests.Support.Hosting
             {
                 try
                 {
-                    _client?.Dispose();
+                    if ( _client.IsValueCreated )
+                        _client.Value.Dispose();
                 }
                 finally
                 {
-                    _server?.Dispose();
+                    if (_server.IsValueCreated)
+                        _server.Value.Dispose();
                 }
             }
             finally

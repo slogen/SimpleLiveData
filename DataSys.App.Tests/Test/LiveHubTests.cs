@@ -20,12 +20,9 @@ using Xunit.Abstractions;
 
 namespace DataSys.App.Tests.Test
 {
-    public class LiveHubTests : TestSourceBasedTests, IClassFixture<TestAppUnitOfWorkFactory>
+    public class LiveHubTests : StandardClientServer33
     {
-        [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter", Justification = "Specific type required for IoC")]
-        public LiveHubTests(TestAppUnitOfWorkFactory appUnitOfWorkFactory, ITestOutputHelper output) : base(
-            appUnitOfWorkFactory)
-        {
+        public LiveHubTests(ITestOutputHelper output) {
             Output = output;
         }
 
@@ -44,11 +41,10 @@ namespace DataSys.App.Tests.Test
         [Fact]
         public async Task ObservingThoughApiWorks()
         {
-            await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
-            var server = Server;
+            await Prepared.ConfigureAwait(false);
             var builder = new HubConnectionBuilder()
                     .WithUrl($"http://test{LiveHub.Route}",
-                        cfg => cfg.HttpMessageHandlerFactory = _ => server.CreateHandler())
+                        cfg => cfg.HttpMessageHandlerFactory = _ => Server.CreateHandler())
                 ;
             var hubConnection = builder.Build();
             await hubConnection.StartAsync();

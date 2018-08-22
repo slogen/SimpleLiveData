@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DataSys.App.Presentation.Mvc;
-using DataSys.App.Tests.Support.App;
 using DataSys.Protocol;
 using FluentAssertions;
 using Parquet;
@@ -17,12 +15,9 @@ using Xunit;
 
 namespace DataSys.App.Tests.Test
 {
-    public class ParquetIntegrationTests : TestSourceBasedTests, IClassFixture<TestAppUnitOfWorkFactory>
+    [Collection(nameof(StandardClientServer33ReadOnly))]
+    public class ParquetIntegrationTests : InClientServerStateContextTest<StandardClientServer33ReadOnly>
     {
-        [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter", Justification = "Specific type required for IoC")]
-        public ParquetIntegrationTests(TestAppUnitOfWorkFactory appUnitOfWorkFactory) : base(appUnitOfWorkFactory)
-        {
-        }
         protected async Task<IList<T>> SendAsyncParquet<T>(HttpRequestMessage req)
             where T: new()
         {
@@ -69,7 +64,7 @@ namespace DataSys.App.Tests.Test
         [Fact]
         public async Task GetTurbinesByIdReturnsExpectedParquet()
         {
-            await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
+            await Prepared.ConfigureAwait(false);
             var server = Server;
             var got = await SendAsyncParquet<Installation>(
                     new Uri(server.BaseAddress,
@@ -82,5 +77,8 @@ namespace DataSys.App.Tests.Test
                     .Excluding(x => x.Id));
         }
 
+        public ParquetIntegrationTests(StandardClientServer33ReadOnly context) : base(context)
+        {
+        }
     }
 }

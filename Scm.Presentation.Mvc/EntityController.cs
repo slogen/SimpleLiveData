@@ -107,7 +107,7 @@ namespace Scm.Presentation.Mvc
                 q = q.Skip(offset.Value);
             if (count.HasValue)
                 q = q.Take(count.Value);
-            return Ok(q.ToAsyncEnumerable());
+            return Ok(ToProtocol(q.ToAsyncEnumerable()));
         }
 
         public const string AllRoute = "all";
