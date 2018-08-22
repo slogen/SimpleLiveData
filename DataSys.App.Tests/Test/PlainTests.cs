@@ -22,15 +22,15 @@ namespace DataSys.App.Tests.Test
         public async Task GetTurbinesByIdReturnsExpectedJson()
         {
             await TestSource.Prepare(3, 3, CancellationToken).ConfigureAwait(false);
-            var server = Server;
             var client = await Client.ConfigureAwait(false);
             var i1 = TestSource.Installations().First();
             var got = await client.GetJsonAsync<Installation>(
-                new Uri(server.BaseAddress, $"{InstallationXController.RoutePrefix}/{i1.Id}"),
+                new Uri(Server.BaseAddress, $"{InstallationXController.RoutePrefix}/{i1.Id}"),
                 JsonSerializer,
                 CancellationToken
             );
-            got.Should().BeEquivalentTo(new {i1.Id, i1.Name, i1.InstallationPeriod.From, i1.InstallationPeriod.To});
+            var expected = new Installation(i1.Id, i1.Name, i1.InstallationPeriod.From, i1.InstallationPeriod.To);
+            got.Should().BeEquivalentTo(expected);
         }
     }
 }
