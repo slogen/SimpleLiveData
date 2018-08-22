@@ -29,6 +29,7 @@ namespace Scm.Rx
                     var isMatch = r.TryGetValue(k, out var rv);
                     return new { isMatch, m = isMatch ? selector(lv, rv) : default(TResult) };
                 })
+                // ReSharper disable once ImplicitlyCapturedClosure -- acceptable
                 .Merge(right.Select(rv =>
                 {
                     var key = rightKey(rv);

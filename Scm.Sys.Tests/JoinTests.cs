@@ -47,6 +47,7 @@ namespace Scm.Sys.Tests
                 m = default(Match);
             }
 
+            // ReSharper disable once ImplicitlyCapturedClosure -- acceptable
             using (j.Subscribe(x => m = x))
             {
                 l.OnNext(X(1));
