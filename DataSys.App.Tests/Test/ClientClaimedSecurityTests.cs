@@ -20,6 +20,14 @@ namespace DataSys.App.Tests.Test
             got.Identities.Single().Claims
                 .Should().Contain(c => c.Value == Context.ExpectClientId && c.Type == "client_id");
         }
+        [Fact]
+        public async Task ClaimsShouldContainClientIdNoWhenAuthorizeRequired()
+        {
+            var got = await Context.Query(IdentityController.NoAuthorizeRoute).ConfigureAwait(false);
+
+            got.Identities.Single().Claims
+                .Should().Contain(c => c.Value == Context.ExpectClientId && c.Type == "client_id");
+        }
 
         [Fact]
         public void RequestsForGroupNotHeldShouldCause403()
