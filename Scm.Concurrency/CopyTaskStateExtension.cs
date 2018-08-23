@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Scm.Concurrency
@@ -12,6 +10,7 @@ namespace Scm.Concurrency
             src.ContinueWith(t =>
             {
                 var st = t.Status;
+                // ReSharper disable once SwitchStatementMissingSomeCases -- only handles 3 cases, rest throws via default:
                 switch (t.Status)
                 {
                     case TaskStatus.Canceled:
@@ -23,6 +22,7 @@ namespace Scm.Concurrency
                     case TaskStatus.RanToCompletion:
                         dst.SetResult(t.Result);
                         return;
+                    // ReSharper disable once RedundantEmptySwitchSection -- explicitly shows rest is unhandled
                     default:
                         break;
                 }

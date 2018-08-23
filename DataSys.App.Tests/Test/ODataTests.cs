@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DataSys.App.Tests.Support.App;
 using DataSys.Protocol;
 using FluentAssertions;
 using Microsoft.OData;

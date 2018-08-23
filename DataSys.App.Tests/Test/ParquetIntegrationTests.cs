@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DataSys.App.Presentation.Mvc;
+using DataSys.App.Tests.Support.App;
 using DataSys.Protocol;
 using FluentAssertions;
 using Parquet;

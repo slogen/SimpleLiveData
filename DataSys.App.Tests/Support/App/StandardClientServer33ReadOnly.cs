@@ -1,6 +1,7 @@
-﻿using Xunit;
+﻿using DataSys.App.Tests.Test;
+using Xunit;
 
-namespace DataSys.App.Tests.Test
+namespace DataSys.App.Tests.Support.App
 {
     /// <inheritdoc cref="StandardClientServerStateContext" />
     /// <summary>

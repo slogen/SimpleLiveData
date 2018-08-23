@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Runtime.Serialization;
@@ -7,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using DataSys.App.DataModel;
 using DataSys.App.Presentation.SignalR;
-using DataSys.App.Tests.Support.App;
 using DataSys.App.Tests.Support.Trace;
 using FluentAssertions;
 using Microsoft.AspNetCore.SignalR.Client;

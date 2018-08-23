@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,6 +34,6 @@ namespace Scm.DataAccess.Efc2
         public Expression<Func<TEntity, TId>> IdExpression { get; }
 
         public async Task<TEntity> ByIdAsync(TId id, CancellationToken cancellationToken)
-            => await Set.FirstOrDefaultAsync(IdExpression.Before(F.Eq(id))).ConfigureAwait(false);
+            => await Set.FirstOrDefaultAsync(IdExpression.Before(F.Eq(id)), cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 }
