@@ -11,10 +11,10 @@ namespace DataSys.App.Presentation.Mvc.Support
         where TUnitOfWork : IAsyncUnitOfWork
         where TEntity : AbstractEntity
     {
+        protected override Guid Id(TEntity entity) => entity.Id;
+
         protected UnitOfWorkAbstractEntityController(TUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
-        
-        protected override Guid Id(TEntity entity) => entity.Id;
     }
 }
