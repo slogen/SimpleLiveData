@@ -18,20 +18,18 @@ namespace Scm.Presentation.Mvc.Parquet
         private static MethodInfo _parquetConvertSerialize;
 
         private static MethodInfo ParquetConvertSerialize =>
-            _parquetConvertSerialize ?? (_parquetConvertSerialize = FindParquetConverSerialize());
+            _parquetConvertSerialize ?? (_parquetConvertSerialize = FindParquetConvertSerialize());
 
-        private static MethodInfo FindParquetConverSerialize()
+        private static MethodInfo FindParquetConvertSerialize()
         {
 
             var mis = typeof(ParquetConvert)
                 .GetMethods(BindingFlags.Static | BindingFlags.FlattenHierarchy | BindingFlags.Public)
-                .ToList();
-            var mis2 = mis
-                    .Where(mi => mi.GetParameters().FirstOrDefault()?.ParameterType?.IsArray ?? false)
-                    .ToList();
-            var mis3 = mis2.Where(mi => mi.GetParameters().Skip(1).Select(x => x.ParameterType).SequenceEqual(new[]
-                {typeof(Stream), typeof(Schema), typeof(CompressionMethod), typeof(int)})).ToList();
-            return mis3.First();
+                .Where(mi => mi.Name == nameof(ParquetConvert.Serialize))
+                .OrderByDescending(
+                    mi => mi.GetParameters().Skip(1).Select(x => x.ParameterType).SequenceEqual(new[]
+                    {typeof(Stream), typeof(Schema), typeof(CompressionMethod), typeof(int)}));
+            return mis.First();
         }
 
         public static Schema ParquetSerialize(
