@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -33,14 +34,16 @@ namespace Scm.Presentation.Mvc.Parquet
         }
 
         public static Schema ParquetSerialize(
-            this Array objectInstances, Stream destination,
+            this IEnumerable objectInstances, Stream destination,
             Schema schema = null,
             CompressionMethod? compressionMethod = null,
-            int? rowGroupSize = null)
+            int? rowGroupSize = null,
+            Type elementType = null)
         {
             if (objectInstances == null)
                 throw new ArgumentNullException(nameof(objectInstances));
-            var elementType = objectInstances.GetType().GetElementType();
+            if (elementType is null)
+                elementType = objectInstances.GetType().GetElementType();
             var bakedMethodInfo = ParquetConvertSerialize.MakeGenericMethod(elementType);
             var result = bakedMethodInfo.Invoke(null,
                 new object[]
@@ -52,14 +55,15 @@ namespace Scm.Presentation.Mvc.Parquet
         }
 
         public static async Task<Schema> ParquetSerializeAsync(
-            this Array objectInstances, Stream destination,
+            this IEnumerable objectInstances, Stream destination,
             CancellationToken cancellationToken,
             Schema schema = null,
             CompressionMethod? compressionMethod = null,
-            int? rowGroupSize = null)
+            int? rowGroupSize = null,
+            Type elementType = null)
         {
             return await Task.Factory
-                .StartNew(() => objectInstances.ParquetSerialize(destination, schema, compressionMethod, rowGroupSize),
+                .StartNew(() => objectInstances.ParquetSerialize(destination, schema, compressionMethod, rowGroupSize, elementType),
                     cancellationToken).ConfigureAwait(false);
         }
 
