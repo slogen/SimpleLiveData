@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -125,15 +126,23 @@ namespace DataSys.App.Tests.Support.Hosting
             var srv = IdServer;
             var handler = srv.CreateHandler();
             var authority = srv.BaseAddress.ToString();
-            //var getUrl = authority + "/.well-known/openid-configuration";
-            //var get = await client.GetAsync(getUrl, CancellationToken).ConfigureAwait(false);
-            var discoClient = new DiscoveryClient(authority, handler);
-            var secret = Identity4ServerConfiguration.ClientSecret;
-            var idClient = Identity4ServerConfiguration.Id4Clients.First();
-            var disco = await discoClient.GetAsync(cancellationToken).ConfigureAwait(false);
-            if (!disco.IsError)
-                await ConfigureClientDiscoAuthenticationFromTestClient(client, disco, idClient.ClientId, secret,
-                    idClient.AllowedScopes.First(), cancellationToken).ConfigureAwait(false);
+            using (var tokenClient = new HttpClient(handler))
+            {
+                var disco = await tokenClient.GetDiscoveryDocumentAsync(
+                    new DiscoveryDocumentRequest()
+                    {
+                        Address = authority
+                    },
+                    cancellationToken: cancellationToken);
+                var secret = Identity4ServerConfiguration.ClientSecret;
+                var idClient = Identity4ServerConfiguration.Id4Clients.First();
+                if (!disco.IsError)
+                    await ConfigureClientDiscoAuthenticationFromTestClient(
+                        client,
+                        tokenClient, disco, 
+                        idClient.ClientId, secret,
+                        idClient.AllowedScopes.First(), cancellationToken).ConfigureAwait(false);
+            }
         }
 
         public class ClientDiscoAuthenticationFailed : Exception
@@ -148,14 +157,25 @@ namespace DataSys.App.Tests.Support.Hosting
             public TokenResponse Response { get; }
         }
 
-        private async Task ConfigureClientDiscoAuthenticationFromTestClient(HttpClient client, DiscoveryResponse disco,
-            string clientId, string secret, string scope, CancellationToken cancellationToken)
+        private async Task ConfigureClientDiscoAuthenticationFromTestClient(
+            HttpClient client, 
+            HttpClient tokenClient,
+            DiscoveryResponse disco, string clientId, string secret, string scope, CancellationToken cancellationToken)
         {
-            var tokenClient = new TokenClient(disco.TokenEndpoint, clientId, secret, IdServer.CreateHandler());
-            var tokenResponse = await tokenClient
-                .RequestClientCredentialsAsync(scope, cancellationToken: cancellationToken).ConfigureAwait(false);
-            if (tokenResponse.IsError)
+            if (disco is null)
                 return;
+            var grantType = "client_credentials";
+            var req = new ClientCredentialsTokenRequest
+            {
+                GrantType = grantType,
+                Address = disco.TokenEndpoint,
+                ClientId = clientId,
+                ClientSecret = secret,
+                Scope = scope
+            };
+            var tokenResponse = await tokenClient.RequestTokenAsync(req, cancellationToken).ConfigureAwait(false);
+            if (tokenResponse.IsError)
+                throw new IOException($"{tokenResponse.Error} ({req.Address})");
             client.SetBearerToken(tokenResponse.AccessToken);
         }
 
